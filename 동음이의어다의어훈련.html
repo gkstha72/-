@@ -1,0 +1,2886 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>동음이의어·다의어 훈련</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif;background:#f4f6fa;color:#162033}
+.app{max-width:1120px;margin:0 auto;padding:24px 22px 48px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:900}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#315cff,#37c4ff);color:white;display:grid;place-items:center;font-weight:900}
+button{border:none;border-radius:14px;padding:12px 17px;font-size:15px;font-weight:900;cursor:pointer}
+.primary{background:#246bfe;color:white}.secondary{background:#eef3ff;color:#246bfe}.gray{background:#edf1f6;color:#5d687b}
+.panel{background:white;border:1px solid #e2e8f0;border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(15,30,60,.06);margin-bottom:20px}
+.panel h2{margin:0 0 16px;font-size:22px}
+.setup-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+label{display:block;font-size:13px;font-weight:900;color:#475569;margin-bottom:7px}
+select,textarea{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;font-size:14px;outline:none;background:white}
+textarea{min-height:74px;resize:vertical}
+.subject-box,.help-box{background:#f8faff;border:1px solid #e2e8f0;border-radius:18px;padding:16px;margin-bottom:16px;color:#475569;line-height:1.6}
+.help-box{margin-top:16px;font-size:14px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.word-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.item-card{background:#f8faff;border:1px solid #e2e8f0;border-radius:16px;padding:14px;font-size:15px;font-weight:900;color:#334155;line-height:1.5}
+.item-card strong{color:#246bfe;margin-right:5px}
+.tag{display:inline-block;margin-left:6px;padding:3px 8px;border-radius:999px;background:#eef3ff;color:#246bfe;font-size:12px;font-weight:900}
+.hidden{display:none!important}
+.progress-line{height:10px;background:#edf1f7;border-radius:999px;overflow:hidden;margin-bottom:18px}
+.progress-bar{height:100%;width:0%;background:#246bfe}
+.question{color:#246bfe;font-size:26px;line-height:1.5;font-weight:900;text-align:center;margin-bottom:16px}
+.training-box{background:#f8faff;border-radius:24px;padding:30px 24px;margin-bottom:18px;min-height:360px}
+.training-title{font-size:22px;font-weight:900;color:#246bfe;text-align:center;margin-bottom:16px}
+.target-card{display:none}
+.target-word{font-size:48px;font-weight:900;color:#246bfe;margin-bottom:8px}
+.meaning-line{font-size:20px;font-weight:900;color:#475569;line-height:1.5}
+.answer-options{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;max-width:980px;margin-left:auto;margin-right:auto}
+.answer-btn{background:white;color:#162033;border:2px solid #dbe7ff;border-radius:18px;min-height:72px;padding:18px 20px;font-size:24px;font-weight:900;text-align:center;line-height:1.45}
+.answer-btn:hover{background:#eef3ff}
+.answer-btn.correct-choice{background:white!important;color:#162033!important;border:4px solid #16a06f!important}
+.answer-btn.wrong-choice{background:white!important;color:#162033!important;border:4px solid #e54848!important}
+.highlight-word{color:#e54848;font-weight:1000}
+.feedback{display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center}
+.feedback.correct{background:#e8fff4;color:#16a06f;border:1px solid #a7f3d0}
+.feedback.wrong{background:#fff1f1;color:#e54848;border:1px solid #fecaca}
+.explanation-box{display:none;margin-top:12px;background:#f8faff;border:1px solid #e2e8f0;border-radius:16px;padding:14px;color:#475569;font-size:17px;font-weight:800;line-height:1.5}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.summary-card{background:white;border:1px solid #edf2f7;border-radius:20px;padding:22px 16px;text-align:center;box-shadow:0 8px 22px rgba(15,30,60,.06)}
+.summary-icon{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;margin:0 auto 10px;color:white;font-size:22px;font-weight:900}
+.summary-card strong{display:block;font-size:30px;line-height:1;margin-bottom:8px;font-weight:900}
+.summary-card span{color:#334155;font-size:15px;font-weight:800}
+.summary-card.total strong,.summary-card.rate strong{color:#246bfe}.summary-card.correct strong{color:#16a06f}.summary-card.wrong strong{color:#e54848}
+.summary-icon.total,.summary-icon.rate{background:#246bfe}.summary-icon.correct{background:#16a06f}.summary-icon.wrong{background:#e54848}
+@media(max-width:900px){.setup-grid{grid-template-columns:1fr 1fr}.word-grid{grid-template-columns:repeat(2,1fr)}.summary-grid{grid-template-columns:repeat(2,1fr)}.topbar{align-items:flex-start;flex-direction:column}.target-word{font-size:40px}}
+@media(max-width:560px){.setup-grid,.word-grid,.summary-grid{grid-template-columns:1fr}.question{font-size:22px}.answer-btn{font-size:20px}.target-word{font-size:34px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar"><div class="brand"><div class="logo">뜻</div><span>동음이의어·다의어 훈련</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+
+<section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+
+<section id="setupView" class="panel">
+<h2>훈련 설정</h2>
+<div class="setup-grid">
+  <div><label for="itemType">훈련 유형</label><select id="itemType" onchange="generateMaterials()"><option value="word" selected>단어형</option><option value="conjugation">활용형</option><option value="all">전체</option></select></div>
+  <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="all">전체</option></select></div>
+  <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
+  <div><label for="explainMode">설명 표시</label><select id="explainMode"><option value="after" selected>정답 후 표시</option><option value="hide">표시 안 함</option></select></div>
+</div>
+<div class="help-box">같은 단어가 다른 뜻으로 쓰인 문장을 고르는 훈련입니다. 단어형과 활용형을 선택해서 훈련할 수 있습니다. 문장 안의 목표 단어 또는 활용형은 빨간색으로 표시됩니다. 정답 또는 2회 오답 후에는 설명을 확인하고 다음 문제로 넘어갑니다. 1번 틀리고 두 번째에 맞춘 경우도 오답으로 기록됩니다.</div>
+<div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
+</section>
+
+<section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
+
+<section id="trainingView" class="panel hidden">
+<div id="question" class="question">같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.</div>
+<div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+<div class="training-box">
+  <div class="training-title" id="trainingTitle">1번 문항</div>
+  <div class="target-card">
+    <div id="targetWord" class="target-word"></div>
+    <div id="meaningLine" class="meaning-line"></div>
+  </div>
+  <div id="answerOptions" class="answer-options"></div>
+</div>
+<div id="feedbackBox" class="feedback"></div>
+<div id="explanationBox" class="explanation-box"></div>
+<div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
+<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+</section>
+
+<section id="finishView" class="panel hidden">
+<h2>훈련 결과</h2><p id="finishText"></p><div class="summary-grid" id="summaryGrid"></div>
+<div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+</section>
+</main>
+
+<script>
+const TRAINING_NAME="동음이의어·다의어 훈련";
+const Store={load(key,fallback){try{const value=localStorage.getItem(key);return value?JSON.parse(value):fallback}catch{return fallback}},save(key,value){localStorage.setItem(key,JSON.stringify(value))}};
+const subjects=Store.load("speech_subjects",[]);
+const selectedSubjectId=Store.load("speech_selected_subject",null);
+const selectedSubject=subjects.find(subject=>subject.id===selectedSubjectId)||null;
+const POLYSEMY_ITEMS=[
+  {
+    word: "눈",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이나 동물의 보는 기관",
+    oddMeaning: "하늘에서 내리는 흰 얼음 결정",
+    choices: [
+      {
+        text: "저 아이는 참 눈이 크고 맑구나.",
+        meaning: "사람이나 동물의 보는 기관",
+        isOdd: false
+      },
+      {
+        text: "눈이 아파서 안과에 갔어요.",
+        meaning: "사람이나 동물의 보는 기관",
+        isOdd: false
+      },
+      {
+        text: "하늘에서 눈이 펑펑 내린다.",
+        meaning: "하늘에서 내리는 흰 얼음 결정",
+        isOdd: true
+      }
+    ],
+    answer: "하늘에서 눈이 펑펑 내린다.",
+    explanation: "'하늘에서 눈이 펑펑 내린다'의 눈은 겨울에 내리는 눈이고, 나머지 눈은 보는 기관을 뜻합니다."
+  },
+  {
+    word: "밤",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "해가 지고 어두워진 시간",
+    oddMeaning: "먹는 열매",
+    choices: [
+      {
+        text: "어젯밤에 비가 많이 왔어요.",
+        meaning: "해가 지고 어두워진 시간",
+        isOdd: false
+      },
+      {
+        text: "밤이 되자 거리가 조용해졌다.",
+        meaning: "해가 지고 어두워진 시간",
+        isOdd: false
+      },
+      {
+        text: "가을에는 밤을 구워 먹으면 맛있다.",
+        meaning: "먹는 열매",
+        isOdd: true
+      }
+    ],
+    answer: "가을에는 밤을 구워 먹으면 맛있다.",
+    explanation: "'가을에는 밤을 구워 먹으면 맛있다'의 밤은 먹는 열매이고, 나머지 밤은 어두운 시간을 뜻합니다."
+  },
+  {
+    word: "말",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이 생각을 표현하는 소리나 글",
+    oddMeaning: "동물",
+    choices: [
+      {
+        text: "친구에게 고운 말을 해야 해요.",
+        meaning: "사람이 생각을 표현하는 소리나 글",
+        isOdd: false
+      },
+      {
+        text: "선생님 말씀을 잘 들어야 합니다.",
+        meaning: "사람이 생각을 표현하는 소리나 글",
+        isOdd: false
+      },
+      {
+        text: "초원에서 말이 힘차게 달린다.",
+        meaning: "동물",
+        isOdd: true
+      }
+    ],
+    answer: "초원에서 말이 힘차게 달린다.",
+    explanation: "'초원에서 말이 힘차게 달린다'의 말은 동물이고, 나머지 말은 생각을 표현하는 언어를 뜻합니다."
+  },
+  {
+    word: "배",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이나 동물의 몸 앞쪽 가운데 부분",
+    oddMeaning: "물 위를 다니는 탈것",
+    choices: [
+      {
+        text: "밥을 많이 먹어서 배가 불러요.",
+        meaning: "사람이나 동물의 몸 앞쪽 가운데 부분",
+        isOdd: false
+      },
+      {
+        text: "배가 아파서 약을 먹었어요.",
+        meaning: "사람이나 동물의 몸 앞쪽 가운데 부분",
+        isOdd: false
+      },
+      {
+        text: "커다란 배가 바다 위를 지나간다.",
+        meaning: "물 위를 다니는 탈것",
+        isOdd: true
+      }
+    ],
+    answer: "커다란 배가 바다 위를 지나간다.",
+    explanation: "'커다란 배가 바다 위를 지나간다'의 배는 물 위를 다니는 탈것이고, 나머지 배는 몸의 한 부분을 뜻합니다."
+  },
+  {
+    word: "감",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "먹는 과일",
+    oddMeaning: "느낌이나 짐작",
+    choices: [
+      {
+        text: "가을에는 달콤한 감을 먹어요.",
+        meaning: "먹는 과일",
+        isOdd: false
+      },
+      {
+        text: "할머니가 감을 깎아 주셨어요.",
+        meaning: "먹는 과일",
+        isOdd: false
+      },
+      {
+        text: "오늘은 왠지 좋은 감이 들어요.",
+        meaning: "느낌이나 짐작",
+        isOdd: true
+      }
+    ],
+    answer: "오늘은 왠지 좋은 감이 들어요.",
+    explanation: "'좋은 감이 들어요'의 감은 느낌이나 짐작을 뜻하고, 나머지 감은 먹는 과일을 뜻합니다."
+  },
+  {
+    word: "벌",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "꿀을 모으는 곤충",
+    oddMeaning: "잘못했을 때 받는 꾸중이나 처벌",
+    choices: [
+      {
+        text: "꽃 위에 벌이 앉아 있어요.",
+        meaning: "꿀을 모으는 곤충",
+        isOdd: false
+      },
+      {
+        text: "벌이 윙윙거리며 날아다녀요.",
+        meaning: "꿀을 모으는 곤충",
+        isOdd: false
+      },
+      {
+        text: "규칙을 어겨서 벌을 받았어요.",
+        meaning: "꾸중이나 처벌",
+        isOdd: true
+      }
+    ],
+    answer: "규칙을 어겨서 벌을 받았어요.",
+    explanation: "'벌을 받았어요'의 벌은 잘못했을 때 받는 처벌이고, 나머지 벌은 곤충을 뜻합니다."
+  },
+  {
+    word: "굴",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "먹는 바다 음식",
+    oddMeaning: "땅속이나 바위 속에 난 구멍",
+    choices: [
+      {
+        text: "겨울에는 굴이 맛있어요.",
+        meaning: "먹는 바다 음식",
+        isOdd: false
+      },
+      {
+        text: "엄마가 굴을 넣고 국을 끓였어요.",
+        meaning: "먹는 바다 음식",
+        isOdd: false
+      },
+      {
+        text: "토끼가 굴 속으로 들어갔어요.",
+        meaning: "땅속이나 바위 속에 난 구멍",
+        isOdd: true
+      }
+    ],
+    answer: "토끼가 굴 속으로 들어갔어요.",
+    explanation: "'굴 속'의 굴은 땅속에 난 구멍이고, 나머지 굴은 먹는 바다 음식을 뜻합니다."
+  },
+  {
+    word: "장",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "물건을 사고파는 시장",
+    oddMeaning: "몸속의 소화 기관",
+    choices: [
+      {
+        text: "엄마와 함께 장에 갔어요.",
+        meaning: "물건을 사고파는 시장",
+        isOdd: false
+      },
+      {
+        text: "오늘은 장에서 과일을 샀어요.",
+        meaning: "물건을 사고파는 시장",
+        isOdd: false
+      },
+      {
+        text: "배가 아파서 장 검사를 받았어요.",
+        meaning: "몸속의 소화 기관",
+        isOdd: true
+      }
+    ],
+    answer: "배가 아파서 장 검사를 받았어요.",
+    explanation: "'장 검사'의 장은 몸속의 소화 기관이고, 나머지 장은 시장을 뜻합니다."
+  },
+  {
+    word: "병",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "물이나 음료를 담는 그릇",
+    oddMeaning: "몸이 아픈 상태",
+    choices: [
+      {
+        text: "물병에 물을 가득 담았어요.",
+        meaning: "물이나 음료를 담는 그릇",
+        isOdd: false
+      },
+      {
+        text: "유리병이 바닥에 떨어졌어요.",
+        meaning: "물이나 음료를 담는 그릇",
+        isOdd: false
+      },
+      {
+        text: "동생이 병에 걸려 병원에 갔어요.",
+        meaning: "몸이 아픈 상태",
+        isOdd: true
+      }
+    ],
+    answer: "동생이 병에 걸려 병원에 갔어요.",
+    explanation: "'병에 걸려'의 병은 몸이 아픈 상태이고, 나머지 병은 물건을 담는 그릇을 뜻합니다."
+  },
+  {
+    word: "상",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "음식이나 물건을 올려놓는 가구",
+    oddMeaning: "잘한 일에 대해 받는 표창",
+    choices: [
+      {
+        text: "밥상을 깨끗이 닦았어요.",
+        meaning: "음식이나 물건을 올려놓는 가구",
+        isOdd: false
+      },
+      {
+        text: "상 위에 반찬을 올려놓았어요.",
+        meaning: "음식이나 물건을 올려놓는 가구",
+        isOdd: false
+      },
+      {
+        text: "동생이 그림 대회에서 상을 받았어요.",
+        meaning: "잘한 일에 대해 받는 표창",
+        isOdd: true
+      }
+    ],
+    answer: "동생이 그림 대회에서 상을 받았어요.",
+    explanation: "'상을 받았어요'의 상은 잘한 일에 대해 받는 표창이고, 나머지 상은 물건을 올려놓는 가구를 뜻합니다."
+  },
+  {
+    word: "알",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "새나 곤충 등이 낳는 둥근 것",
+    oddMeaning: "알다의 활용형",
+    choices: [
+      {
+        text: "닭이 알을 낳았어요.",
+        meaning: "새나 곤충 등이 낳는 둥근 것",
+        isOdd: false
+      },
+      {
+        text: "새 둥지 안에 작은 알이 있었어요.",
+        meaning: "새나 곤충 등이 낳는 둥근 것",
+        isOdd: false
+      },
+      {
+        text: "나는 그 문제의 답을 알 것 같아요.",
+        meaning: "알다의 활용형",
+        isOdd: true
+      }
+    ],
+    answer: "나는 그 문제의 답을 알 것 같아요.",
+    explanation: "'알 것 같아요'의 알은 안다는 뜻이고, 나머지 알은 새나 곤충 등이 낳는 둥근 것을 뜻합니다."
+  },
+  {
+    word: "줄",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "가늘고 길게 생긴 끈",
+    oddMeaning: "차례를 기다리며 서 있는 사람들의 행렬",
+    choices: [
+      {
+        text: "상자를 줄로 묶었어요.",
+        meaning: "가늘고 길게 생긴 끈",
+        isOdd: false
+      },
+      {
+        text: "빨랫줄에 옷을 널었어요.",
+        meaning: "가늘고 길게 생긴 끈",
+        isOdd: false
+      },
+      {
+        text: "사람들이 버스를 타려고 줄을 섰어요.",
+        meaning: "차례를 기다리며 서 있는 사람들의 행렬",
+        isOdd: true
+      }
+    ],
+    answer: "사람들이 버스를 타려고 줄을 섰어요.",
+    explanation: "'줄을 섰어요'의 줄은 차례를 기다리는 행렬이고, 나머지 줄은 가늘고 긴 끈을 뜻합니다."
+  },
+  {
+    word: "살",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "몸을 이루는 부드러운 부분",
+    oddMeaning: "나이를 세는 말",
+    choices: [
+      {
+        text: "운동을 안 했더니 살이 조금 쪘어요.",
+        meaning: "몸을 이루는 부드러운 부분",
+        isOdd: false
+      },
+      {
+        text: "넘어져서 무릎 살이 까졌어요.",
+        meaning: "몸을 이루는 부드러운 부분",
+        isOdd: false
+      },
+      {
+        text: "내 동생은 일곱 살이에요.",
+        meaning: "나이를 세는 말",
+        isOdd: true
+      }
+    ],
+    answer: "내 동생은 일곱 살이에요.",
+    explanation: "'일곱 살'의 살은 나이를 세는 말이고, 나머지 살은 몸의 부드러운 부분을 뜻합니다."
+  },
+  {
+    word: "새",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "날개가 있어 날 수 있는 동물",
+    oddMeaning: "처음이거나 낡지 않은 것",
+    choices: [
+      {
+        text: "나무 위에서 새가 노래해요.",
+        meaning: "날개가 있어 날 수 있는 동물",
+        isOdd: false
+      },
+      {
+        text: "하늘 위로 새가 날아갔어요.",
+        meaning: "날개가 있어 날 수 있는 동물",
+        isOdd: false
+      },
+      {
+        text: "엄마가 새 신발을 사 주셨어요.",
+        meaning: "처음이거나 낡지 않은 것",
+        isOdd: true
+      }
+    ],
+    answer: "엄마가 새 신발을 사 주셨어요.",
+    explanation: "'새 신발'의 새는 새롭다는 뜻이고, 나머지 새는 날아다니는 동물을 뜻합니다."
+  },
+  {
+    word: "전",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "기름에 부쳐 만든 음식",
+    oddMeaning: "지금보다 앞선 때",
+    choices: [
+      {
+        text: "명절에 맛있는 전을 부쳤어요.",
+        meaning: "기름에 부쳐 만든 음식",
+        isOdd: false
+      },
+      {
+        text: "호박전을 간장에 찍어 먹었어요.",
+        meaning: "기름에 부쳐 만든 음식",
+        isOdd: false
+      },
+      {
+        text: "나는 오래전에 그 친구를 만났어요.",
+        meaning: "지금보다 앞선 때",
+        isOdd: true
+      }
+    ],
+    answer: "나는 오래전에 그 친구를 만났어요.",
+    explanation: "'오래전'의 전은 지금보다 앞선 때이고, 나머지 전은 기름에 부쳐 만든 음식을 뜻합니다."
+  },
+  {
+    word: "달",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "밤하늘에 보이는 둥근 천체",
+    oddMeaning: "한 해를 나눈 기간",
+    choices: [
+      {
+        text: "밤하늘에 둥근 달이 떴어요.",
+        meaning: "밤하늘에 보이는 둥근 천체",
+        isOdd: false
+      },
+      {
+        text: "구름 사이로 달이 보였어요.",
+        meaning: "밤하늘에 보이는 둥근 천체",
+        isOdd: false
+      },
+      {
+        text: "다음 달에 여행을 가요.",
+        meaning: "한 해를 나눈 기간",
+        isOdd: true
+      }
+    ],
+    answer: "다음 달에 여행을 가요.",
+    explanation: "'다음 달'의 달은 한 해를 나눈 기간이고, 나머지 달은 밤하늘의 달을 뜻합니다."
+  },
+  {
+    word: "해",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "낮에 하늘에서 빛나는 태양",
+    oddMeaning: "일 년을 세는 말",
+    choices: [
+      {
+        text: "아침에 해가 밝게 떠올랐어요.",
+        meaning: "낮에 하늘에서 빛나는 태양",
+        isOdd: false
+      },
+      {
+        text: "해가 지자 날이 어두워졌어요.",
+        meaning: "낮에 하늘에서 빛나는 태양",
+        isOdd: false
+      },
+      {
+        text: "새해에는 운동을 열심히 할 거예요.",
+        meaning: "일 년을 세는 말",
+        isOdd: true
+      }
+    ],
+    answer: "새해에는 운동을 열심히 할 거예요.",
+    explanation: "'새해'의 해는 일 년을 뜻하고, 나머지 해는 태양을 뜻합니다."
+  },
+  {
+    word: "신",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "발에 신는 물건",
+    oddMeaning: "종교에서 믿는 존재",
+    choices: [
+      {
+        text: "현관에 신을 가지런히 놓았어요.",
+        meaning: "발에 신는 물건",
+        isOdd: false
+      },
+      {
+        text: "비 오는 날에는 장화를 신어요.",
+        meaning: "발에 신는 물건",
+        isOdd: false
+      },
+      {
+        text: "옛사람들은 산에 신이 있다고 믿었어요.",
+        meaning: "종교에서 믿는 존재",
+        isOdd: true
+      }
+    ],
+    answer: "옛사람들은 산에 신이 있다고 믿었어요.",
+    explanation: "'신이 있다고'의 신은 종교에서 믿는 존재이고, 나머지 신은 발에 신는 물건을 뜻합니다."
+  },
+  {
+    word: "연",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "바람을 이용해 하늘에 띄우는 장난감",
+    oddMeaning: "사람 사이의 관계나 인연",
+    choices: [
+      {
+        text: "운동장에서 연을 높이 날렸어요.",
+        meaning: "바람을 이용해 하늘에 띄우는 장난감",
+        isOdd: false
+      },
+      {
+        text: "동생이 직접 만든 연을 들고 나갔어요.",
+        meaning: "바람을 이용해 하늘에 띄우는 장난감",
+        isOdd: false
+      },
+      {
+        text: "그 친구와는 좋은 연이 있는 것 같아요.",
+        meaning: "사람 사이의 관계나 인연",
+        isOdd: true
+      }
+    ],
+    answer: "그 친구와는 좋은 연이 있는 것 같아요.",
+    explanation: "'좋은 연'의 연은 사람 사이의 관계나 인연이고, 나머지 연은 하늘에 띄우는 장난감을 뜻합니다."
+  },
+  {
+    word: "맞다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "정답이거나 틀리지 않다",
+    oddMeaning: "비나 눈을 몸에 받다",
+    choices: [
+      {
+        text: "네가 고른 답이 맞아요.",
+        meaning: "정답이거나 틀리지 않다",
+        isOdd: false
+      },
+      {
+        text: "선생님 말씀이 맞는 것 같아요.",
+        meaning: "정답이거나 틀리지 않다",
+        isOdd: false
+      },
+      {
+        text: "우산이 없어서 비를 맞았어요.",
+        meaning: "비나 눈을 몸에 받다",
+        isOdd: true
+      }
+    ],
+    answer: "우산이 없어서 비를 맞았어요.",
+    explanation: "'비를 맞았어요'의 맞다는 비를 몸에 받는다는 뜻이고, 나머지 맞다는 틀리지 않다는 뜻입니다."
+  },
+  {
+    word: "세다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "수를 하나씩 헤아리다",
+    oddMeaning: "힘이 강하다",
+    choices: [
+      {
+        text: "사탕이 몇 개인지 세어 보았어요.",
+        meaning: "수를 하나씩 헤아리다",
+        isOdd: false
+      },
+      {
+        text: "손가락으로 숫자를 세었어요.",
+        meaning: "수를 하나씩 헤아리다",
+        isOdd: false
+      },
+      {
+        text: "형은 힘이 세서 무거운 것도 잘 들어요.",
+        meaning: "힘이 강하다",
+        isOdd: true
+      }
+    ],
+    answer: "형은 힘이 세서 무거운 것도 잘 들어요.",
+    explanation: "'힘이 세서'의 세다는 힘이 강하다는 뜻이고, 나머지 세다는 수를 헤아린다는 뜻입니다."
+  },
+  {
+    word: "쉬다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "일을 멈추고 편안히 있다",
+    oddMeaning: "음식이 상하다",
+    choices: [
+      {
+        text: "피곤해서 잠시 쉬었어요.",
+        meaning: "일을 멈추고 편안히 있다",
+        isOdd: false
+      },
+      {
+        text: "운동을 하다가 의자에 앉아 쉬었어요.",
+        meaning: "일을 멈추고 편안히 있다",
+        isOdd: false
+      },
+      {
+        text: "더운 날씨에 밥이 쉬어 버렸어요.",
+        meaning: "음식이 상하다",
+        isOdd: true
+      }
+    ],
+    answer: "더운 날씨에 밥이 쉬어 버렸어요.",
+    explanation: "'밥이 쉬어 버렸어요'의 쉬다는 음식이 상했다는 뜻이고, 나머지 쉬다는 편안히 쉰다는 뜻입니다."
+  },
+  {
+    word: "돌다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "빙글빙글 움직이다",
+    oddMeaning: "병이나 소문이 퍼지다",
+    choices: [
+      {
+        text: "팽이가 빠르게 돌았어요.",
+        meaning: "빙글빙글 움직이다",
+        isOdd: false
+      },
+      {
+        text: "바퀴가 천천히 돌기 시작했어요.",
+        meaning: "빙글빙글 움직이다",
+        isOdd: false
+      },
+      {
+        text: "학교에 감기가 돌고 있어요.",
+        meaning: "병이나 소문이 퍼지다",
+        isOdd: true
+      }
+    ],
+    answer: "학교에 감기가 돌고 있어요.",
+    explanation: "'감기가 돌고 있어요'의 돌다는 병이 퍼진다는 뜻이고, 나머지 돌다는 빙글빙글 움직인다는 뜻입니다."
+  },
+  {
+    word: "걸다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "물건을 매달다",
+    oddMeaning: "전화를 하다",
+    choices: [
+      {
+        text: "벽에 그림을 걸었어요.",
+        meaning: "물건을 매달다",
+        isOdd: false
+      },
+      {
+        text: "옷걸이에 외투를 걸었어요.",
+        meaning: "물건을 매달다",
+        isOdd: false
+      },
+      {
+        text: "엄마에게 전화를 걸었어요.",
+        meaning: "전화를 하다",
+        isOdd: true
+      }
+    ],
+    answer: "엄마에게 전화를 걸었어요.",
+    explanation: "'전화를 걸었어요'의 걸다는 전화를 한다는 뜻이고, 나머지 걸다는 물건을 매단다는 뜻입니다."
+  },
+  {
+    word: "끊다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "이어진 것을 자르다",
+    oddMeaning: "하던 일을 그만두다",
+    choices: [
+      {
+        text: "가위로 종이를 끊었어요.",
+        meaning: "이어진 것을 자르다",
+        isOdd: false
+      },
+      {
+        text: "긴 줄을 알맞게 끊었어요.",
+        meaning: "이어진 것을 자르다",
+        isOdd: false
+      },
+      {
+        text: "아빠는 건강을 위해 담배를 끊었어요.",
+        meaning: "하던 일을 그만두다",
+        isOdd: true
+      }
+    ],
+    answer: "아빠는 건강을 위해 담배를 끊었어요.",
+    explanation: "'담배를 끊었어요'의 끊다는 하던 일을 그만둔다는 뜻이고, 나머지 끊다는 이어진 것을 자른다는 뜻입니다."
+  },
+  {
+    word: "붙다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "떨어지지 않고 달라붙다",
+    oddMeaning: "시험이나 심사에 합격하다",
+    choices: [
+      {
+        text: "스티커가 공책에 붙었어요.",
+        meaning: "떨어지지 않고 달라붙다",
+        isOdd: false
+      },
+      {
+        text: "밥풀이 옷에 붙었어요.",
+        meaning: "떨어지지 않고 달라붙다",
+        isOdd: false
+      },
+      {
+        text: "형이 시험에 붙었어요.",
+        meaning: "시험이나 심사에 합격하다",
+        isOdd: true
+      }
+    ],
+    answer: "형이 시험에 붙었어요.",
+    explanation: "'시험에 붙었어요'의 붙다는 합격했다는 뜻이고, 나머지 붙다는 달라붙었다는 뜻입니다."
+  },
+  {
+    word: "빠지다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "물이나 구멍 속에 들어가다",
+    oddMeaning: "참석하지 않다",
+    choices: [
+      {
+        text: "아이가 물웅덩이에 빠졌어요.",
+        meaning: "물이나 구멍 속에 들어가다",
+        isOdd: false
+      },
+      {
+        text: "공이 구덩이에 빠졌어요.",
+        meaning: "물이나 구멍 속에 들어가다",
+        isOdd: false
+      },
+      {
+        text: "감기에 걸려 수업에 빠졌어요.",
+        meaning: "참석하지 않다",
+        isOdd: true
+      }
+    ],
+    answer: "감기에 걸려 수업에 빠졌어요.",
+    explanation: "'수업에 빠졌어요'의 빠지다는 참석하지 않았다는 뜻이고, 나머지 빠지다는 물이나 구멍 속에 들어갔다는 뜻입니다."
+  },
+  {
+    word: "지다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "해나 달이 아래로 내려가 보이지 않게 되다",
+    oddMeaning: "경기나 싸움에서 이기지 못하다",
+    choices: [
+      {
+        text: "저녁이 되자 해가 졌어요.",
+        meaning: "해나 달이 아래로 내려가 보이지 않게 되다",
+        isOdd: false
+      },
+      {
+        text: "달이 서쪽 하늘로 지고 있어요.",
+        meaning: "해나 달이 아래로 내려가 보이지 않게 되다",
+        isOdd: false
+      },
+      {
+        text: "우리 팀이 축구 경기에서 졌어요.",
+        meaning: "경기나 싸움에서 이기지 못하다",
+        isOdd: true
+      }
+    ],
+    answer: "우리 팀이 축구 경기에서 졌어요.",
+    explanation: "'경기에서 졌어요'의 지다는 이기지 못했다는 뜻이고, 나머지 지다는 해나 달이 내려가 보이지 않는다는 뜻입니다."
+  },
+  {
+    word: "빼다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "안에 있는 것을 밖으로 꺼내다",
+    oddMeaning: "어떤 것에서 제외하다",
+    choices: [
+      {
+        text: "서랍에서 연필을 뺐어요.",
+        meaning: "안에 있는 것을 밖으로 꺼내다",
+        isOdd: false
+      },
+      {
+        text: "벽에 박힌 못을 뺐어요.",
+        meaning: "안에 있는 것을 밖으로 꺼내다",
+        isOdd: false
+      },
+      {
+        text: "명단에서 내 이름을 뺐어요.",
+        meaning: "어떤 것에서 제외하다",
+        isOdd: true
+      }
+    ],
+    answer: "명단에서 내 이름을 뺐어요.",
+    explanation: "'이름을 뺐어요'의 빼다는 제외했다는 뜻이고, 나머지 빼다는 안에 있는 것을 꺼낸다는 뜻입니다."
+  },
+  {
+    word: "오다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "말하는 사람 쪽으로 움직이다",
+    oddMeaning: "비나 눈이 내리다",
+    choices: [
+      {
+        text: "친구가 우리 집에 왔어요.",
+        meaning: "말하는 사람 쪽으로 움직이다",
+        isOdd: false
+      },
+      {
+        text: "엄마가 학교 앞으로 오셨어요.",
+        meaning: "말하는 사람 쪽으로 움직이다",
+        isOdd: false
+      },
+      {
+        text: "아침부터 비가 많이 왔어요.",
+        meaning: "비나 눈이 내리다",
+        isOdd: true
+      }
+    ],
+    answer: "아침부터 비가 많이 왔어요.",
+    explanation: "'비가 왔어요'의 오다는 비가 내렸다는 뜻이고, 나머지 오다는 이쪽으로 움직였다는 뜻입니다."
+  },
+  {
+    word: "가다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "다른 곳으로 이동하다",
+    oddMeaning: "시간이 지나가다",
+    choices: [
+      {
+        text: "아침에 학교에 갔어요.",
+        meaning: "다른 곳으로 이동하다",
+        isOdd: false
+      },
+      {
+        text: "가족과 함께 시장에 갔어요.",
+        meaning: "다른 곳으로 이동하다",
+        isOdd: false
+      },
+      {
+        text: "즐겁게 놀다 보니 시간이 빨리 갔어요.",
+        meaning: "시간이 지나가다",
+        isOdd: true
+      }
+    ],
+    answer: "즐겁게 놀다 보니 시간이 빨리 갔어요.",
+    explanation: "'시간이 갔어요'의 가다는 시간이 지나갔다는 뜻이고, 나머지 가다는 다른 곳으로 이동했다는 뜻입니다."
+  },
+  {
+    word: "먹다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "음식을 입으로 넣어 삼키다",
+    oddMeaning: "나이가 많아지다",
+    choices: [
+      {
+        text: "점심에 김밥을 먹었어요.",
+        meaning: "음식을 입으로 넣어 삼키다",
+        isOdd: false
+      },
+      {
+        text: "동생이 사과를 맛있게 먹었어요.",
+        meaning: "음식을 입으로 넣어 삼키다",
+        isOdd: false
+      },
+      {
+        text: "나는 한 살을 더 먹었어요.",
+        meaning: "나이가 많아지다",
+        isOdd: true
+      }
+    ],
+    answer: "나는 한 살을 더 먹었어요.",
+    explanation: "'한 살을 더 먹었어요'의 먹다는 나이가 많아졌다는 뜻이고, 나머지 먹다는 음식을 먹는다는 뜻입니다."
+  },
+  {
+    word: "세우다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "서 있게 하다",
+    oddMeaning: "계획을 만들다",
+    choices: [
+      {
+        text: "쓰러진 의자를 다시 세웠어요.",
+        meaning: "서 있게 하다",
+        isOdd: false
+      },
+      {
+        text: "주차장에 차를 세웠어요.",
+        meaning: "서 있게 하다",
+        isOdd: false
+      },
+      {
+        text: "방학 동안 공부 계획을 세웠어요.",
+        meaning: "계획을 만들다",
+        isOdd: true
+      }
+    ],
+    answer: "방학 동안 공부 계획을 세웠어요.",
+    explanation: "'계획을 세웠어요'의 세우다는 계획을 만들었다는 뜻이고, 나머지 세우다는 서 있게 했다는 뜻입니다."
+  },
+  {
+    word: "내다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "밖으로 보내거나 꺼내다",
+    oddMeaning: "돈을 지불하다",
+    choices: [
+      {
+        text: "쓰레기를 밖에 내다 버렸어요.",
+        meaning: "밖으로 보내거나 꺼내다",
+        isOdd: false
+      },
+      {
+        text: "가방에서 책을 내어 놓았어요.",
+        meaning: "밖으로 보내거나 꺼내다",
+        isOdd: false
+      },
+      {
+        text: "버스 요금을 냈어요.",
+        meaning: "돈을 지불하다",
+        isOdd: true
+      }
+    ],
+    answer: "버스 요금을 냈어요.",
+    explanation: "'요금을 냈어요'의 내다는 돈을 지불했다는 뜻이고, 나머지 내다는 밖으로 꺼내거나 보낸다는 뜻입니다."
+  },
+  {
+    word: "돌",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "딱딱한 광물 덩어리",
+    oddMeaning: "아기의 첫 번째 생일",
+    choices: [
+      {
+        text: "길가에 작은 돌이 많았어요.",
+        meaning: "딱딱한 광물 덩어리",
+        isOdd: false
+      },
+      {
+        text: "아이가 돌을 주워 강에 던졌어요.",
+        meaning: "딱딱한 광물 덩어리",
+        isOdd: false
+      },
+      {
+        text: "조카의 돌잔치에 다녀왔어요.",
+        meaning: "아기의 첫 번째 생일",
+        isOdd: true
+      }
+    ],
+    answer: "조카의 돌잔치에 다녀왔어요.",
+    explanation: "'돌잔치'의 돌은 아기의 첫 번째 생일이고, 나머지 돌은 딱딱한 광물 덩어리를 뜻합니다."
+  },
+  {
+    word: "날",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "하루 또는 특정한 날짜",
+    oddMeaning: "칼이나 도구의 날카로운 부분",
+    choices: [
+      {
+        text: "비 오는 날에는 우산을 써요.",
+        meaning: "하루 또는 특정한 날짜",
+        isOdd: false
+      },
+      {
+        text: "생일날에 가족이 모였어요.",
+        meaning: "하루 또는 특정한 날짜",
+        isOdd: false
+      },
+      {
+        text: "칼날이 날카로우니 조심하세요.",
+        meaning: "칼이나 도구의 날카로운 부분",
+        isOdd: true
+      }
+    ],
+    answer: "칼날이 날카로우니 조심하세요.",
+    explanation: "'칼날'의 날은 칼의 날카로운 부분이고, 나머지 날은 하루나 날짜를 뜻합니다."
+  },
+  {
+    word: "고장",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "기계나 물건이 망가진 상태",
+    oddMeaning: "사람이 태어나거나 사는 지역",
+    choices: [
+      {
+        text: "시계가 고장 나서 멈췄어요.",
+        meaning: "기계나 물건이 망가진 상태",
+        isOdd: false
+      },
+      {
+        text: "컴퓨터가 고장 나서 수리를 맡겼어요.",
+        meaning: "기계나 물건이 망가진 상태",
+        isOdd: false
+      },
+      {
+        text: "우리 고장은 사과가 유명해요.",
+        meaning: "사람이 태어나거나 사는 지역",
+        isOdd: true
+      }
+    ],
+    answer: "우리 고장은 사과가 유명해요.",
+    explanation: "'우리 고장'의 고장은 지역을 뜻하고, 나머지 고장은 물건이 망가진 상태를 뜻합니다."
+  },
+  {
+    word: "마디",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "손가락이나 줄기에서 구분되는 부분",
+    oddMeaning: "말이나 글의 짧은 부분",
+    choices: [
+      {
+        text: "손가락 마디가 아파요.",
+        meaning: "손가락이나 줄기에서 구분되는 부분",
+        isOdd: false
+      },
+      {
+        text: "대나무에는 마디가 있어요.",
+        meaning: "손가락이나 줄기에서 구분되는 부분",
+        isOdd: false
+      },
+      {
+        text: "친구가 따뜻한 말 한마디를 해 주었어요.",
+        meaning: "말이나 글의 짧은 부분",
+        isOdd: true
+      }
+    ],
+    answer: "친구가 따뜻한 말 한마디를 해 주었어요.",
+    explanation: "'말 한마디'의 마디는 말의 짧은 부분이고, 나머지 마디는 손가락이나 줄기에서 구분되는 부분을 뜻합니다."
+  },
+  {
+    word: "매다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "끈이나 줄로 묶다",
+    oddMeaning: "논밭의 잡초를 뽑다",
+    choices: [
+      {
+        text: "운동화 끈을 단단히 맸어요.",
+        meaning: "끈이나 줄로 묶다",
+        isOdd: false
+      },
+      {
+        text: "허리에 앞치마를 맸어요.",
+        meaning: "끈이나 줄로 묶다",
+        isOdd: false
+      },
+      {
+        text: "할아버지가 밭을 매고 계세요.",
+        meaning: "논밭의 잡초를 뽑다",
+        isOdd: true
+      }
+    ],
+    answer: "할아버지가 밭을 매고 계세요.",
+    explanation: "'밭을 매고'의 매다는 잡초를 뽑는다는 뜻이고, 나머지 매다는 끈이나 줄로 묶는다는 뜻입니다."
+  },
+  {
+    word: "부치다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "음식을 기름에 익히다",
+    oddMeaning: "편지나 물건을 보내다",
+    choices: [
+      {
+        text: "엄마가 호박전을 부쳤어요.",
+        meaning: "음식을 기름에 익히다",
+        isOdd: false
+      },
+      {
+        text: "명절에 가족이 함께 전을 부쳤어요.",
+        meaning: "음식을 기름에 익히다",
+        isOdd: false
+      },
+      {
+        text: "친구에게 편지를 부쳤어요.",
+        meaning: "편지나 물건을 보내다",
+        isOdd: true
+      }
+    ],
+    answer: "친구에게 편지를 부쳤어요.",
+    explanation: "'편지를 부쳤어요'의 부치다는 편지를 보냈다는 뜻이고, 나머지 부치다는 음식을 기름에 익힌다는 뜻입니다."
+  },
+  {
+    word: "사다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "돈을 주고 물건을 얻다",
+    oddMeaning: "남의 마음이나 평가를 얻게 되다",
+    choices: [
+      {
+        text: "가게에서 우유를 샀어요.",
+        meaning: "돈을 주고 물건을 얻다",
+        isOdd: false
+      },
+      {
+        text: "문구점에서 새 공책을 샀어요.",
+        meaning: "돈을 주고 물건을 얻다",
+        isOdd: false
+      },
+      {
+        text: "거짓말을 해서 친구의 미움을 샀어요.",
+        meaning: "남의 마음이나 평가를 얻게 되다",
+        isOdd: true
+      }
+    ],
+    answer: "거짓말을 해서 친구의 미움을 샀어요.",
+    explanation: "'미움을 샀어요'의 사다는 미움을 받게 되었다는 뜻이고, 나머지 사다는 돈을 주고 물건을 얻는다는 뜻입니다."
+  },
+  {
+    word: "살다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "생명을 유지하다",
+    oddMeaning: "어떤 곳에 머물러 생활하다",
+    choices: [
+      {
+        text: "물고기는 물속에서 살아요.",
+        meaning: "생명을 유지하다",
+        isOdd: false
+      },
+      {
+        text: "나무도 햇빛과 물이 있어야 살아요.",
+        meaning: "생명을 유지하다",
+        isOdd: false
+      },
+      {
+        text: "우리 가족은 서울에 살아요.",
+        meaning: "어떤 곳에 머물러 생활하다",
+        isOdd: true
+      }
+    ],
+    answer: "우리 가족은 서울에 살아요.",
+    explanation: "'서울에 살아요'의 살다는 어떤 곳에서 생활한다는 뜻이고, 나머지 살다는 생명을 유지한다는 뜻입니다."
+  },
+  {
+    word: "넘다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "높은 것 위를 지나가다",
+    oddMeaning: "어떤 수나 정도보다 많아지다",
+    choices: [
+      {
+        text: "고양이가 담을 훌쩍 넘었어요.",
+        meaning: "높은 것 위를 지나가다",
+        isOdd: false
+      },
+      {
+        text: "선수가 장애물을 넘었어요.",
+        meaning: "높은 것 위를 지나가다",
+        isOdd: false
+      },
+      {
+        text: "교실에 학생이 스무 명이 넘어요.",
+        meaning: "어떤 수나 정도보다 많아지다",
+        isOdd: true
+      }
+    ],
+    answer: "교실에 학생이 스무 명이 넘어요.",
+    explanation: "'스무 명이 넘어요'의 넘다는 어떤 수보다 많다는 뜻이고, 나머지 넘다는 높은 것 위를 지나간다는 뜻입니다."
+  },
+  {
+    word: "식다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "뜨거운 것이 차가워지다",
+    oddMeaning: "마음이나 열정이 줄어들다",
+    choices: [
+      {
+        text: "뜨거운 국이 조금 식었어요.",
+        meaning: "뜨거운 것이 차가워지다",
+        isOdd: false
+      },
+      {
+        text: "차가 식기 전에 마셔요.",
+        meaning: "뜨거운 것이 차가워지다",
+        isOdd: false
+      },
+      {
+        text: "처음의 열정이 점점 식었어요.",
+        meaning: "마음이나 열정이 줄어들다",
+        isOdd: true
+      }
+    ],
+    answer: "처음의 열정이 점점 식었어요.",
+    explanation: "'열정이 식었어요'의 식다는 마음이나 열정이 줄어들었다는 뜻이고, 나머지 식다는 뜨거운 것이 차가워졌다는 뜻입니다."
+  },
+  {
+    word: "얼다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "물이 차가워져 딱딱하게 굳다",
+    oddMeaning: "무섭거나 긴장해서 몸이 굳다",
+    choices: [
+      {
+        text: "추운 날씨에 강물이 얼었어요.",
+        meaning: "물이 차가워져 딱딱하게 굳다",
+        isOdd: false
+      },
+      {
+        text: "냉동실에서 물이 꽁꽁 얼었어요.",
+        meaning: "물이 차가워져 딱딱하게 굳다",
+        isOdd: false
+      },
+      {
+        text: "많은 사람 앞에 서자 몸이 얼어 버렸어요.",
+        meaning: "무섭거나 긴장해서 몸이 굳다",
+        isOdd: true
+      }
+    ],
+    answer: "많은 사람 앞에 서자 몸이 얼어 버렸어요.",
+    explanation: "'몸이 얼어 버렸어요'의 얼다는 긴장해서 굳었다는 뜻이고, 나머지 얼다는 물이 딱딱하게 굳었다는 뜻입니다."
+  },
+  {
+    word: "풀리다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "묶인 것이 느슨해지거나 열리다",
+    oddMeaning: "기분이나 화가 가라앉다",
+    choices: [
+      {
+        text: "운동화 끈이 풀렸어요.",
+        meaning: "묶인 것이 느슨해지거나 열리다",
+        isOdd: false
+      },
+      {
+        text: "묶어 둔 리본이 풀렸어요.",
+        meaning: "묶인 것이 느슨해지거나 열리다",
+        isOdd: false
+      },
+      {
+        text: "친구와 이야기하니 화가 풀렸어요.",
+        meaning: "기분이나 화가 가라앉다",
+        isOdd: true
+      }
+    ],
+    answer: "친구와 이야기하니 화가 풀렸어요.",
+    explanation: "'화가 풀렸어요'의 풀리다는 화가 가라앉았다는 뜻이고, 나머지 풀리다는 묶인 것이 열렸다는 뜻입니다."
+  },
+  {
+    word: "통",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "물건을 담는 속이 빈 그릇",
+    oddMeaning: "전혀 또는 도무지",
+    choices: [
+      {
+        text: "물통에 물을 담았어요.",
+        meaning: "물건을 담는 속이 빈 그릇",
+        isOdd: false
+      },
+      {
+        text: "쓰레기통을 깨끗이 비웠어요.",
+        meaning: "물건을 담는 속이 빈 그릇",
+        isOdd: false
+      },
+      {
+        text: "요즘 그 친구는 통 보이지 않아요.",
+        meaning: "전혀 또는 도무지",
+        isOdd: true
+      }
+    ],
+    answer: "요즘 그 친구는 통 보이지 않아요.",
+    explanation: "'통 보이지 않아요'의 통은 전혀 또는 도무지라는 뜻이고, 나머지 통은 물건을 담는 그릇을 뜻합니다."
+  },
+  {
+    word: "편",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "쪽이나 방향",
+    oddMeaning: "같은 입장에 있는 사람",
+    choices: [
+      {
+        text: "오른편으로 걸어가세요.",
+        meaning: "쪽이나 방향",
+        isOdd: false
+      },
+      {
+        text: "왼편에 큰 나무가 있어요.",
+        meaning: "쪽이나 방향",
+        isOdd: false
+      },
+      {
+        text: "동생은 항상 내 편을 들어 줘요.",
+        meaning: "같은 입장에 있는 사람",
+        isOdd: true
+      }
+    ],
+    answer: "동생은 항상 내 편을 들어 줘요.",
+    explanation: "'내 편'의 편은 같은 입장에 있는 사람이고, 나머지 편은 방향이나 쪽을 뜻합니다."
+  },
+  {
+    word: "판",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "넓고 평평한 물건",
+    oddMeaning: "일이나 놀이가 벌어지는 자리",
+    choices: [
+      {
+        text: "나무판 위에 그림을 그렸어요.",
+        meaning: "넓고 평평한 물건",
+        isOdd: false
+      },
+      {
+        text: "철판 위에서 고기를 구웠어요.",
+        meaning: "넓고 평평한 물건",
+        isOdd: false
+      },
+      {
+        text: "친구들과 신나는 놀이판을 벌였어요.",
+        meaning: "일이나 놀이가 벌어지는 자리",
+        isOdd: true
+      }
+    ],
+    answer: "친구들과 신나는 놀이판을 벌였어요.",
+    explanation: "'놀이판'의 판은 놀이가 벌어지는 자리이고, 나머지 판은 넓고 평평한 물건을 뜻합니다."
+  },
+  {
+    word: "기운",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "몸을 움직이는 힘",
+    oddMeaning: "어떤 분위기나 느낌",
+    choices: [
+      {
+        text: "아파서 기운이 하나도 없어요.",
+        meaning: "몸을 움직이는 힘",
+        isOdd: false
+      },
+      {
+        text: "밥을 먹고 나니 기운이 났어요.",
+        meaning: "몸을 움직이는 힘",
+        isOdd: false
+      },
+      {
+        text: "봄기운이 느껴지는 따뜻한 날이에요.",
+        meaning: "어떤 분위기나 느낌",
+        isOdd: true
+      }
+    ],
+    answer: "봄기운이 느껴지는 따뜻한 날이에요.",
+    explanation: "'봄기운'의 기운은 봄의 분위기나 느낌이고, 나머지 기운은 몸을 움직이는 힘을 뜻합니다."
+  },
+  {
+    word: "마음",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이 느끼는 생각이나 감정",
+    oddMeaning: "무엇을 하려는 생각이나 의도",
+    choices: [
+      {
+        text: "친구가 떠나서 마음이 슬펐어요.",
+        meaning: "사람이 느끼는 생각이나 감정",
+        isOdd: false
+      },
+      {
+        text: "칭찬을 들으니 마음이 기뻤어요.",
+        meaning: "사람이 느끼는 생각이나 감정",
+        isOdd: false
+      },
+      {
+        text: "나는 오늘부터 운동하기로 마음을 먹었어요.",
+        meaning: "무엇을 하려는 생각이나 의도",
+        isOdd: true
+      }
+    ],
+    answer: "나는 오늘부터 운동하기로 마음을 먹었어요.",
+    explanation: "'마음을 먹었어요'의 마음은 무엇을 하려는 생각이나 의도이고, 나머지 마음은 감정을 뜻합니다."
+  },
+  {
+    word: "속",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "물건의 안쪽",
+    oddMeaning: "마음이나 기분",
+    choices: [
+      {
+        text: "상자 속에 장난감이 들어 있어요.",
+        meaning: "물건의 안쪽",
+        isOdd: false
+      },
+      {
+        text: "가방 속에서 지갑을 꺼냈어요.",
+        meaning: "물건의 안쪽",
+        isOdd: false
+      },
+      {
+        text: "친구의 말 때문에 속이 상했어요.",
+        meaning: "마음이나 기분",
+        isOdd: true
+      }
+    ],
+    answer: "친구의 말 때문에 속이 상했어요.",
+    explanation: "'속이 상했어요'의 속은 마음이나 기분을 뜻하고, 나머지 속은 물건의 안쪽을 뜻합니다."
+  },
+  {
+    word: "말다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "어떤 행동을 하지 않다",
+    oddMeaning: "얇은 것을 돌돌 감다",
+    choices: [
+      {
+        text: "위험하니 뛰지 말아요.",
+        meaning: "어떤 행동을 하지 않다",
+        isOdd: false
+      },
+      {
+        text: "수업 시간에는 떠들지 말아요.",
+        meaning: "어떤 행동을 하지 않다",
+        isOdd: false
+      },
+      {
+        text: "엄마가 김밥을 돌돌 말았어요.",
+        meaning: "얇은 것을 돌돌 감다",
+        isOdd: true
+      }
+    ],
+    answer: "엄마가 김밥을 돌돌 말았어요.",
+    explanation: "'김밥을 말았어요'의 말다는 돌돌 감았다는 뜻이고, 나머지 말다는 하지 말라는 뜻입니다."
+  },
+  {
+    word: "맡다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "냄새를 코로 느끼다",
+    oddMeaning: "일을 책임지고 담당하다",
+    choices: [
+      {
+        text: "꽃향기를 맡았어요.",
+        meaning: "냄새를 코로 느끼다",
+        isOdd: false
+      },
+      {
+        text: "맛있는 빵 냄새를 맡았어요.",
+        meaning: "냄새를 코로 느끼다",
+        isOdd: false
+      },
+      {
+        text: "언니가 발표 준비를 맡았어요.",
+        meaning: "일을 책임지고 담당하다",
+        isOdd: true
+      }
+    ],
+    answer: "언니가 발표 준비를 맡았어요.",
+    explanation: "'준비를 맡았어요'의 맡다는 일을 담당했다는 뜻이고, 나머지 맡다는 냄새를 느낀다는 뜻입니다."
+  },
+  {
+    word: "크다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "크기나 키가 보통보다 크다",
+    oddMeaning: "소리가 세다",
+    choices: [
+      {
+        text: "형은 키가 커요.",
+        meaning: "크기나 키가 보통보다 크다",
+        isOdd: false
+      },
+      {
+        text: "큰 상자에 장난감을 담았어요.",
+        meaning: "크기나 키가 보통보다 크다",
+        isOdd: false
+      },
+      {
+        text: "텔레비전 소리가 너무 커요.",
+        meaning: "소리가 세다",
+        isOdd: true
+      }
+    ],
+    answer: "텔레비전 소리가 너무 커요.",
+    explanation: "'소리가 커요'의 크다는 소리가 세다는 뜻이고, 나머지 크다는 크기나 키가 크다는 뜻입니다."
+  },
+  {
+    word: "작다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "크기가 크지 않다",
+    oddMeaning: "소리가 크지 않다",
+    choices: [
+      {
+        text: "동생은 작은 신발을 신었어요.",
+        meaning: "크기가 크지 않다",
+        isOdd: false
+      },
+      {
+        text: "작은 컵에 물을 따랐어요.",
+        meaning: "크기가 크지 않다",
+        isOdd: false
+      },
+      {
+        text: "목소리가 작아서 잘 들리지 않아요.",
+        meaning: "소리가 크지 않다",
+        isOdd: true
+      }
+    ],
+    answer: "목소리가 작아서 잘 들리지 않아요.",
+    explanation: "'목소리가 작다'의 작다는 소리가 크지 않다는 뜻이고, 나머지 작다는 크기가 작다는 뜻입니다."
+  },
+  {
+    word: "배",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "먹는 과일",
+    oddMeaning: "사람이나 동물의 몸 앞쪽 가운데 부분",
+    choices: [
+      {
+        text: "달콤한 배를 한 조각 먹었어요.",
+        meaning: "먹는 과일",
+        isOdd: false
+      },
+      {
+        text: "가을에는 배가 아주 맛있어요.",
+        meaning: "먹는 과일",
+        isOdd: false
+      },
+      {
+        text: "운동을 많이 해서 배가 고파요.",
+        meaning: "사람이나 동물의 몸 앞쪽 가운데 부분",
+        isOdd: true
+      }
+    ],
+    answer: "운동을 많이 해서 배가 고파요.",
+    explanation: "'운동을 많이 해서 배가 고파요'의 배는 몸의 한 부분이고, 나머지 배는 먹는 과일을 뜻합니다."
+  },
+  {
+    word: "다리",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이나 동물의 몸에서 걷는 데 쓰는 부분",
+    oddMeaning: "강이나 길 위를 건너가게 만든 구조물",
+    choices: [
+      {
+        text: "오래 걸어서 다리가 아파요.",
+        meaning: "몸에서 걷는 데 쓰는 부분",
+        isOdd: false
+      },
+      {
+        text: "강아지는 다리가 네 개예요.",
+        meaning: "몸에서 걷는 데 쓰는 부분",
+        isOdd: false
+      },
+      {
+        text: "강 위에 긴 다리가 놓여 있다.",
+        meaning: "강이나 길 위를 건너가게 만든 구조물",
+        isOdd: true
+      }
+    ],
+    answer: "강 위에 긴 다리가 놓여 있다.",
+    explanation: "'강 위에 긴 다리가 놓여 있다'의 다리는 건너가는 구조물이고, 나머지 다리는 몸의 한 부분을 뜻합니다."
+  },
+  {
+    word: "손",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람의 팔 끝에 있는 신체 부분",
+    oddMeaning: "일을 도와주는 사람이나 힘",
+    choices: [
+      {
+        text: "손을 깨끗이 씻으세요.",
+        meaning: "사람의 팔 끝에 있는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "아기가 작은 손을 흔들었어요.",
+        meaning: "사람의 팔 끝에 있는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "일손이 부족해서 모두 바빴어요.",
+        meaning: "일을 도와주는 사람이나 힘",
+        isOdd: true
+      }
+    ],
+    answer: "일손이 부족해서 모두 바빴어요.",
+    explanation: "'일손이 부족해서 모두 바빴어요'의 손은 일을 도와주는 사람이나 힘을 뜻하고, 나머지 손은 신체 부분을 뜻합니다."
+  },
+  {
+    word: "머리",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이나 동물의 목 위에 있는 신체 부분",
+    oddMeaning: "생각하거나 판단하는 능력",
+    choices: [
+      {
+        text: "머리가 아파서 잠시 쉬었어요.",
+        meaning: "목 위에 있는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "동생은 머리에 모자를 썼어요.",
+        meaning: "목 위에 있는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "그 학생은 머리가 좋아서 문제를 잘 풀어요.",
+        meaning: "생각하거나 판단하는 능력",
+        isOdd: true
+      }
+    ],
+    answer: "그 학생은 머리가 좋아서 문제를 잘 풀어요.",
+    explanation: "'그 학생은 머리가 좋아서 문제를 잘 풀어요'의 머리는 생각하는 능력을 뜻하고, 나머지 머리는 신체 부분을 뜻합니다."
+  },
+  {
+    word: "코",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "냄새를 맡고 숨을 쉬는 신체 부분",
+    oddMeaning: "뜨개질이나 그물에서 이어진 고리 모양",
+    choices: [
+      {
+        text: "감기에 걸려 코가 막혔어요.",
+        meaning: "냄새를 맡고 숨을 쉬는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "코로 꽃향기를 맡았어요.",
+        meaning: "냄새를 맡고 숨을 쉬는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "할머니가 뜨개질 코를 하나 빠뜨렸어요.",
+        meaning: "뜨개질이나 그물에서 이어진 고리 모양",
+        isOdd: true
+      }
+    ],
+    answer: "할머니가 뜨개질 코를 하나 빠뜨렸어요.",
+    explanation: "'뜨개질 코'의 코는 고리 모양으로 이어진 부분이고, 나머지 코는 신체 부분을 뜻합니다."
+  },
+  {
+    word: "입",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "먹고 말하는 데 쓰는 신체 부분",
+    oddMeaning: "옷을 몸에 걸치는 행동",
+    choices: [
+      {
+        text: "입을 크게 벌리고 웃었어요.",
+        meaning: "먹고 말하는 데 쓰는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "뜨거운 음식을 입에 넣지 마세요.",
+        meaning: "먹고 말하는 데 쓰는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "추워서 두꺼운 옷을 입었어요.",
+        meaning: "옷을 몸에 걸치는 행동",
+        isOdd: true
+      }
+    ],
+    answer: "추워서 두꺼운 옷을 입었어요.",
+    explanation: "'옷을 입었어요'의 입은 옷을 몸에 걸치는 행동이고, 나머지 입은 신체 부분을 뜻합니다."
+  },
+  {
+    word: "길",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이나 차가 다니는 곳",
+    oddMeaning: "어떤 일을 하는 방법",
+    choices: [
+      {
+        text: "학교 가는 길에 친구를 만났어요.",
+        meaning: "사람이나 차가 다니는 곳",
+        isOdd: false
+      },
+      {
+        text: "비가 와서 길이 미끄러웠어요.",
+        meaning: "사람이나 차가 다니는 곳",
+        isOdd: false
+      },
+      {
+        text: "문제를 푸는 길을 찾았어요.",
+        meaning: "어떤 일을 하는 방법",
+        isOdd: true
+      }
+    ],
+    answer: "문제를 푸는 길을 찾았어요.",
+    explanation: "'문제를 푸는 길'의 길은 방법을 뜻하고, 나머지 길은 다니는 곳을 뜻합니다."
+  },
+  {
+    word: "소리",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "귀로 들을 수 있는 것",
+    oddMeaning: "말이나 의견",
+    choices: [
+      {
+        text: "밖에서 큰 소리가 들렸어요.",
+        meaning: "귀로 들을 수 있는 것",
+        isOdd: false
+      },
+      {
+        text: "새 소리가 아름답게 들려요.",
+        meaning: "귀로 들을 수 있는 것",
+        isOdd: false
+      },
+      {
+        text: "그런 소리는 하지 마세요.",
+        meaning: "말이나 의견",
+        isOdd: true
+      }
+    ],
+    answer: "그런 소리는 하지 마세요.",
+    explanation: "'그런 소리'의 소리는 말이나 의견을 뜻하고, 나머지 소리는 귀로 듣는 것을 뜻합니다."
+  },
+  {
+    word: "자리",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이 앉거나 머무는 곳",
+    oddMeaning: "직위나 맡은 역할",
+    choices: [
+      {
+        text: "버스에 빈자리가 있었어요.",
+        meaning: "사람이 앉거나 머무는 곳",
+        isOdd: false
+      },
+      {
+        text: "친구 옆자리에 앉았어요.",
+        meaning: "사람이 앉거나 머무는 곳",
+        isOdd: false
+      },
+      {
+        text: "그분은 회장 자리에 올랐어요.",
+        meaning: "직위나 맡은 역할",
+        isOdd: true
+      }
+    ],
+    answer: "그분은 회장 자리에 올랐어요.",
+    explanation: "'회장 자리'의 자리는 직위나 역할을 뜻하고, 나머지 자리는 앉거나 머무는 곳을 뜻합니다."
+  },
+  {
+    word: "가슴",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "몸의 앞쪽 윗부분",
+    oddMeaning: "마음이나 감정",
+    choices: [
+      {
+        text: "넘어져서 가슴을 다쳤어요.",
+        meaning: "몸의 앞쪽 윗부분",
+        isOdd: false
+      },
+      {
+        text: "의사가 가슴 소리를 들어 보았어요.",
+        meaning: "몸의 앞쪽 윗부분",
+        isOdd: false
+      },
+      {
+        text: "친구의 말에 가슴이 따뜻해졌어요.",
+        meaning: "마음이나 감정",
+        isOdd: true
+      }
+    ],
+    answer: "친구의 말에 가슴이 따뜻해졌어요.",
+    explanation: "'가슴이 따뜻해졌어요'의 가슴은 마음이나 감정을 뜻하고, 나머지 가슴은 몸의 한 부분을 뜻합니다."
+  },
+  {
+    word: "바람",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "공기가 움직이는 것",
+    oddMeaning: "바라는 마음이나 희망",
+    choices: [
+      {
+        text: "차가운 바람이 불었어요.",
+        meaning: "공기가 움직이는 것",
+        isOdd: false
+      },
+      {
+        text: "창문 사이로 바람이 들어왔어요.",
+        meaning: "공기가 움직이는 것",
+        isOdd: false
+      },
+      {
+        text: "제 바람은 가족이 건강한 거예요.",
+        meaning: "바라는 마음이나 희망",
+        isOdd: true
+      }
+    ],
+    answer: "제 바람은 가족이 건강한 거예요.",
+    explanation: "'제 바람'의 바람은 바라는 마음이나 희망을 뜻하고, 나머지 바람은 움직이는 공기를 뜻합니다."
+  },
+  {
+    word: "불",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "뜨겁게 타오르는 것",
+    oddMeaning: "전등이나 불빛",
+    choices: [
+      {
+        text: "모닥불이 활활 타고 있어요.",
+        meaning: "뜨겁게 타오르는 것",
+        isOdd: false
+      },
+      {
+        text: "불이 나서 사람들이 대피했어요.",
+        meaning: "뜨겁게 타오르는 것",
+        isOdd: false
+      },
+      {
+        text: "방 안의 불을 켰어요.",
+        meaning: "전등이나 불빛",
+        isOdd: true
+      }
+    ],
+    answer: "방 안의 불을 켰어요.",
+    explanation: "'방 안의 불'은 전등이나 불빛을 뜻하고, 나머지 불은 뜨겁게 타오르는 것을 뜻합니다."
+  },
+  {
+    word: "김",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "뜨거운 것에서 나는 수증기",
+    oddMeaning: "먹는 해조류",
+    choices: [
+      {
+        text: "뜨거운 국에서 김이 모락모락 났어요.",
+        meaning: "뜨거운 것에서 나는 수증기",
+        isOdd: false
+      },
+      {
+        text: "밥솥에서 하얀 김이 올라왔어요.",
+        meaning: "뜨거운 것에서 나는 수증기",
+        isOdd: false
+      },
+      {
+        text: "밥을 김에 싸서 먹었어요.",
+        meaning: "먹는 해조류",
+        isOdd: true
+      }
+    ],
+    answer: "밥을 김에 싸서 먹었어요.",
+    explanation: "'밥을 김에 싸서 먹었어요'의 김은 먹는 해조류이고, 나머지 김은 수증기를 뜻합니다."
+  },
+  {
+    word: "차",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이나 물건을 싣고 다니는 탈것",
+    oddMeaning: "마시는 음료",
+    choices: [
+      {
+        text: "아빠가 차를 운전했어요.",
+        meaning: "사람이나 물건을 싣고 다니는 탈것",
+        isOdd: false
+      },
+      {
+        text: "길에 차가 많이 막혔어요.",
+        meaning: "사람이나 물건을 싣고 다니는 탈것",
+        isOdd: false
+      },
+      {
+        text: "따뜻한 차를 마셨어요.",
+        meaning: "마시는 음료",
+        isOdd: true
+      }
+    ],
+    answer: "따뜻한 차를 마셨어요.",
+    explanation: "'따뜻한 차'의 차는 마시는 음료이고, 나머지 차는 탈것을 뜻합니다."
+  },
+  {
+    word: "풀",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "땅에서 자라는 작은 식물",
+    oddMeaning: "종이 등을 붙이는 물질",
+    choices: [
+      {
+        text: "운동장 옆에 풀이 자랐어요.",
+        meaning: "땅에서 자라는 작은 식물",
+        isOdd: false
+      },
+      {
+        text: "토끼가 푸른 풀을 먹었어요.",
+        meaning: "땅에서 자라는 작은 식물",
+        isOdd: false
+      },
+      {
+        text: "종이에 풀을 발라 붙였어요.",
+        meaning: "종이 등을 붙이는 물질",
+        isOdd: true
+      }
+    ],
+    answer: "종이에 풀을 발라 붙였어요.",
+    explanation: "'종이에 풀을 발라 붙였어요'의 풀은 붙이는 물질이고, 나머지 풀은 식물을 뜻합니다."
+  },
+  {
+    word: "사과",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "먹는 과일",
+    oddMeaning: "잘못을 인정하고 미안하다고 말하는 일",
+    choices: [
+      {
+        text: "빨간 사과를 깎아 먹었어요.",
+        meaning: "먹는 과일",
+        isOdd: false
+      },
+      {
+        text: "가을 사과는 달고 맛있어요.",
+        meaning: "먹는 과일",
+        isOdd: false
+      },
+      {
+        text: "친구에게 잘못을 사과했어요.",
+        meaning: "잘못을 인정하고 미안하다고 말하는 일",
+        isOdd: true
+      }
+    ],
+    answer: "친구에게 잘못을 사과했어요.",
+    explanation: "'잘못을 사과했어요'의 사과는 미안하다고 말하는 일이고, 나머지 사과는 먹는 과일을 뜻합니다."
+  },
+  {
+    word: "등",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이나 동물의 몸 뒤쪽 부분",
+    oddMeaning: "불을 밝히는 물건",
+    choices: [
+      {
+        text: "가방을 오래 메서 등이 아팠어요.",
+        meaning: "사람이나 동물의 몸 뒤쪽 부분",
+        isOdd: false
+      },
+      {
+        text: "아빠가 내 등을 토닥여 주셨어요.",
+        meaning: "사람이나 동물의 몸 뒤쪽 부분",
+        isOdd: false
+      },
+      {
+        text: "어두운 방에 등을 켰어요.",
+        meaning: "불을 밝히는 물건",
+        isOdd: true
+      }
+    ],
+    answer: "어두운 방에 등을 켰어요.",
+    explanation: "'어두운 방에 등을 켰어요'의 등은 불을 밝히는 물건이고, 나머지 등은 몸의 뒤쪽 부분을 뜻합니다."
+  },
+  {
+    word: "발",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "사람이나 동물의 다리 끝부분",
+    oddMeaning: "커튼처럼 햇빛을 가리는 물건",
+    choices: [
+      {
+        text: "운동화를 신으니 발이 편했어요.",
+        meaning: "사람이나 동물의 다리 끝부분",
+        isOdd: false
+      },
+      {
+        text: "오래 걸어서 발이 아파요.",
+        meaning: "사람이나 동물의 다리 끝부분",
+        isOdd: false
+      },
+      {
+        text: "햇빛이 강해서 창문에 발을 쳤어요.",
+        meaning: "햇빛을 가리는 물건",
+        isOdd: true
+      }
+    ],
+    answer: "햇빛이 강해서 창문에 발을 쳤어요.",
+    explanation: "'창문에 발을 쳤어요'의 발은 햇빛을 가리는 물건이고, 나머지 발은 신체 부분을 뜻합니다."
+  },
+  {
+    word: "목",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "머리와 몸을 이어 주는 신체 부분",
+    oddMeaning: "요일 중 하나",
+    choices: [
+      {
+        text: "감기에 걸려 목이 아파요.",
+        meaning: "머리와 몸을 이어 주는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "목에 목도리를 둘렀어요.",
+        meaning: "머리와 몸을 이어 주는 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "이번 주 목요일에 병원에 가요.",
+        meaning: "요일 중 하나",
+        isOdd: true
+      }
+    ],
+    answer: "이번 주 목요일에 병원에 가요.",
+    explanation: "'목요일'의 목은 요일 이름에 쓰인 말이고, 나머지 목은 신체 부분을 뜻합니다."
+  },
+  {
+    word: "팔",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "어깨에서 손목까지의 신체 부분",
+    oddMeaning: "물건을 돈을 받고 넘기는 행동",
+    choices: [
+      {
+        text: "무거운 가방을 들어서 팔이 아파요.",
+        meaning: "어깨에서 손목까지의 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "동생이 팔을 크게 흔들었어요.",
+        meaning: "어깨에서 손목까지의 신체 부분",
+        isOdd: false
+      },
+      {
+        text: "가게에서 과일을 팔고 있어요.",
+        meaning: "물건을 돈을 받고 넘기는 행동",
+        isOdd: true
+      }
+    ],
+    answer: "가게에서 과일을 팔고 있어요.",
+    explanation: "'과일을 팔고 있어요'의 팔은 물건을 돈을 받고 넘기는 행동이고, 나머지 팔은 신체 부분을 뜻합니다."
+  },
+  {
+    word: "차다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "온도가 낮아 시원하거나 춥다",
+    oddMeaning: "발로 힘껏 밀어내다",
+    choices: [
+      {
+        text: "물이 너무 차서 손이 시려요.",
+        meaning: "온도가 낮아 시원하거나 춥다",
+        isOdd: false
+      },
+      {
+        text: "아침 공기가 차게 느껴졌어요.",
+        meaning: "온도가 낮아 시원하거나 춥다",
+        isOdd: false
+      },
+      {
+        text: "아이가 공을 힘껏 찼어요.",
+        meaning: "발로 힘껏 밀어내다",
+        isOdd: true
+      }
+    ],
+    answer: "아이가 공을 힘껏 찼어요.",
+    explanation: "'공을 찼어요'의 찼어요는 발로 밀어내는 행동이고, 나머지 차다는 온도가 낮다는 뜻입니다."
+  },
+  {
+    word: "타다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "차나 배 같은 탈것에 오르다",
+    oddMeaning: "불에 닿아 검게 되거나 없어지다",
+    choices: [
+      {
+        text: "아침마다 버스를 타고 학교에 가요.",
+        meaning: "탈것에 오르다",
+        isOdd: false
+      },
+      {
+        text: "기차를 타고 여행을 갔어요.",
+        meaning: "탈것에 오르다",
+        isOdd: false
+      },
+      {
+        text: "냄비가 불에 타서 까맣게 되었어요.",
+        meaning: "불에 닿아 검게 되거나 없어지다",
+        isOdd: true
+      }
+    ],
+    answer: "냄비가 불에 타서 까맣게 되었어요.",
+    explanation: "'불에 타서'의 타다는 불에 닿아 검게 되거나 없어지는 뜻이고, 나머지 타다는 탈것에 오르는 뜻입니다."
+  },
+  {
+    word: "쓰다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "글씨나 글을 적다",
+    oddMeaning: "맛이 달지 않고 씁쓸하다",
+    choices: [
+      {
+        text: "공책에 이름을 썼어요.",
+        meaning: "글씨나 글을 적다",
+        isOdd: false
+      },
+      {
+        text: "친구에게 편지를 썼어요.",
+        meaning: "글씨나 글을 적다",
+        isOdd: false
+      },
+      {
+        text: "약이 너무 써서 먹기 힘들었어요.",
+        meaning: "맛이 달지 않고 씁쓸하다",
+        isOdd: true
+      }
+    ],
+    answer: "약이 너무 써서 먹기 힘들었어요.",
+    explanation: "'약이 써서'의 쓰다는 맛이 씁쓸하다는 뜻이고, 나머지 쓰다는 글을 적는 뜻입니다."
+  },
+  {
+    word: "쓰다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "모자나 안경 등을 머리나 얼굴에 걸치다",
+    oddMeaning: "글씨나 글을 적다",
+    choices: [
+      {
+        text: "햇빛이 강해서 모자를 썼어요.",
+        meaning: "모자나 안경 등을 걸치다",
+        isOdd: false
+      },
+      {
+        text: "눈이 나빠서 안경을 썼어요.",
+        meaning: "모자나 안경 등을 걸치다",
+        isOdd: false
+      },
+      {
+        text: "칠판에 글씨를 크게 썼어요.",
+        meaning: "글씨나 글을 적다",
+        isOdd: true
+      }
+    ],
+    answer: "칠판에 글씨를 크게 썼어요.",
+    explanation: "'글씨를 썼어요'의 쓰다는 글을 적는 뜻이고, 나머지 쓰다는 모자나 안경 등을 걸치는 뜻입니다."
+  },
+  {
+    word: "보다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "눈으로 대상을 알아보다",
+    oddMeaning: "시험을 치르다",
+    choices: [
+      {
+        text: "창밖의 풍경을 보았어요.",
+        meaning: "눈으로 대상을 알아보다",
+        isOdd: false
+      },
+      {
+        text: "텔레비전에서 만화를 보았어요.",
+        meaning: "눈으로 대상을 알아보다",
+        isOdd: false
+      },
+      {
+        text: "오늘 학교에서 시험을 보았어요.",
+        meaning: "시험을 치르다",
+        isOdd: true
+      }
+    ],
+    answer: "오늘 학교에서 시험을 보았어요.",
+    explanation: "'시험을 보았어요'의 보다는 시험을 치른다는 뜻이고, 나머지 보다는 눈으로 보는 뜻입니다."
+  },
+  {
+    word: "보다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "눈으로 대상을 알아보다",
+    oddMeaning: "돌보거나 맡아 주다",
+    choices: [
+      {
+        text: "밤하늘의 별을 보았어요.",
+        meaning: "눈으로 대상을 알아보다",
+        isOdd: false
+      },
+      {
+        text: "거울을 보고 머리를 빗었어요.",
+        meaning: "눈으로 대상을 알아보다",
+        isOdd: false
+      },
+      {
+        text: "언니가 잠시 아기를 보았어요.",
+        meaning: "돌보거나 맡아 주다",
+        isOdd: true
+      }
+    ],
+    answer: "언니가 잠시 아기를 보았어요.",
+    explanation: "'아기를 보았어요'의 보다는 돌보거나 맡아 주는 뜻이고, 나머지 보다는 눈으로 보는 뜻입니다."
+  },
+  {
+    word: "나다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "몸에 어떤 것이 생기다",
+    oddMeaning: "소리나 냄새가 생겨 밖으로 퍼지다",
+    choices: [
+      {
+        text: "팔에 작은 상처가 났어요.",
+        meaning: "몸에 어떤 것이 생기다",
+        isOdd: false
+      },
+      {
+        text: "얼굴에 여드름이 났어요.",
+        meaning: "몸에 어떤 것이 생기다",
+        isOdd: false
+      },
+      {
+        text: "부엌에서 맛있는 냄새가 났어요.",
+        meaning: "소리나 냄새가 생겨 밖으로 퍼지다",
+        isOdd: true
+      }
+    ],
+    answer: "부엌에서 맛있는 냄새가 났어요.",
+    explanation: "'냄새가 났어요'의 나다는 냄새가 생겨 퍼진다는 뜻이고, 나머지 나다는 몸에 어떤 것이 생긴다는 뜻입니다."
+  },
+  {
+    word: "나다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "소리나 냄새가 생겨 밖으로 퍼지다",
+    oddMeaning: "길이나 통로가 생기다",
+    choices: [
+      {
+        text: "밖에서 큰 소리가 났어요.",
+        meaning: "소리나 냄새가 생겨 밖으로 퍼지다",
+        isOdd: false
+      },
+      {
+        text: "꽃에서 좋은 향기가 났어요.",
+        meaning: "소리나 냄새가 생겨 밖으로 퍼지다",
+        isOdd: false
+      },
+      {
+        text: "숲속에 작은 길이 났어요.",
+        meaning: "길이나 통로가 생기다",
+        isOdd: true
+      }
+    ],
+    answer: "숲속에 작은 길이 났어요.",
+    explanation: "'길이 났어요'의 나다는 길이나 통로가 생겼다는 뜻이고, 나머지 나다는 소리나 냄새가 퍼진다는 뜻입니다."
+  },
+  {
+    word: "들다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "손에 잡고 위로 올리다",
+    oddMeaning: "마음에 만족스럽다",
+    choices: [
+      {
+        text: "무거운 상자를 두 손으로 들었어요.",
+        meaning: "손에 잡고 위로 올리다",
+        isOdd: false
+      },
+      {
+        text: "선생님이 책을 높이 들었어요.",
+        meaning: "손에 잡고 위로 올리다",
+        isOdd: false
+      },
+      {
+        text: "새 가방이 마음에 들었어요.",
+        meaning: "마음에 만족스럽다",
+        isOdd: true
+      }
+    ],
+    answer: "새 가방이 마음에 들었어요.",
+    explanation: "'마음에 들었어요'의 들다는 만족스럽다는 뜻이고, 나머지 들다는 손으로 잡아 올리는 뜻입니다."
+  },
+  {
+    word: "들다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "어떤 곳 안으로 들어가다",
+    oddMeaning: "돈이나 시간이 필요하게 되다",
+    choices: [
+      {
+        text: "동생이 방에 들었어요.",
+        meaning: "어떤 곳 안으로 들어가다",
+        isOdd: false
+      },
+      {
+        text: "새가 둥지에 들었어요.",
+        meaning: "어떤 곳 안으로 들어가다",
+        isOdd: false
+      },
+      {
+        text: "수리하는 데 돈이 많이 들었어요.",
+        meaning: "돈이나 시간이 필요하게 되다",
+        isOdd: true
+      }
+    ],
+    answer: "수리하는 데 돈이 많이 들었어요.",
+    explanation: "'돈이 많이 들었어요'의 들다는 돈이 필요했다는 뜻이고, 나머지 들다는 안으로 들어간다는 뜻입니다."
+  },
+  {
+    word: "놓다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "손에 든 것을 어떤 곳에 두다",
+    oddMeaning: "잡고 있던 것을 풀어 주다",
+    choices: [
+      {
+        text: "책상 위에 컵을 놓았어요.",
+        meaning: "어떤 곳에 두다",
+        isOdd: false
+      },
+      {
+        text: "의자 옆에 가방을 놓았어요.",
+        meaning: "어떤 곳에 두다",
+        isOdd: false
+      },
+      {
+        text: "잡고 있던 새를 놓아 주었어요.",
+        meaning: "잡고 있던 것을 풀어 주다",
+        isOdd: true
+      }
+    ],
+    answer: "잡고 있던 새를 놓아 주었어요.",
+    explanation: "'새를 놓아 주었어요'의 놓다는 잡고 있던 것을 풀어 주는 뜻이고, 나머지 놓다는 어떤 곳에 두는 뜻입니다."
+  },
+  {
+    word: "잡다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "손으로 움켜쥐다",
+    oddMeaning: "날짜나 시간을 정하다",
+    choices: [
+      {
+        text: "아이의 손을 꼭 잡았어요.",
+        meaning: "손으로 움켜쥐다",
+        isOdd: false
+      },
+      {
+        text: "바람에 날아가는 종이를 잡았어요.",
+        meaning: "손으로 움켜쥐다",
+        isOdd: false
+      },
+      {
+        text: "다음 주로 약속을 잡았어요.",
+        meaning: "날짜나 시간을 정하다",
+        isOdd: true
+      }
+    ],
+    answer: "다음 주로 약속을 잡았어요.",
+    explanation: "'약속을 잡았어요'의 잡다는 날짜나 시간을 정했다는 뜻이고, 나머지 잡다는 손으로 잡는 뜻입니다."
+  },
+  {
+    word: "잡다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "동물이나 사람을 붙잡다",
+    oddMeaning: "방향이나 기준을 정하다",
+    choices: [
+      {
+        text: "고양이가 쥐를 잡았어요.",
+        meaning: "동물이나 사람을 붙잡다",
+        isOdd: false
+      },
+      {
+        text: "경찰이 도둑을 잡았어요.",
+        meaning: "동물이나 사람을 붙잡다",
+        isOdd: false
+      },
+      {
+        text: "선생님이 공부 방향을 잡아 주셨어요.",
+        meaning: "방향이나 기준을 정하다",
+        isOdd: true
+      }
+    ],
+    answer: "선생님이 공부 방향을 잡아 주셨어요.",
+    explanation: "'방향을 잡아 주셨어요'의 잡다는 방향이나 기준을 정한다는 뜻이고, 나머지 잡다는 붙잡는 뜻입니다."
+  },
+  {
+    word: "치다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "손이나 물건으로 때리다",
+    oddMeaning: "악기를 연주하다",
+    choices: [
+      {
+        text: "장난으로 친구의 등을 치면 안 돼요.",
+        meaning: "손이나 물건으로 때리다",
+        isOdd: false
+      },
+      {
+        text: "공을 막대기로 쳤어요.",
+        meaning: "손이나 물건으로 때리다",
+        isOdd: false
+      },
+      {
+        text: "누나가 피아노를 쳤어요.",
+        meaning: "악기를 연주하다",
+        isOdd: true
+      }
+    ],
+    answer: "누나가 피아노를 쳤어요.",
+    explanation: "'피아노를 쳤어요'의 치다는 악기를 연주한다는 뜻이고, 나머지 치다는 때리거나 부딪치게 하는 뜻입니다."
+  },
+  {
+    word: "치다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "악기를 연주하다",
+    oddMeaning: "계산하다",
+    choices: [
+      {
+        text: "동생은 북을 신나게 쳤어요.",
+        meaning: "악기를 연주하다",
+        isOdd: false
+      },
+      {
+        text: "친구가 기타를 멋지게 쳤어요.",
+        meaning: "악기를 연주하다",
+        isOdd: false
+      },
+      {
+        text: "가게 주인이 값을 쳐 주었어요.",
+        meaning: "계산하다",
+        isOdd: true
+      }
+    ],
+    answer: "가게 주인이 값을 쳐 주었어요.",
+    explanation: "'값을 쳐 주었어요'의 치다는 값을 계산한다는 뜻이고, 나머지 치다는 악기를 연주한다는 뜻입니다."
+  },
+  {
+    word: "피다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "꽃봉오리가 벌어지다",
+    oddMeaning: "불이나 연기 등이 일어나다",
+    choices: [
+      {
+        text: "봄이 되자 꽃이 활짝 피었어요.",
+        meaning: "꽃봉오리가 벌어지다",
+        isOdd: false
+      },
+      {
+        text: "마당에 장미꽃이 예쁘게 피었어요.",
+        meaning: "꽃봉오리가 벌어지다",
+        isOdd: false
+      },
+      {
+        text: "굴뚝에서 연기가 피어올랐어요.",
+        meaning: "불이나 연기 등이 일어나다",
+        isOdd: true
+      }
+    ],
+    answer: "굴뚝에서 연기가 피어올랐어요.",
+    explanation: "'연기가 피어올랐어요'의 피다는 연기 등이 일어나는 뜻이고, 나머지 피다는 꽃이 벌어지는 뜻입니다."
+  },
+  {
+    word: "익다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "음식이 열을 받아 먹기 좋게 되다",
+    oddMeaning: "과일이나 곡식이 잘 자라 먹기 좋게 되다",
+    choices: [
+      {
+        text: "고기가 잘 익어서 맛있어요.",
+        meaning: "음식이 열을 받아 먹기 좋게 되다",
+        isOdd: false
+      },
+      {
+        text: "감자가 푹 익었어요.",
+        meaning: "음식이 열을 받아 먹기 좋게 되다",
+        isOdd: false
+      },
+      {
+        text: "나무에 달린 감이 빨갛게 익었어요.",
+        meaning: "과일이나 곡식이 잘 자라 먹기 좋게 되다",
+        isOdd: true
+      }
+    ],
+    answer: "나무에 달린 감이 빨갛게 익었어요.",
+    explanation: "'감이 익었어요'의 익다는 과일이 잘 자라 먹기 좋게 되었다는 뜻이고, 나머지 익다는 음식이 열을 받아 먹기 좋게 된 뜻입니다."
+  },
+  {
+    word: "오르다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "낮은 곳에서 높은 곳으로 가다",
+    oddMeaning: "값이나 온도가 높아지다",
+    choices: [
+      {
+        text: "아이들이 산에 올랐어요.",
+        meaning: "낮은 곳에서 높은 곳으로 가다",
+        isOdd: false
+      },
+      {
+        text: "계단을 천천히 올랐어요.",
+        meaning: "낮은 곳에서 높은 곳으로 가다",
+        isOdd: false
+      },
+      {
+        text: "물건값이 많이 올랐어요.",
+        meaning: "값이나 온도가 높아지다",
+        isOdd: true
+      }
+    ],
+    answer: "물건값이 많이 올랐어요.",
+    explanation: "'물건값이 올랐어요'의 오르다는 값이 높아졌다는 뜻이고, 나머지 오르다는 높은 곳으로 가는 뜻입니다."
+  },
+  {
+    word: "내리다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "높은 곳에서 낮은 곳으로 가다",
+    oddMeaning: "비나 눈이 오다",
+    choices: [
+      {
+        text: "아이가 계단을 조심히 내려왔어요.",
+        meaning: "높은 곳에서 낮은 곳으로 가다",
+        isOdd: false
+      },
+      {
+        text: "산에서 천천히 내려왔어요.",
+        meaning: "높은 곳에서 낮은 곳으로 가다",
+        isOdd: false
+      },
+      {
+        text: "아침부터 비가 내렸어요.",
+        meaning: "비나 눈이 오다",
+        isOdd: true
+      }
+    ],
+    answer: "아침부터 비가 내렸어요.",
+    explanation: "'비가 내렸어요'의 내리다는 비가 온다는 뜻이고, 나머지 내리다는 높은 곳에서 낮은 곳으로 가는 뜻입니다."
+  },
+  {
+    word: "열다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "닫힌 것을 벌리거나 젖히다",
+    oddMeaning: "행사나 모임을 시작하다",
+    choices: [
+      {
+        text: "방문을 조용히 열었어요.",
+        meaning: "닫힌 것을 벌리거나 젖히다",
+        isOdd: false
+      },
+      {
+        text: "상자 뚜껑을 열어 보았어요.",
+        meaning: "닫힌 것을 벌리거나 젖히다",
+        isOdd: false
+      },
+      {
+        text: "학교에서 운동회를 열었어요.",
+        meaning: "행사나 모임을 시작하다",
+        isOdd: true
+      }
+    ],
+    answer: "학교에서 운동회를 열었어요.",
+    explanation: "'운동회를 열었어요'의 열다는 행사를 시작한다는 뜻이고, 나머지 열다는 닫힌 것을 여는 뜻입니다."
+  },
+  {
+    word: "막다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "지나가지 못하게 가로채다",
+    oddMeaning: "좋지 않은 일을 미리 막아내다",
+    choices: [
+      {
+        text: "큰 돌이 길을 막고 있었어요.",
+        meaning: "지나가지 못하게 가로채다",
+        isOdd: false
+      },
+      {
+        text: "차가 입구를 막아서 들어갈 수 없었어요.",
+        meaning: "지나가지 못하게 가로채다",
+        isOdd: false
+      },
+      {
+        text: "손을 씻으면 감기를 막는 데 도움이 돼요.",
+        meaning: "좋지 않은 일을 미리 막아내다",
+        isOdd: true
+      }
+    ],
+    answer: "손을 씻으면 감기를 막는 데 도움이 돼요.",
+    explanation: "'감기를 막다'의 막다는 병이 생기지 않게 예방한다는 뜻이고, 나머지 막다는 지나가지 못하게 하는 뜻입니다."
+  },
+  {
+    word: "풀다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "묶이거나 잠긴 것을 열다",
+    oddMeaning: "문제의 답을 찾다",
+    choices: [
+      {
+        text: "신발 끈을 풀었어요.",
+        meaning: "묶이거나 잠긴 것을 열다",
+        isOdd: false
+      },
+      {
+        text: "강아지 목줄을 잠시 풀었어요.",
+        meaning: "묶이거나 잠긴 것을 열다",
+        isOdd: false
+      },
+      {
+        text: "어려운 수학 문제를 풀었어요.",
+        meaning: "문제의 답을 찾다",
+        isOdd: true
+      }
+    ],
+    answer: "어려운 수학 문제를 풀었어요.",
+    explanation: "'문제를 풀었어요'의 풀다는 답을 찾는 뜻이고, 나머지 풀다는 묶인 것을 여는 뜻입니다."
+  },
+  {
+    word: "밝다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "빛이 많아 환하다",
+    oddMeaning: "성격이나 표정이 명랑하다",
+    choices: [
+      {
+        text: "방 안이 밝아서 책이 잘 보여요.",
+        meaning: "빛이 많아 환하다",
+        isOdd: false
+      },
+      {
+        text: "아침 햇살이 밝게 비쳤어요.",
+        meaning: "빛이 많아 환하다",
+        isOdd: false
+      },
+      {
+        text: "그 아이는 성격이 밝고 씩씩해요.",
+        meaning: "성격이나 표정이 명랑하다",
+        isOdd: true
+      }
+    ],
+    answer: "그 아이는 성격이 밝고 씩씩해요.",
+    explanation: "'성격이 밝다'의 밝다는 명랑하다는 뜻이고, 나머지 밝다는 빛이 많아 환하다는 뜻입니다."
+  },
+  {
+    word: "깊다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "위에서 아래까지의 거리가 길다",
+    oddMeaning: "생각이나 마음이 크고 진하다",
+    choices: [
+      {
+        text: "이 우물은 아주 깊어요.",
+        meaning: "위에서 아래까지의 거리가 길다",
+        isOdd: false
+      },
+      {
+        text: "수영장 깊은 곳에는 들어가지 마세요.",
+        meaning: "위에서 아래까지의 거리가 길다",
+        isOdd: false
+      },
+      {
+        text: "부모님의 사랑은 참 깊어요.",
+        meaning: "생각이나 마음이 크고 진하다",
+        isOdd: true
+      }
+    ],
+    answer: "부모님의 사랑은 참 깊어요.",
+    explanation: "'사랑이 깊다'의 깊다는 마음이 크고 진하다는 뜻이고, 나머지 깊다는 아래까지의 거리가 길다는 뜻입니다."
+  },
+  {
+    word: "가볍다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "무게가 적다",
+    oddMeaning: "마음이나 기분이 편하다",
+    choices: [
+      {
+        text: "이 가방은 작고 가벼워요.",
+        meaning: "무게가 적다",
+        isOdd: false
+      },
+      {
+        text: "종이는 돌보다 훨씬 가벼워요.",
+        meaning: "무게가 적다",
+        isOdd: false
+      },
+      {
+        text: "숙제를 끝내니 마음이 가벼워졌어요.",
+        meaning: "마음이나 기분이 편하다",
+        isOdd: true
+      }
+    ],
+    answer: "숙제를 끝내니 마음이 가벼워졌어요.",
+    explanation: "'마음이 가벼워졌어요'의 가볍다는 기분이 편해졌다는 뜻이고, 나머지 가볍다는 무게가 적다는 뜻입니다."
+  },
+  {
+    word: "무겁다",
+    instruction: "같은 단어가 다른 뜻으로 쓰인 문장을 고르세요.",
+    targetMeaning: "무게가 많이 나간다",
+    oddMeaning: "기분이나 분위기가 가라앉아 있다",
+    choices: [
+      {
+        text: "상자가 너무 무거워서 들기 힘들어요.",
+        meaning: "무게가 많이 나간다",
+        isOdd: false
+      },
+      {
+        text: "돌은 솜보다 무거워요.",
+        meaning: "무게가 많이 나간다",
+        isOdd: false
+      },
+      {
+        text: "교실 분위기가 무겁게 느껴졌어요.",
+        meaning: "기분이나 분위기가 가라앉아 있다",
+        isOdd: true
+      }
+    ],
+    answer: "교실 분위기가 무겁게 느껴졌어요.",
+    explanation: "'분위기가 무겁다'의 무겁다는 분위기가 가라앉았다는 뜻이고, 나머지 무겁다는 무게가 많이 나간다는 뜻입니다."
+  }
+];
+
+let materials=[],currentIndex=0,answers=[],choiceLocked=false,retryCount=0;
+
+function unique(array){return[...new Set(array)]}
+function shuffle(array){const copy=[...array];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
+function escapeHtml(str){return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function highlightWord(sentence, word){
+  const safe = escapeHtml(sentence);
+  const escapedWord = escapeHtml(word);
+
+  // 기본 단어가 그대로 들어간 경우
+  if (safe.includes(escapedWord)) {
+    return safe.split(escapedWord).join(`<span class="highlight-word">${escapedWord}</span>`);
+  }
+
+  // 활용형 문항에서 실제 문장에 나타나는 형태만 표시
+  const variants = {
+    "차다": ["차서", "차게", "찼어요", "찬"],
+    "타다": ["타서", "탔어요", "타고", "탄"],
+    "쓰다": ["썼어요", "써서", "쓰고", "쓴"],
+    "보다": ["보았어요", "봤어요", "보고", "본"],
+    "나다": ["났어요", "나서", "난"],
+    "들다": ["들었어요", "들고", "든"],
+    "놓다": ["놓았어요", "놓아", "놓고", "놓은"],
+    "잡다": ["잡았어요", "잡아", "잡고", "잡은"],
+    "치다": ["쳤어요", "쳐", "치고", "친"],
+    "피다": ["피었어요", "피어", "피고", "핀"],
+    "익다": ["익었어요", "익어서", "익고", "익은"],
+    "오르다": ["올랐어요", "올라", "오르고", "오른"],
+    "내리다": ["내렸어요", "내려", "내리고", "내린"],
+    "열다": ["열었어요", "열어", "열고", "연"],
+    "막다": ["막고", "막아서", "막는", "막았어요"],
+    "풀다": ["풀었어요", "풀어", "풀고", "푼"],
+    "밝다": ["밝아서", "밝게", "밝고", "밝은"],
+    "깊다": ["깊어요", "깊은", "깊고"],
+    "가볍다": ["가벼워요", "가벼워졌어요", "가벼운"],
+    "무겁다": ["무거워요", "무거워서", "무겁게", "무거운"],
+    "맞다": ["맞아요", "맞는", "맞았어요"],
+    "세다": ["세어", "세었어요", "세서"],
+    "쉬다": ["쉬었어요", "쉬어"],
+    "돌다": ["돌았어요", "돌기", "돌고"],
+    "걸다": ["걸었어요"],
+    "끊다": ["끊었어요"],
+    "붙다": ["붙었어요"],
+    "빠지다": ["빠졌어요"],
+    "지다": ["졌어요", "지고"],
+    "빼다": ["뺐어요"],
+    "오다": ["왔어요", "오셨어요"],
+    "가다": ["갔어요"],
+    "먹다": ["먹었어요"],
+    "세우다": ["세웠어요"],
+    "내다": ["냈어요", "내어", "내다"],
+    "매다": ["맸어요", "매고"],
+    "부치다": ["부쳤어요"],
+    "사다": ["샀어요"],
+    "살다": ["살아요"],
+    "넘다": ["넘었어요", "넘어요"],
+    "식다": ["식었어요", "식기"],
+    "얼다": ["얼었어요", "얼어"],
+    "풀리다": ["풀렸어요"],
+    "말다": ["말아요", "말았어요"],
+    "맡다": ["맡았어요"],
+    "크다": ["커요", "큰"],
+    "작다": ["작은", "작아서"]
+  };
+
+  let result = safe;
+  const list = (variants[word] || []).slice().sort((a,b) => b.length - a.length);
+  list.forEach(v => {
+    const escapedVariant = escapeHtml(v);
+    result = result.split(escapedVariant).join(`<span class="highlight-word">${escapedVariant}</span>`);
+  });
+  return result;
+}
+
+function isConjugationItem(item){
+  if (item.word.endsWith("다")) return true;
+  const conjugationLikeWords = ["알","입","팔","신","사과"];
+  return conjugationLikeWords.includes(item.word);
+}
+
+function getTypeName(item){
+  return isConjugationItem(item) ? "활용형" : "단어형";
+}
+
+function renderSubject(){
+  const box=document.getElementById("subjectBox");
+  if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;return}
+  box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`;
+}
+
+function generateMaterials(){
+  const typeValue=document.getElementById("itemType").value;
+  const countValue=document.getElementById("count").value;
+  const orderMode=document.getElementById("orderMode").value;
+  let source=POLYSEMY_ITEMS.filter(item=>{
+    if(typeValue==="all") return true;
+    if(typeValue==="conjugation") return isConjugationItem(item);
+    return !isConjugationItem(item);
+  });
+  source=orderMode==="random"?shuffle(source):[...source];
+  const limit=countValue==="all"?source.length:Number(countValue);
+  materials=source.slice(0,Math.min(limit,source.length)).map((item,idx)=>({...item,no:idx+1, choices:shuffle(item.choices), memo:""}));
+  currentIndex=0;answers=[];renderPreview();
+}
+
+function renderPreview(){
+  document.getElementById("previewTitle").textContent=`생성 자료 ${materials.length}개`;
+  const list=document.getElementById("previewList");
+  if(!materials.length){list.innerHTML=`<div class="item-card">조건에 맞는 자료가 없습니다.</div>`;return}
+  list.innerHTML=materials.map((item,idx)=>`<div class="item-card"><strong>${idx+1}.</strong>${item.word}<span class="tag">${getTypeName(item)}</span><br><span class="tag">${item.targetMeaning}</span><br><span class="tag">다른 뜻: ${item.oddMeaning}</span></div>`).join("");
+}
+
+function startTraining(){
+  if(!materials.length)generateMaterials();
+  if(!materials.length)return;
+  document.getElementById("setupView").classList.add("hidden");
+  document.getElementById("previewView").classList.add("hidden");
+  document.getElementById("trainingView").classList.remove("hidden");
+  document.getElementById("finishView").classList.add("hidden");
+  currentIndex=0;answers=[];showItem();
+}
+
+function showItem(){
+  choiceLocked=false;retryCount=0;
+  const item=materials[currentIndex];
+  document.getElementById("trainingTitle").textContent=`${currentIndex+1} / ${materials.length}`;
+  document.getElementById("targetWord").textContent=item.word;
+  document.getElementById("meaningLine").innerHTML=`기준 뜻: <strong>${escapeHtml(item.targetMeaning)}</strong><br>다른 뜻으로 쓰인 문장을 찾으세요.`;
+  document.getElementById("progressBar").style.width=`${(currentIndex/materials.length)*100}%`;
+  document.getElementById("itemMemo").value=item.memo||"";
+  document.getElementById("feedbackBox").style.display="none";
+  document.getElementById("feedbackBox").textContent="";
+  document.getElementById("feedbackBox").className="feedback";
+  document.getElementById("explanationBox").style.display="none";
+  document.getElementById("explanationBox").textContent="";
+  document.getElementById("nextBtn").style.display="none";
+  document.getElementById("answerOptions").innerHTML=item.choices.map((choice,idx)=>`<button class="answer-btn" onclick="selectAnswer(this, ${idx})">${highlightWord(choice.text,item.word)}</button>`).join("");
+}
+
+function saveMemo(){if(materials[currentIndex])materials[currentIndex].memo=document.getElementById("itemMemo").value.trim()}
+
+function showFeedback(message,isCorrectStyle){
+  const box=document.getElementById("feedbackBox");
+  box.style.display="block";box.textContent=message;box.className="feedback "+(isCorrectStyle?"correct":"wrong");
+}
+
+function showExplanation(){
+  if(document.getElementById("explainMode").value==="hide")return;
+  const item=materials[currentIndex];
+  const box=document.getElementById("explanationBox");
+  box.style.display="block";
+  box.textContent=`설명: ${item.explanation}`;
+}
+
+function setAnswerButtonsDisabled(disabled){document.querySelectorAll(".answer-btn").forEach(btn=>btn.disabled=disabled)}
+
+function markChoiceResult(selectedButton,choice){
+  const item=materials[currentIndex];
+  document.querySelectorAll(".answer-btn").forEach((btn,idx)=>{
+    if(item.choices[idx].isOdd)btn.classList.add("correct-choice");
+    if(btn===selectedButton&&!choice.isOdd)btn.classList.add("wrong-choice");
+  });
+}
+
+function selectAnswer(button,idx){
+  if(choiceLocked)return;
+  saveMemo();
+  const item=materials[currentIndex];
+  const choice=item.choices[idx];
+
+  if(choice.isOdd){
+    choiceLocked=true;
+    setAnswerButtonsDisabled(true);
+    markChoiceResult(button,choice);
+    showFeedback("정답입니다.",true);
+    showExplanation();
+    const countedCorrect=retryCount===0;
+    answers.push({word:item.word,answer:item.answer,response:choice.text,correct:countedCorrect,retry:retryCount,memo:item.memo||""});
+    document.getElementById("nextBtn").style.display="inline-block";
+    return;
+  }
+
+  retryCount+=1;
+  if(retryCount===1){
+    button.classList.add("wrong-choice");
+    showFeedback("다시 풀어보세요.",false);
+    setTimeout(()=>button.classList.remove("wrong-choice"),800);
+    return;
+  }
+
+  choiceLocked=true;
+  setAnswerButtonsDisabled(true);
+  markChoiceResult(button,choice);
+  showFeedback(`정답은 "${item.answer}"입니다. 다음 문제를 눌러주세요.`,false);
+  showExplanation();
+  answers.push({word:item.word,answer:item.answer,response:choice.text,correct:false,retry:retryCount,memo:item.memo||""});
+  document.getElementById("nextBtn").style.display="inline-block";
+}
+
+function nextQuestionManual(){if(!choiceLocked)return;nextItem()}
+
+function nextItem(){
+  currentIndex++;
+  if(currentIndex>=materials.length)finishTraining();else showItem();
+}
+
+function finishTraining(){
+  document.getElementById("progressBar").style.width="100%";
+  document.getElementById("trainingView").classList.add("hidden");
+  document.getElementById("finishView").classList.remove("hidden");
+  const total=answers.length;
+  const correct=answers.filter(a=>a.correct).length;
+  const wrong=total-correct;
+  const rate=total?Math.round((correct/total)*100):0;
+  const subjectName=selectedSubject?selectedSubject.name:"대상자";
+  document.getElementById("finishText").textContent=`${subjectName}님의 ${TRAINING_NAME} 결과입니다.`;
+  document.getElementById("summaryGrid").innerHTML=`<div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div><div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정답</span></div><div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>오답</span></div><div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+  const history=Store.load("speech_training_history",[]);
+  history.push({id:Date.now(),subjectId:selectedSubjectId,subjectName,training:TRAINING_NAME,date:new Date().toISOString(),total,correct,wrong,rate,answers});
+  Store.save("speech_training_history",history);
+}
+
+renderSubject();generateMaterials();
+</script>
+</body>
+</html>

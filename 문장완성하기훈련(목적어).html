@@ -1,0 +1,1320 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>문장완성하기훈련(목적어)</title>
+<style>
+* { box-sizing:border-box; }
+body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+.app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+.brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+.logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+.primary { background:#246bfe; color:white; }
+.secondary { background:#eef3ff; color:#246bfe; }
+.gray { background:#edf1f6; color:#5d687b; }
+.panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+.panel h2 { margin:0 0 16px; font-size:22px; }
+.setup-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+textarea { min-height:74px; resize:vertical; }
+.subject-box,.help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+.help-box { margin-top:16px; font-size:14px; }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+.word-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.item-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:15px; padding:14px; font-size:15px; line-height:1.5; }
+.item-card strong { color:#246bfe; margin-right:5px; }
+.hidden { display:none !important; }
+.progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+.progress-bar { height:100%; width:0%; background:#246bfe; }
+.question { color:#246bfe; font-size:25px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+.training-box { background:#f8faff; border-radius:24px; padding:38px 24px; text-align:center; margin-bottom:18px; min-height:300px; display:grid; place-items:center; }
+.training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:22px; }
+.sentence { font-size:38px; font-weight:900; line-height:1.45; word-break:keep-all; }
+.blank { display:inline-block; min-width:140px; padding:0 10px 4px; color:#246bfe; border-bottom:5px solid #246bfe; }
+.answer-options { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:12px; }
+.answer-btn { background:#eef3ff; color:#246bfe; border:1px solid #dbe7ff; border-radius:16px; min-height:68px; padding:15px 12px; font-size:22px; font-weight:900; }
+.answer-btn:hover { background:#dfeaff; }
+.answer-btn.correct-choice { background:#16a06f; color:white; border-color:#16a06f; }
+.answer-btn.wrong-choice { background:#e54848; color:white; border-color:#e54848; }
+.feedback { display:none; margin-top:12px; padding:16px; border-radius:16px; font-size:24px; font-weight:900; text-align:center; }
+.stats-mini { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; font-size:13px; }
+.stats-mini div { background:#f8faff; border:1px solid #e2e8f0; border-radius:12px; padding:8px 10px; display:flex; justify-content:space-between; gap:6px; }
+.stats-mini b { color:#246bfe; }
+.result-panel { background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); border-radius:24px; padding:16px; border:1px solid #edf2f7; box-shadow:0 10px 28px rgba(15,30,60,.05); }
+.summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+.summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+.summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+.summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+.summary-card span { color:#334155; font-size:15px; font-weight:800; }
+.summary-card.correct strong { color:#16a06f; }
+.summary-card.wrong strong { color:#e54848; }
+.summary-card.total strong,.summary-card.rate strong { color:#246bfe; }
+.summary-icon.correct { background:#16a06f; }
+.summary-icon.wrong { background:#e54848; }
+.summary-icon.total,.summary-icon.rate { background:#246bfe; }
+.summary-icon.total,.summary-icon.rate{background:#246bfe}
+@media (max-width:900px){ .setup-grid{grid-template-columns:1fr 1fr;} .word-grid{grid-template-columns:repeat(2,1fr);} .stats-mini{grid-template-columns:1fr;} .summary-grid{grid-template-columns:repeat(2,1fr);} .topbar{align-items:flex-start; flex-direction:column;} }
+@media (max-width:560px){ .setup-grid,.word-grid,.answer-options,.summary-grid{grid-template-columns:1fr;} .description{font-size:26px;} .question{font-size:21px;} }
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar"><div class="brand"><div class="logo">목</div><span>문장완성하기훈련 (목적어)</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+
+<section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+
+<section id="setupView" class="panel">
+<h2>훈련 설정</h2>
+<div class="setup-grid">
+<div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="40">40개</option><option value="50">50개</option><option value="100">100개</option><option value="150">150개</option><option value="200">200개</option></select></div>
+<div><label for="choiceCount">보기 개수</label><select id="choiceCount" onchange="generateMaterials()"><option value="2" selected>2개 보기</option><option value="4">4개 보기</option></select></div>
+<div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
+</div>
+<div class="help-box">목적어 전용 문장 완성 훈련입니다. 빈칸에 알맞은 목적어를 고르는 활동으로, 음식·생활용품·의류·가전가구·탈것·자연·동물·장소 등 일상 문항을 포함했습니다.</div>
+<div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
+</section>
+
+<section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
+<section id="statsView" class="panel"><h2>문항 수</h2><div id="statsBox"></div></section>
+
+<section id="trainingView" class="panel hidden">
+<div id="question" class="question">빈칸에 알맞은 목적어를 고르세요.</div>
+<div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+<div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="sentence" class="sentence"></div></div></div>
+<div id="answerOptions" class="answer-options"></div>
+<div id="feedbackBox" class="feedback"></div>
+<div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
+<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+</section>
+
+<section id="finishView" class="panel hidden">
+<h2>훈련 결과</h2>
+<p id="finishText"></p>
+<div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div>
+<div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+</section>
+</main>
+
+<script>
+const Store = { load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }, save(key, value) { localStorage.setItem(key, JSON.stringify(value)); } };
+const subjects = Store.load("speech_subjects", []);
+const selectedSubjectId = Store.load("speech_selected_subject", null);
+const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+
+const SENTENCE_DB = [
+  {
+    "answer": "밥",
+    "sentence": "배가 고파서 ___을 먹습니다.",
+    "wrongs": ["의자", "신발", "연필", "수건", "가방"]
+  },
+  {
+    "answer": "물",
+    "sentence": "목이 말라서 ___을 마십니다.",
+    "wrongs": ["돌", "신발", "책", "의자", "연필"]
+  },
+  {
+    "answer": "우유",
+    "sentence": "컵에 담긴 ___를 마십니다.",
+    "wrongs": ["연필", "신발", "의자", "책상", "수건"]
+  },
+  {
+    "answer": "주스",
+    "sentence": "과일로 만든 ___를 마십니다.",
+    "wrongs": ["책", "신발", "의자", "연필", "가방"]
+  },
+  {
+    "answer": "사과",
+    "sentence": "빨간 ___를 한 입 베어 먹습니다.",
+    "wrongs": ["의자", "신발", "연필", "수건", "가방"]
+  },
+  {
+    "answer": "바나나",
+    "sentence": "노란 ___를 먹습니다.",
+    "wrongs": ["책상", "의자", "컵", "신발", "연필"]
+  },
+  {
+    "answer": "포도",
+    "sentence": "알알이 달린 ___를 먹습니다.",
+    "wrongs": ["신발", "책", "수건", "연필", "의자"]
+  },
+  {
+    "answer": "수박",
+    "sentence": "여름에 시원한 ___을 먹습니다.",
+    "wrongs": ["연필", "신발", "컵", "책", "모자"]
+  },
+  {
+    "answer": "딸기",
+    "sentence": "빨갛고 작은 ___를 먹습니다.",
+    "wrongs": ["의자", "신발", "책상", "전화기", "수건"]
+  },
+  {
+    "answer": "귤",
+    "sentence": "껍질을 까서 ___을 먹습니다.",
+    "wrongs": ["연필", "책", "의자", "신발", "컵"]
+  },
+  {
+    "answer": "복숭아",
+    "sentence": "달콤하고 말랑한 ___를 먹습니다.",
+    "wrongs": ["책상", "컵", "수건", "신발", "연필"]
+  },
+  {
+    "answer": "감",
+    "sentence": "가을에 주황색 ___을 먹습니다.",
+    "wrongs": ["연필", "신발", "책", "컵", "수건"]
+  },
+  {
+    "answer": "빵",
+    "sentence": "아침에 부드러운 ___을 먹습니다.",
+    "wrongs": ["의자", "공책", "연필", "신발", "전화기"]
+  },
+  {
+    "answer": "김치",
+    "sentence": "밥과 함께 매운 ___를 먹습니다.",
+    "wrongs": ["우유", "사탕", "의자", "연필", "신발"]
+  },
+  {
+    "answer": "국",
+    "sentence": "숟가락으로 따뜻한 ___을 떠먹습니다.",
+    "wrongs": ["신발", "책", "연필", "모자", "가방"]
+  },
+  {
+    "answer": "라면",
+    "sentence": "냄비에 끓인 ___을 먹습니다.",
+    "wrongs": ["의자", "수건", "신발", "가방", "연필"]
+  },
+  {
+    "answer": "떡",
+    "sentence": "쫄깃쫄깃한 ___을 먹습니다.",
+    "wrongs": ["책", "의자", "신발", "수건", "연필"]
+  },
+  {
+    "answer": "국수",
+    "sentence": "긴 면으로 된 ___를 먹습니다.",
+    "wrongs": ["의자", "신발", "책", "연필", "가방"]
+  },
+  {
+    "answer": "달걀",
+    "sentence": "프라이팬에 익힌 ___을 먹습니다.",
+    "wrongs": ["연필", "신발", "책", "컵", "의자"]
+  },
+  {
+    "answer": "치즈",
+    "sentence": "우유로 만든 ___를 먹습니다.",
+    "wrongs": ["돌", "연필", "신발", "책상", "컵"]
+  },
+  {
+    "answer": "아이스크림",
+    "sentence": "차갑고 달콤한 ___을 먹습니다.",
+    "wrongs": ["국", "밥", "김치", "의자", "연필"]
+  },
+  {
+    "answer": "사탕",
+    "sentence": "달콤한 ___을 입에 넣습니다.",
+    "wrongs": ["김치", "국", "신발", "책", "수건"]
+  },
+  {
+    "answer": "초콜릿",
+    "sentence": "갈색의 달콤한 ___을 먹습니다.",
+    "wrongs": ["당근", "오이", "신발", "의자", "컵"]
+  },
+  {
+    "answer": "과자",
+    "sentence": "바삭바삭한 ___를 먹습니다.",
+    "wrongs": ["물", "우유", "책상", "연필", "신발"]
+  },
+  {
+    "answer": "당근",
+    "sentence": "주황색 ___을 먹습니다.",
+    "wrongs": ["바나나", "포도", "컵", "신발", "연필"]
+  },
+  {
+    "answer": "오이",
+    "sentence": "길고 초록색인 ___를 먹습니다.",
+    "wrongs": ["딸기", "우유", "책", "신발", "컵"]
+  },
+  {
+    "answer": "감자",
+    "sentence": "땅속에서 자란 ___를 먹습니다.",
+    "wrongs": ["사과", "바나나", "의자", "신발", "책"]
+  },
+  {
+    "answer": "고구마",
+    "sentence": "달콤하게 익힌 ___를 먹습니다.",
+    "wrongs": ["포도", "우유", "연필", "컵", "의자"]
+  },
+  {
+    "answer": "양파",
+    "sentence": "껍질을 벗긴 ___를 썹니다.",
+    "wrongs": ["수박", "우유", "신발", "책", "연필"]
+  },
+  {
+    "answer": "마늘",
+    "sentence": "음식에 매운 ___을 넣습니다.",
+    "wrongs": ["사과", "바나나", "컵", "의자", "수건"]
+  },
+  {
+    "answer": "책",
+    "sentence": "도서관에서 ___을 읽습니다.",
+    "wrongs": ["신발", "컵", "수건", "의자", "모자"]
+  },
+  {
+    "answer": "연필",
+    "sentence": "글씨를 쓰려고 ___을 잡습니다.",
+    "wrongs": ["컵", "신발", "수건", "의자", "모자"]
+  },
+  {
+    "answer": "지우개",
+    "sentence": "틀린 글씨를 지우려고 ___를 사용합니다.",
+    "wrongs": ["연필", "책", "신발", "컵", "수건"]
+  },
+  {
+    "answer": "공책",
+    "sentence": "숙제를 하려고 ___을 펼칩니다.",
+    "wrongs": ["신발", "컵", "수건", "모자", "의자"]
+  },
+  {
+    "answer": "가위",
+    "sentence": "종이를 자르려고 ___를 사용합니다.",
+    "wrongs": ["컵", "신발", "수건", "모자", "가방"]
+  },
+  {
+    "answer": "풀",
+    "sentence": "종이를 붙이려고 ___을 바릅니다.",
+    "wrongs": ["가위", "연필", "신발", "컵", "수건"]
+  },
+  {
+    "answer": "자",
+    "sentence": "길이를 재려고 ___를 사용합니다.",
+    "wrongs": ["컵", "신발", "모자", "수건", "가방"]
+  },
+  {
+    "answer": "색연필",
+    "sentence": "그림을 색칠하려고 ___을 꺼냅니다.",
+    "wrongs": ["신발", "컵", "수건", "의자", "모자"]
+  },
+  {
+    "answer": "크레파스",
+    "sentence": "그림에 색을 칠하려고 ___를 사용합니다.",
+    "wrongs": ["신발", "컵", "전화기", "수건", "모자"]
+  },
+  {
+    "answer": "가방",
+    "sentence": "책을 넣으려고 ___을 엽니다.",
+    "wrongs": ["컵", "신발", "수건", "의자", "모자"]
+  },
+  {
+    "answer": "시계",
+    "sentence": "시간을 확인하려고 ___를 봅니다.",
+    "wrongs": ["컵", "신발", "수건", "연필", "의자"]
+  },
+  {
+    "answer": "우산",
+    "sentence": "비를 피하려고 ___을 펼칩니다.",
+    "wrongs": ["책", "연필", "컵", "수건", "신발"]
+  },
+  {
+    "answer": "신발",
+    "sentence": "밖에 나가려고 ___을 신습니다.",
+    "wrongs": ["모자", "컵", "책", "연필", "수건"]
+  },
+  {
+    "answer": "모자",
+    "sentence": "햇빛을 가리려고 ___를 씁니다.",
+    "wrongs": ["신발", "컵", "책", "연필", "수건"]
+  },
+  {
+    "answer": "옷",
+    "sentence": "외출하기 전에 ___을 입습니다.",
+    "wrongs": ["신발", "컵", "책", "연필", "의자"]
+  },
+  {
+    "answer": "양말",
+    "sentence": "신발을 신기 전에 ___을 신습니다.",
+    "wrongs": ["모자", "장갑", "컵", "책", "연필"]
+  },
+  {
+    "answer": "장갑",
+    "sentence": "추운 날 손에 ___을 낍니다.",
+    "wrongs": ["양말", "모자", "신발", "컵", "책"]
+  },
+  {
+    "answer": "목도리",
+    "sentence": "추운 날 목에 ___를 두릅니다.",
+    "wrongs": ["신발", "양말", "컵", "연필", "책"]
+  },
+  {
+    "answer": "안경",
+    "sentence": "글씨를 잘 보려고 ___을 씁니다.",
+    "wrongs": ["신발", "모자", "컵", "수건", "가방"]
+  },
+  {
+    "answer": "마스크",
+    "sentence": "입과 코를 가리려고 ___를 씁니다.",
+    "wrongs": ["신발", "책", "연필", "컵", "의자"]
+  },
+  {
+    "answer": "컵",
+    "sentence": "물을 마시려고 ___을 듭니다.",
+    "wrongs": ["신발", "책", "수건", "연필", "모자"]
+  },
+  {
+    "answer": "숟가락",
+    "sentence": "국을 먹으려고 ___을 사용합니다.",
+    "wrongs": ["연필", "신발", "수건", "책", "모자"]
+  },
+  {
+    "answer": "젓가락",
+    "sentence": "반찬을 집으려고 ___을 사용합니다.",
+    "wrongs": ["신발", "책", "수건", "컵", "모자"]
+  },
+  {
+    "answer": "그릇",
+    "sentence": "음식을 담으려고 ___을 꺼냅니다.",
+    "wrongs": ["신발", "책", "연필", "수건", "모자"]
+  },
+  {
+    "answer": "접시",
+    "sentence": "과일을 올려놓으려고 ___를 꺼냅니다.",
+    "wrongs": ["신발", "책", "연필", "수건", "모자"]
+  },
+  {
+    "answer": "냄비",
+    "sentence": "국을 끓이려고 ___를 사용합니다.",
+    "wrongs": ["신발", "책", "연필", "모자", "가방"]
+  },
+  {
+    "answer": "프라이팬",
+    "sentence": "달걀을 부치려고 ___을 사용합니다.",
+    "wrongs": ["컵", "신발", "책", "수건", "모자"]
+  },
+  {
+    "answer": "칼",
+    "sentence": "채소를 자르려고 ___을 사용합니다.",
+    "wrongs": ["컵", "수건", "신발", "모자", "가방"]
+  },
+  {
+    "answer": "도마",
+    "sentence": "채소를 자르기 전에 ___를 놓습니다.",
+    "wrongs": ["신발", "책", "컵", "수건", "모자"]
+  },
+  {
+    "answer": "수건",
+    "sentence": "젖은 손을 닦으려고 ___을 사용합니다.",
+    "wrongs": ["책", "연필", "신발", "모자", "가방"]
+  },
+  {
+    "answer": "비누",
+    "sentence": "손을 깨끗이 씻으려고 ___를 사용합니다.",
+    "wrongs": ["연필", "책", "의자", "신발", "모자"]
+  },
+  {
+    "answer": "칫솔",
+    "sentence": "이를 닦으려고 ___을 잡습니다.",
+    "wrongs": ["수건", "책", "신발", "컵", "가위"]
+  },
+  {
+    "answer": "치약",
+    "sentence": "이를 닦으려고 ___을 칫솔에 짭니다.",
+    "wrongs": ["비누", "수건", "책", "신발", "연필"]
+  },
+  {
+    "answer": "빗",
+    "sentence": "머리카락을 정리하려고 ___을 사용합니다.",
+    "wrongs": ["칫솔", "컵", "신발", "책", "수건"]
+  },
+  {
+    "answer": "침대",
+    "sentence": "잠을 자려고 ___에 눕습니다.",
+    "wrongs": ["책상", "의자", "컵", "연필", "가위"]
+  },
+  {
+    "answer": "이불",
+    "sentence": "잘 때 몸에 ___을 덮습니다.",
+    "wrongs": ["신발", "컵", "책", "연필", "가방"]
+  },
+  {
+    "answer": "베개",
+    "sentence": "잘 때 머리에 ___를 벱니다.",
+    "wrongs": ["신발", "컵", "책", "연필", "가방"]
+  },
+  {
+    "answer": "책상",
+    "sentence": "공부하려고 ___에 앉습니다.",
+    "wrongs": ["신발", "컵", "모자", "수건", "전화기"]
+  },
+  {
+    "answer": "의자",
+    "sentence": "쉬려고 ___에 앉습니다.",
+    "wrongs": ["책", "연필", "가방", "수건", "신발"]
+  },
+  {
+    "answer": "문",
+    "sentence": "방에 들어가려고 ___을 엽니다.",
+    "wrongs": ["책", "컵", "연필", "신발", "수건"]
+  },
+  {
+    "answer": "창문",
+    "sentence": "환기하려고 ___을 엽니다.",
+    "wrongs": ["신발", "컵", "책", "수건", "가방"]
+  },
+  {
+    "answer": "전등",
+    "sentence": "방을 밝히려고 ___을 켭니다.",
+    "wrongs": ["신발", "책", "컵", "연필", "수건"]
+  },
+  {
+    "answer": "냉장고",
+    "sentence": "음식을 꺼내려고 ___를 엽니다.",
+    "wrongs": ["책상", "의자", "신발", "연필", "가방"]
+  },
+  {
+    "answer": "텔레비전",
+    "sentence": "뉴스를 보려고 ___을 켭니다.",
+    "wrongs": ["수건", "신발", "컵", "연필", "가위"]
+  },
+  {
+    "answer": "전화기",
+    "sentence": "친구에게 전화하려고 ___를 듭니다.",
+    "wrongs": ["의자", "책상", "수건", "신발", "모자"]
+  },
+  {
+    "answer": "컴퓨터",
+    "sentence": "숙제를 하려고 ___를 켭니다.",
+    "wrongs": ["컵", "신발", "수건", "모자", "가위"]
+  },
+  {
+    "answer": "세탁기",
+    "sentence": "옷을 빨려고 ___를 돌립니다.",
+    "wrongs": ["냉장고", "텔레비전", "책상", "컵", "모자"]
+  },
+  {
+    "answer": "청소기",
+    "sentence": "먼지를 치우려고 ___를 사용합니다.",
+    "wrongs": ["냉장고", "전화기", "책", "신발", "컵"]
+  },
+  {
+    "answer": "선풍기",
+    "sentence": "더워서 ___를 켭니다.",
+    "wrongs": ["책", "신발", "컵", "연필", "수건"]
+  },
+  {
+    "answer": "에어컨",
+    "sentence": "방을 시원하게 하려고 ___을 켭니다.",
+    "wrongs": ["전등", "책상", "신발", "컵", "수건"]
+  },
+  {
+    "answer": "난로",
+    "sentence": "방을 따뜻하게 하려고 ___를 켭니다.",
+    "wrongs": ["선풍기", "컵", "책", "연필", "신발"]
+  },
+  {
+    "answer": "버스",
+    "sentence": "학교에 가려고 ___를 탑니다.",
+    "wrongs": ["책", "의자", "컵", "신발", "수건"]
+  },
+  {
+    "answer": "자동차",
+    "sentence": "여행을 가려고 ___를 탑니다.",
+    "wrongs": ["물고기", "책상", "구름", "연필", "꽃"]
+  },
+  {
+    "answer": "비행기",
+    "sentence": "먼 나라에 가려고 ___를 탑니다.",
+    "wrongs": ["책", "의자", "컵", "신발", "수건"]
+  },
+  {
+    "answer": "기차",
+    "sentence": "철길을 따라 달리는 ___를 탑니다.",
+    "wrongs": ["신발", "책", "수건", "컵", "모자"]
+  },
+  {
+    "answer": "배",
+    "sentence": "바다를 건너려고 ___를 탑니다.",
+    "wrongs": ["의자", "연필", "신발", "책", "컵"]
+  },
+  {
+    "answer": "자전거",
+    "sentence": "페달을 밟으며 ___를 탑니다.",
+    "wrongs": ["책상", "컵", "수건", "모자", "연필"]
+  },
+  {
+    "answer": "오토바이",
+    "sentence": "도로에서 ___를 탑니다.",
+    "wrongs": ["책", "의자", "컵", "수건", "연필"]
+  },
+  {
+    "answer": "택시",
+    "sentence": "목적지에 가려고 ___를 탑니다.",
+    "wrongs": ["책", "신발", "컵", "수건", "의자"]
+  },
+  {
+    "answer": "구급차",
+    "sentence": "병원에 빨리 가려고 ___를 탑니다.",
+    "wrongs": ["자전거", "책", "컵", "의자", "연필"]
+  },
+  {
+    "answer": "소방차",
+    "sentence": "불을 끄러 가려고 ___를 탑니다.",
+    "wrongs": ["책상", "컵", "신발", "모자", "연필"]
+  },
+  {
+    "answer": "경찰차",
+    "sentence": "순찰을 하려고 ___를 탑니다.",
+    "wrongs": ["책", "컵", "수건", "신발", "의자"]
+  },
+  {
+    "answer": "트럭",
+    "sentence": "무거운 짐을 옮기려고 ___을 운전합니다.",
+    "wrongs": ["연필", "컵", "수건", "책", "모자"]
+  },
+  {
+    "answer": "지하철",
+    "sentence": "도시에서 이동하려고 ___을 탑니다.",
+    "wrongs": ["신발", "책", "컵", "수건", "연필"]
+  },
+  {
+    "answer": "헬리콥터",
+    "sentence": "하늘에서 구조하려고 ___를 탑니다.",
+    "wrongs": ["책", "의자", "컵", "연필", "수건"]
+  },
+  {
+    "answer": "로켓",
+    "sentence": "우주로 가려고 ___을 탑니다.",
+    "wrongs": ["버스", "자전거", "배", "책상", "의자"]
+  },
+  {
+    "answer": "꽃",
+    "sentence": "화분에 핀 ___을 봅니다.",
+    "wrongs": ["돌", "의자", "신발", "컵", "연필"]
+  },
+  {
+    "answer": "나무",
+    "sentence": "마당에 있는 ___를 가꿉니다.",
+    "wrongs": ["컵", "신발", "연필", "수건", "전화기"]
+  },
+  {
+    "answer": "풀",
+    "sentence": "초록색 ___을 뜯어 먹습니다.",
+    "wrongs": ["의자", "컵", "신발", "연필", "가위"]
+  },
+  {
+    "answer": "잎",
+    "sentence": "바닥에 떨어진 ___을 줍습니다.",
+    "wrongs": ["신발", "공책", "컵", "수건", "전화기"]
+  },
+  {
+    "answer": "씨앗",
+    "sentence": "밭에 ___을 심습니다.",
+    "wrongs": ["의자", "신발", "컵", "책상", "전화기"]
+  },
+  {
+    "answer": "뿌리",
+    "sentence": "땅속으로 ___를 내립니다.",
+    "wrongs": ["구름", "신발", "컵", "연필", "모자"]
+  },
+  {
+    "answer": "줄기",
+    "sentence": "식물의 초록색 ___를 관찰합니다.",
+    "wrongs": ["구름", "신발", "모자", "컵", "가방"]
+  },
+  {
+    "answer": "꽃잎",
+    "sentence": "떨어진 ___을 하나씩 셉니다.",
+    "wrongs": ["돌", "신발", "전화기", "의자", "연필"]
+  },
+  {
+    "answer": "열매",
+    "sentence": "나무에 열린 ___를 땁니다.",
+    "wrongs": ["신발", "책", "컵", "수건", "의자"]
+  },
+  {
+    "answer": "솔방울",
+    "sentence": "소나무 밑에서 ___을 주웠습니다.",
+    "wrongs": ["바나나", "연필", "신발", "수건", "컵"]
+  },
+  {
+    "answer": "해",
+    "sentence": "낮에 밝게 빛나는 ___를 봅니다.",
+    "wrongs": ["의자", "신발", "연필", "컵", "가방"]
+  },
+  {
+    "answer": "달",
+    "sentence": "밤하늘에 뜬 ___을 봅니다.",
+    "wrongs": ["의자", "꽃", "나무", "컵", "신발"]
+  },
+  {
+    "answer": "별",
+    "sentence": "밤하늘의 반짝이는 ___을 봅니다.",
+    "wrongs": ["돌", "물", "의자", "가방", "연필"]
+  },
+  {
+    "answer": "구름",
+    "sentence": "하늘에 떠 있는 ___을 바라봅니다.",
+    "wrongs": ["돌", "물", "의자", "신발", "컵"]
+  },
+  {
+    "answer": "무지개",
+    "sentence": "비가 그친 뒤 하늘의 ___를 봅니다.",
+    "wrongs": ["의자", "신발", "연필", "가방", "수건"]
+  },
+  {
+    "answer": "번개",
+    "sentence": "하늘에서 번쩍이는 ___를 보았습니다.",
+    "wrongs": ["꽃", "나무", "책", "컵", "모자"]
+  },
+  {
+    "answer": "천둥",
+    "sentence": "우르르 울리는 ___을 들었습니다.",
+    "wrongs": ["연필", "공책", "의자", "신발", "컵"]
+  },
+  {
+    "answer": "비",
+    "sentence": "창밖으로 내리는 ___를 봅니다.",
+    "wrongs": ["책", "신발", "의자", "연필", "가방"]
+  },
+  {
+    "answer": "눈",
+    "sentence": "하늘에서 내리는 하얀 ___을 봅니다.",
+    "wrongs": ["비누", "수건", "컵", "전화기", "연필"]
+  },
+  {
+    "answer": "바람",
+    "sentence": "얼굴에 스치는 ___을 느낍니다.",
+    "wrongs": ["돌", "책", "의자", "컵", "신발"]
+  },
+  {
+    "answer": "비밀번호",
+    "sentence": "문을 열기 전에 ___를 입력합니다.",
+    "wrongs": ["수건", "신발", "과자", "구름", "연필"]
+  },
+  {
+    "answer": "초인종",
+    "sentence": "집에 들어가기 전에 ___을 누릅니다.",
+    "wrongs": ["우산", "숟가락", "양말", "책", "물"]
+  },
+  {
+    "answer": "손잡이",
+    "sentence": "문을 열려고 ___를 잡습니다.",
+    "wrongs": ["사탕", "구름", "수건", "연필", "신발"]
+  },
+  {
+    "answer": "엘리베이터",
+    "sentence": "높은 층에 올라가려고 ___를 탑니다.",
+    "wrongs": ["연필", "컵", "수건", "모자", "책"]
+  },
+  {
+    "answer": "계단",
+    "sentence": "천천히 한 칸씩 ___을 올라갑니다.",
+    "wrongs": ["우유", "연필", "신발", "의자", "사과"]
+  },
+  {
+    "answer": "버튼",
+    "sentence": "기계를 켜려고 ___을 누릅니다.",
+    "wrongs": ["바람", "냄새", "모래", "신발", "수건"]
+  },
+  {
+    "answer": "스위치",
+    "sentence": "불을 켜려고 ___를 누릅니다.",
+    "wrongs": ["김치", "양말", "책", "돌", "풍선"]
+  },
+  {
+    "answer": "콘센트",
+    "sentence": "충전기를 꽂으려고 ___을 찾습니다.",
+    "wrongs": ["과자", "구름", "모자", "나비", "수건"]
+  },
+  {
+    "answer": "쓰레기봉투",
+    "sentence": "쓰레기를 모으려고 ___를 펼칩니다.",
+    "wrongs": ["우유", "연필", "신발", "사탕", "의자"]
+  },
+  {
+    "answer": "분리수거함",
+    "sentence": "병과 캔을 버리려고 ___을 찾습니다.",
+    "wrongs": ["베개", "구름", "비누", "책상", "바나나"]
+  },
+  {
+    "answer": "신호등",
+    "sentence": "길을 건너기 전에 ___을 봅니다.",
+    "wrongs": ["베개", "숟가락", "꽃잎", "수건", "치즈"]
+  },
+  {
+    "answer": "횡단보도",
+    "sentence": "차가 멈춘 뒤 ___를 건넙니다.",
+    "wrongs": ["공책", "양말", "구름", "우유", "의자"]
+  },
+  {
+    "answer": "안전모",
+    "sentence": "공사장에서는 머리를 보호하려고 ___를 씁니다.",
+    "wrongs": ["컵", "책", "사과", "수건", "연필"]
+  },
+  {
+    "answer": "구명조끼",
+    "sentence": "배를 탈 때 안전을 위해 ___를 입습니다.",
+    "wrongs": ["공책", "초콜릿", "신발장", "꽃", "비누"]
+  },
+  {
+    "answer": "소화기",
+    "sentence": "불이 났을 때 ___를 사용합니다.",
+    "wrongs": ["우산", "풍선", "딸기", "책", "장갑"]
+  },
+  {
+    "answer": "반창고",
+    "sentence": "상처가 난 곳에 ___를 붙입니다.",
+    "wrongs": ["연필", "구름", "신발", "과자", "의자"]
+  },
+  {
+    "answer": "체온계",
+    "sentence": "열이 나는지 보려고 ___를 사용합니다.",
+    "wrongs": ["공책", "양말", "수박", "돌", "모자"]
+  },
+  {
+    "answer": "마스크팩",
+    "sentence": "얼굴을 촉촉하게 하려고 ___을 붙입니다.",
+    "wrongs": ["신발", "책", "숟가락", "구름", "연필"]
+  },
+  {
+    "answer": "로션",
+    "sentence": "피부가 건조해서 ___을 바릅니다.",
+    "wrongs": ["컵", "의자", "공책", "신발", "바람"]
+  },
+  {
+    "answer": "선크림",
+    "sentence": "햇빛에 타지 않으려고 ___을 바릅니다.",
+    "wrongs": ["국수", "수건", "책상", "구름", "양말"]
+  },
+  {
+    "answer": "알람",
+    "sentence": "아침에 일어나려고 ___을 맞춥니다.",
+    "wrongs": ["사탕", "신발", "책", "수건", "구름"]
+  },
+  {
+    "answer": "일정",
+    "sentence": "해야 할 일을 잊지 않으려고 ___을 확인합니다.",
+    "wrongs": ["우유", "모자", "의자", "신발", "바람"]
+  },
+  {
+    "answer": "메모",
+    "sentence": "잊지 않으려고 중요한 내용을 ___에 적습니다.",
+    "wrongs": ["신발", "컵", "구름", "수건", "사과"]
+  },
+  {
+    "answer": "이름",
+    "sentence": "공책 앞에 자기 ___을 씁니다.",
+    "wrongs": ["냄새", "바람", "소리", "모래", "구름"]
+  },
+  {
+    "answer": "주소",
+    "sentence": "편지를 보내려고 봉투에 ___를 씁니다.",
+    "wrongs": ["수건", "의자", "과자", "신발", "구름"]
+  },
+  {
+    "answer": "전화번호",
+    "sentence": "연락하려고 친구의 ___를 적습니다.",
+    "wrongs": ["컵", "양말", "사탕", "돌", "나무"]
+  },
+  {
+    "answer": "생일",
+    "sentence": "친구를 축하하려고 ___을 기억합니다.",
+    "wrongs": ["연필", "신발", "수건", "의자", "구름"]
+  },
+  {
+    "answer": "초대장",
+    "sentence": "잔치에 오라고 친구에게 ___을 보냅니다.",
+    "wrongs": ["비누", "컵", "신발", "모래", "책상"]
+  },
+  {
+    "answer": "선물",
+    "sentence": "생일을 축하하려고 ___을 줍니다.",
+    "wrongs": ["먼지", "구름", "바람", "냄새", "소리"]
+  },
+  {
+    "answer": "케이크",
+    "sentence": "생일날 촛불을 꽂은 ___를 먹습니다.",
+    "wrongs": ["신발", "수건", "연필", "의자", "가방"]
+  },
+  {
+    "answer": "촛불",
+    "sentence": "생일 케이크 위의 ___을 끕니다.",
+    "wrongs": ["컵", "신발", "책", "모자", "연필"]
+  },
+  {
+    "answer": "리본",
+    "sentence": "선물 상자에 예쁜 ___을 묶습니다.",
+    "wrongs": ["우유", "모래", "의자", "수건", "구름"]
+  },
+  {
+    "answer": "스티커",
+    "sentence": "공책 표지에 예쁜 ___를 붙입니다.",
+    "wrongs": ["신발", "바람", "컵", "연필", "돌"]
+  },
+  {
+    "answer": "도장",
+    "sentence": "종이에 확인 표시로 ___을 찍습니다.",
+    "wrongs": ["우유", "구름", "신발", "수건", "사탕"]
+  },
+  {
+    "answer": "종",
+    "sentence": "수업 시간이 끝나면 ___을 울립니다.",
+    "wrongs": ["연필", "의자", "신발", "컵", "사과"]
+  },
+  {
+    "answer": "칠판",
+    "sentence": "선생님이 글씨를 쓰려고 ___을 봅니다.",
+    "wrongs": ["양말", "수건", "우유", "신발", "구름"]
+  },
+  {
+    "answer": "분필",
+    "sentence": "칠판에 글씨를 쓰려고 ___을 잡습니다.",
+    "wrongs": ["사과", "컵", "신발", "수건", "구름"]
+  },
+  {
+    "answer": "화이트보드",
+    "sentence": "수업 내용을 적으려고 ___를 사용합니다.",
+    "wrongs": ["신발", "과자", "양말", "꽃", "의자"]
+  },
+  {
+    "answer": "보드마커",
+    "sentence": "화이트보드에 글씨를 쓰려고 ___를 잡습니다.",
+    "wrongs": ["우유", "신발", "수건", "나비", "모자"]
+  },
+  {
+    "answer": "사물함",
+    "sentence": "책과 준비물을 넣으려고 ___을 엽니다.",
+    "wrongs": ["구름", "사탕", "바람", "연필심", "물"]
+  },
+  {
+    "answer": "급식판",
+    "sentence": "점심을 받으려고 ___을 듭니다.",
+    "wrongs": ["신발", "책", "양말", "모자", "구름"]
+  },
+  {
+    "answer": "식판",
+    "sentence": "반찬과 밥을 담으려고 ___을 꺼냅니다.",
+    "wrongs": ["의자", "연필", "신발", "풍선", "구름"]
+  },
+  {
+    "answer": "물병",
+    "sentence": "목이 마를 때 ___을 꺼냅니다.",
+    "wrongs": ["구름", "신발", "의자", "모자", "책상"]
+  },
+  {
+    "answer": "도시락",
+    "sentence": "점심시간에 싸 온 ___을 엽니다.",
+    "wrongs": ["바람", "연필", "신발", "수건", "구름"]
+  },
+  {
+    "answer": "간식",
+    "sentence": "쉬는 시간에 작은 ___을 먹습니다.",
+    "wrongs": ["의자", "신발", "연필", "구름", "수건"]
+  },
+  {
+    "answer": "우유팩",
+    "sentence": "다 마신 뒤 ___을 분리수거합니다.",
+    "wrongs": ["신발", "공책", "바람", "의자", "모자"]
+  },
+  {
+    "answer": "빨대",
+    "sentence": "음료를 마시려고 ___를 꽂습니다.",
+    "wrongs": ["구름", "신발", "공책", "수건", "의자"]
+  },
+  {
+    "answer": "뚜껑",
+    "sentence": "병을 열려고 ___을 돌립니다.",
+    "wrongs": ["바람", "과자", "연필", "신발", "수건"]
+  },
+  {
+    "answer": "병",
+    "sentence": "물을 담으려고 빈 ___을 씻습니다.",
+    "wrongs": ["구름", "연필", "신발", "의자", "양말"]
+  },
+  {
+    "answer": "캔",
+    "sentence": "음료를 마신 뒤 빈 ___을 버립니다.",
+    "wrongs": ["책", "신발", "수건", "바람", "구름"]
+  },
+  {
+    "answer": "상자",
+    "sentence": "물건을 담으려고 빈 ___를 준비합니다.",
+    "wrongs": ["냄새", "구름", "바람", "소리", "물"]
+  },
+  {
+    "answer": "테이프",
+    "sentence": "상자를 붙이려고 ___를 감습니다.",
+    "wrongs": ["우유", "신발", "의자", "구름", "수건"]
+  },
+  {
+    "answer": "끈",
+    "sentence": "물건을 묶으려고 ___을 사용합니다.",
+    "wrongs": ["바람", "냄새", "소리", "구름", "물"]
+  },
+  {
+    "answer": "봉투",
+    "sentence": "산 물건을 담으려고 ___를 받습니다.",
+    "wrongs": ["의자", "신발", "연필", "바람", "구름"]
+  },
+  {
+    "answer": "장바구니",
+    "sentence": "마트에서 물건을 담으려고 ___를 듭니다.",
+    "wrongs": ["신발", "구름", "연필", "수건", "모자"]
+  },
+  {
+    "answer": "계산서",
+    "sentence": "얼마를 내야 하는지 보려고 ___를 확인합니다.",
+    "wrongs": ["신발", "과자", "구름", "연필", "의자"]
+  },
+  {
+    "answer": "영수증",
+    "sentence": "물건을 산 뒤 ___을 받습니다.",
+    "wrongs": ["바람", "구름", "냄새", "소리", "물"]
+  },
+  {
+    "answer": "동전",
+    "sentence": "자판기에 넣으려고 ___을 꺼냅니다.",
+    "wrongs": ["수건", "구름", "신발", "사과", "책"]
+  },
+  {
+    "answer": "지폐",
+    "sentence": "물건값을 내려고 ___를 꺼냅니다.",
+    "wrongs": ["구름", "바람", "소리", "냄새", "모래"]
+  },
+  {
+    "answer": "카드",
+    "sentence": "계산하려고 ___를 냅니다.",
+    "wrongs": ["신발", "구름", "수건", "의자", "연필"]
+  },
+  {
+    "answer": "도서대출증",
+    "sentence": "책을 빌리려고 ___을 보여 줍니다.",
+    "wrongs": ["과자", "신발", "수건", "구름", "의자"]
+  },
+  {
+    "answer": "입장권",
+    "sentence": "공연장에 들어가려고 ___을 보여 줍니다.",
+    "wrongs": ["우유", "신발", "연필", "수건", "바람"]
+  },
+  {
+    "answer": "여권",
+    "sentence": "외국에 갈 때 공항에서 ___을 보여 줍니다.",
+    "wrongs": ["컵", "양말", "수건", "의자", "구름"]
+  },
+  {
+    "answer": "가위바위보",
+    "sentence": "순서를 정하려고 ___를 합니다.",
+    "wrongs": ["신발", "컵", "수건", "모자", "의자"]
+  },
+  {
+    "answer": "숨바꼭질",
+    "sentence": "친구들과 숨어서 찾는 ___을 합니다.",
+    "wrongs": ["우유", "공책", "신발", "의자", "수건"]
+  },
+  {
+    "answer": "술래잡기",
+    "sentence": "운동장에서 친구를 쫓아다니며 ___를 합니다.",
+    "wrongs": ["책", "컵", "양말", "구름", "의자"]
+  },
+  {
+    "answer": "공기놀이",
+    "sentence": "작은 돌을 던지고 받으며 ___를 합니다.",
+    "wrongs": ["신발", "수건", "의자", "바람", "구름"]
+  },
+  {
+    "answer": "딱지",
+    "sentence": "손바닥으로 바닥의 ___를 칩니다.",
+    "wrongs": ["우유", "구름", "신발", "수건", "책상"]
+  },
+  {
+    "answer": "팽이",
+    "sentence": "줄을 감아 ___를 돌립니다.",
+    "wrongs": ["의자", "컵", "과자", "신발", "수건"]
+  },
+  {
+    "answer": "비눗방울",
+    "sentence": "입으로 불어서 ___을 만듭니다.",
+    "wrongs": ["돌", "신발", "책", "연필", "의자"]
+  },
+  {
+    "answer": "모래성",
+    "sentence": "해변에서 모래로 ___을 만듭니다.",
+    "wrongs": ["우유", "바람", "냄새", "소리", "구름"]
+  },
+  {
+    "answer": "눈사람",
+    "sentence": "겨울에 눈을 굴려 ___을 만듭니다.",
+    "wrongs": ["수박", "신발", "컵", "연필", "의자"]
+  },
+  {
+    "answer": "썰매",
+    "sentence": "눈 위에서 ___를 탑니다.",
+    "wrongs": ["책", "컵", "수건", "연필", "모자"]
+  },
+  {
+    "answer": "연",
+    "sentence": "바람이 부는 날 하늘에 ___을 날립니다.",
+    "wrongs": ["돌", "컵", "신발", "수건", "의자"]
+  },
+  {
+    "answer": "부채",
+    "sentence": "더울 때 손으로 ___를 부칩니다.",
+    "wrongs": ["우유", "책상", "신발", "모자", "구름"]
+  },
+  {
+    "answer": "손난로",
+    "sentence": "추울 때 손을 따뜻하게 하려고 ___를 잡습니다.",
+    "wrongs": ["수박", "컵", "연필", "의자", "구름"]
+  },
+  {
+    "answer": "눈송이",
+    "sentence": "하늘에서 떨어지는 작은 ___를 봅니다.",
+    "wrongs": ["신발", "컵", "의자", "연필", "책"]
+  },
+  {
+    "answer": "낙엽",
+    "sentence": "가을 길에서 바스락거리는 ___을 밟습니다.",
+    "wrongs": ["우유", "의자", "신발", "컵", "연필"]
+  },
+  {
+    "answer": "빗방울",
+    "sentence": "창문에 맺힌 ___을 봅니다.",
+    "wrongs": ["책", "의자", "신발", "수건", "연필"]
+  },
+  {
+    "answer": "고드름",
+    "sentence": "처마 밑에 매달린 ___을 봅니다.",
+    "wrongs": ["사탕", "연필", "신발", "수건", "책"]
+  }
+];
+
+let materials = [];
+let currentIndex = 0;
+let answers = [];
+let choiceLocked = false;
+let retryCount = 0;
+
+function unique(array) { return [...new Set(array)]; }
+function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+
+function renderSubject() {
+  const box = document.getElementById("subjectBox");
+  if (!selectedSubject) {
+    box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+    return;
+  }
+  box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`;
+}
+
+function getSettings() {
+  return {
+    count: Number(document.getElementById("count").value) || 10,
+    choiceCount: Number(document.getElementById("choiceCount").value) === 4 ? 4 : 2,
+    orderMode: document.getElementById("orderMode").value
+  };
+}
+
+function makeChoices(item, settings) {
+  const needWrong = settings.choiceCount - 1;
+  let wrongs = Array.isArray(item.wrongs) ? item.wrongs.filter(answer => answer !== item.answer) : [];
+  wrongs = shuffle(unique(wrongs)).slice(0, needWrong);
+  if (wrongs.length < needWrong) {
+    const pool = unique(SENTENCE_DB.map(x => x.answer).filter(answer => answer !== item.answer && !wrongs.includes(answer)));
+    wrongs.push(...shuffle(pool).slice(0, needWrong - wrongs.length));
+  }
+  return shuffle([item.answer, ...wrongs.slice(0, needWrong)]);
+}
+
+function buildMaterials() {
+  const settings = getSettings();
+  const source = settings.orderMode === "random" ? shuffle(SENTENCE_DB) : [...SENTENCE_DB];
+  return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
+    ...item,
+    choices: makeChoices(item, settings),
+    question: "빈칸에 알맞은 목적어를 고르세요."
+  }));
+}
+
+function sentenceToHtml(sentence) {
+  return sentence.replace("___", `<span class="blank">&nbsp;</span>`);
+}
+
+function safeText(value) {
+  return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function generateMaterials() {
+  materials = buildMaterials();
+  renderPreview();
+}
+
+function renderPreview() {
+  const settings = getSettings();
+  const previewTitle = document.getElementById("previewTitle");
+  const previewList = document.getElementById("previewList");
+  previewTitle.textContent = `목적어 · ${settings.choiceCount}개 보기 · 문장 완성 ${materials.length}개`;
+  if (materials.length === 0) {
+    previewList.innerHTML = `<div class="item-card">문항이 없습니다.</div>`;
+    return;
+  }
+  previewList.innerHTML = materials.map((item, index) =>
+    `<div class="item-card"><strong>${index + 1}.</strong>${safeText(item.sentence.replace("___", "_____"))}</div>`
+  ).join("");
+}
+
+function renderStats() {
+  document.getElementById("statsBox").innerHTML =
+    `<div class="stats-mini"><div><span>목적어 문항</span><b>${SENTENCE_DB.length}</b></div><div><span>보기</span><b>2개/4개</b></div><div><span>재시도</span><b>1회</b></div></div>`;
+}
+
+function startTraining() {
+  if (!selectedSubject) {
+    alert("대상자를 먼저 등록하거나 선택해주세요.");
+    location.href = "main.html";
+    return;
+  }
+  if (materials.length === 0) generateMaterials();
+  if (materials.length === 0) return;
+  currentIndex = 0;
+  answers = [];
+  choiceLocked = false;
+  retryCount = 0;
+  document.getElementById("setupView").classList.add("hidden");
+  document.getElementById("previewView").classList.add("hidden");
+  document.getElementById("statsView").classList.add("hidden");
+  document.getElementById("trainingView").classList.remove("hidden");
+  document.getElementById("finishView").classList.add("hidden");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const item = materials[currentIndex];
+  choiceLocked = false;
+  retryCount = 0;
+  document.getElementById("itemMemo").value = "";
+  document.getElementById("trainingTitle").textContent = `${currentIndex + 1}번 문항 / ${materials.length}개`;
+  document.getElementById("question").textContent = item.question;
+  document.getElementById("sentence").innerHTML = sentenceToHtml(item.sentence);
+  document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
+
+  const feedbackBox = document.getElementById("feedbackBox");
+  feedbackBox.style.display = "none";
+  feedbackBox.textContent = "";
+
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("answerOptions").innerHTML = item.choices.map(choice => {
+    const safe = safeText(choice);
+    return `<button class="answer-btn" data-choice="${safe}" onclick="chooseAnswer(this, this.dataset.choice)">${safe}</button>`;
+  }).join("");
+}
+
+function showFeedback(message, isCorrectStyle) {
+  const feedbackBox = document.getElementById("feedbackBox");
+  feedbackBox.style.display = "block";
+  feedbackBox.textContent = message;
+  feedbackBox.style.background = isCorrectStyle ? "#e8fff4" : "#fff1f1";
+  feedbackBox.style.color = isCorrectStyle ? "#16a06f" : "#e54848";
+  feedbackBox.style.border = isCorrectStyle ? "1px solid #a7f3d0" : "1px solid #fecaca";
+}
+
+function markChoices(selectedButton, selected) {
+  const item = materials[currentIndex];
+  document.querySelectorAll(".answer-btn").forEach(btn => {
+    if (btn.textContent === item.answer) btn.classList.add("correct-choice");
+    if (btn === selectedButton && selected !== item.answer) btn.classList.add("wrong-choice");
+  });
+}
+
+function chooseAnswer(button, selected) {
+  if (choiceLocked) return;
+
+  const item = materials[currentIndex];
+  const isCorrect = selected === item.answer;
+
+  if (isCorrect) {
+    choiceLocked = true;
+    markChoices(button, selected);
+    const countedCorrect = retryCount === 0;
+
+    if (countedCorrect) showFeedback("정답입니다.", true);
+    else showFeedback("정답입니다.", true);
+
+    setTimeout(() => recordAnswer(countedCorrect ? "correct" : "wrong", selected, retryCount), 1200);
+    return;
+  }
+
+  retryCount += 1;
+
+  if (retryCount === 1) {
+    button.classList.add("wrong-choice");
+    showFeedback("다시 풀어보세요.", false);
+    setTimeout(() => button.classList.remove("wrong-choice"), 800);
+    return;
+  }
+
+  choiceLocked = true;
+  markChoices(button, selected);
+  showFeedback("정답을 확인한 뒤 다음 문제를 눌러주세요.", false);
+  document.getElementById("nextBtn").style.display = "inline-block";
+}
+
+function nextQuestionManual() {
+  if (!choiceLocked) return;
+  recordAnswer("wrong", "오답", retryCount);
+}
+
+function recordAnswer(result, selected, retry) {
+  const item = materials[currentIndex];
+  answers.push({
+    index: currentIndex + 1,
+    sentence: item.sentence,
+    answer: item.answer,
+    selected: selected || "",
+    type: "문장완성하기(목적어)",
+    result,
+    retry: retry || 0,
+    memo: document.getElementById("itemMemo").value || ""
+  });
+  currentIndex++;
+  if (currentIndex >= materials.length) finishTraining();
+  else renderQuestion();
+}
+
+function finishTraining() {
+  document.getElementById("trainingView").classList.add("hidden");
+  document.getElementById("finishView").classList.remove("hidden");
+  document.getElementById("progressBar").style.width = "100%";
+  const total = answers.length;
+  const correct = answers.filter(answer => answer.result === "correct").length;
+  const wrong = total - correct;
+  const rate = total ? Math.round((correct / total) * 100) : 0;
+
+document.getElementById("finishText").textContent = `${selectedSubject ? selectedSubject.name + " 대상자" : "대상자"}의 문장완성하기(목적어) 훈련이 완료되었습니다.`;
+document.getElementById("summaryGrid").innerHTML = `
+    <div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div>
+    <div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정답</span></div>
+    <div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>오답</span></div>
+    <div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+
+const history = Store.load("speech_training_history", []);
+history.unshift({
+  id: Date.now(),
+  type: "문장완성하기(목적어)",
+  subjectId: selectedSubjectId,
+  subjectName: selectedSubject ? selectedSubject.name : "",
+  date: new Date().toISOString(),
+  total,
+  correct,
+  wrong,
+  rate,
+  answers
+});
+  Store.save("speech_training_history", history.slice(0, 200));
+}
+
+renderSubject();
+renderStats();
+generateMaterials();
+</script>
+</body>
+</html>

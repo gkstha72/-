@@ -1,0 +1,425 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>그림 보고 동사 고르기</title>
+  <style>
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+    .app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+    .logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+    button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+    .primary { background:#246bfe; color:white; }
+    .secondary { background:#eef3ff; color:#246bfe; }
+    .gray { background:#edf1f6; color:#5d687b; }
+    .blue { background:#246bfe; color:white; }
+    .red { background:#e54848; color:white; }
+    .panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+    .panel h2 { margin:0 0 16px; font-size:22px; }
+    .setup-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+    select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+    textarea { min-height:74px; resize:vertical; }
+    .subject-box,.help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+    .help-box { margin-top:16px; font-size:14px; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .word-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .thumb-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:16px; padding:12px; text-align:center; font-size:15px; font-weight:900; color:#334155; }
+    .thumb-card img { width:100%; height:180px; object-fit:contain; object-position:center; background:white; border-radius:12px; margin-bottom:8px; }
+    .hidden { display:none !important; }
+    .loading { color:#246bfe; font-weight:900; }
+    .progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+    .progress-bar { height:100%; width:0%; background:#246bfe; }
+    .question { color:#246bfe; font-size:26px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+    .training-box { background:#f8faff; border-radius:24px; padding:28px 24px; text-align:center; margin-bottom:18px; min-height:520px; display:grid; place-items:center; }
+    .training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:18px; }
+    .target-img { width:360px; height:360px; object-fit:contain; object-position:center; background:white; border:1px solid #e2e8f0; border-radius:22px; padding:20px; display:block; margin:0 auto; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+    .answer-options { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:12px; }
+    .answer-btn { background:#eef3ff; color:#246bfe; border:1px solid #dbe7ff; border-radius:16px; min-height:68px; padding:15px 12px; font-size:24px; font-weight:900; }
+    .answer-btn:hover { background:#dfeaff; }
+    .answer-btn.correct-choice { background:#16a06f; color:white; border-color:#16a06f; }
+    .answer-btn.wrong-choice { background:#e54848; color:white; border-color:#e54848; }
+    .oral-box { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .oral-box button { min-height:68px; font-size:24px; }
+    .feedback { display:none; margin-top:12px; padding:16px; border-radius:16px; font-size:24px; font-weight:900; text-align:center; }
+    .feedback.correct { background:#e8fff4; color:#16a06f; border:1px solid #a7f3d0; }
+    .feedback.wrong { background:#fff1f1; color:#e54848; border:1px solid #fecaca; }
+    .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+    .summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+    .summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+    .summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+    .summary-card span { color:#334155; font-size:15px; font-weight:800; }
+    .summary-card.total strong,.summary-card.rate strong { color:#246bfe; }
+    .summary-card.correct strong { color:#16a06f; }
+    .summary-card.wrong strong { color:#e54848; }
+    .summary-icon.total,.summary-icon.rate { background:#246bfe; }
+    .summary-icon.correct { background:#16a06f; }
+    .summary-icon.wrong { background:#e54848; }
+    @media (max-width:900px){ .setup-grid{grid-template-columns:1fr 1fr;} .word-grid{grid-template-columns:repeat(2,1fr);} .summary-grid{grid-template-columns:repeat(2,1fr);} .topbar{align-items:flex-start; flex-direction:column;} }
+    @media (max-width:560px){ .setup-grid,.word-grid,.answer-options,.oral-box,.summary-grid{grid-template-columns:1fr;} .question{font-size:22px;} .target-img{height:220px;} }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><div class="logo">동</div><span>그림 보고 동사 고르기</span></div>
+      <button class="gray" onclick="location.href='main.html'">메인으로</button>
+    </header>
+
+    <section class="panel">
+      <h2>대상자</h2>
+      <div id="subjectBox" class="subject-box"></div>
+    </section>
+
+    <section id="setupView" class="panel">
+      <h2>훈련 설정</h2>
+      <div id="loadStatus" class="help-box"><span class="loading">이미지 폴더를 확인하는 중입니다.</span></div>
+      <div class="setup-grid">
+        <div>
+          <label for="responseMode">응답 방식</label>
+          <select id="responseMode" onchange="generateMaterials()">
+            <option value="choice" selected>보기 선택형</option>
+            <option value="oral">표현형(정오답 기록)</option>
+          </select>
+        </div>
+        <div>
+          <label for="count">개수</label>
+          <select id="count" onchange="generateMaterials()">
+            <option value="10" selected>10개</option>
+            <option value="20">20개</option>
+            <option value="30">30개</option>
+            <option value="all">전체</option>
+          </select>
+        </div>
+        <div>
+          <label for="choiceCount">보기 개수</label>
+          <select id="choiceCount" onchange="generateMaterials()">
+            <option value="2" selected>2개 보기</option>
+            <option value="4">4개 보기</option>
+          </select>
+        </div>
+        <div>
+          <label for="orderMode">제시 방식</label>
+          <select id="orderMode" onchange="generateMaterials()">
+            <option value="random" selected>무작위</option>
+            <option value="order">순서대로</option>
+          </select>
+        </div>
+      </div>
+      <div class="help-box">
+        그림을 보고 알맞은 동사를 고르는 훈련입니다.
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="generateMaterials()">자료 생성</button>
+        <button class="secondary" onclick="startTraining()">훈련 시작</button>
+      </div>
+    </section>
+
+    <section id="previewView" class="panel">
+      <h2 id="previewTitle">생성 자료</h2>
+      <div id="previewList" class="word-grid"></div>
+    </section>
+
+    <section id="trainingView" class="panel hidden">
+      <div id="question" class="question">그림에 맞는 동사를 고르세요.</div>
+      <div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+      <div class="training-box">
+        <div>
+          <div id="trainingTitle" class="training-title">1번 문항</div>
+          <img id="targetImage" class="target-img" alt="">
+        </div>
+      </div>
+      <div id="answerOptions" class="answer-options"></div>
+      <div id="oralBox" class="oral-box hidden">
+        <button id="oralCorrectBtn" class="blue" onclick="recordOralAnswer('correct')">정답</button>
+        <button id="oralWrongBtn" class="red" onclick="recordOralAnswer('wrong')">오답</button>
+      </div>
+      <div id="feedbackBox" class="feedback"></div>
+      <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
+      <div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+    </section>
+
+    <section id="finishView" class="panel hidden">
+      <h2>훈련 결과</h2>
+      <p id="finishText"></p>
+      <div class="summary-grid" id="summaryGrid"></div>
+      <div class="actions">
+        <button class="primary" onclick="location.href='main.html'">메인으로</button>
+        <button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const TRAINING_NAME = "그림 보고 동사 고르기";
+    const Store = {
+      load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } },
+      save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+    };
+
+    const subjects = Store.load("speech_subjects", []);
+    const selectedSubjectId = Store.load("speech_selected_subject", null);
+    const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+
+    const VERBS = ["가르치다", "걷다", "결혼하다", "고치다", "달리다", "먹다", "발표하다", "보다", "사라지다", "상상하다", "생각나다", "생각하다", "수리하다", "신다", "쓰다", "씻다", "요리하다", "운동하다", "이별하다", "이사하다", "일어나다", "읽다", "자다", "전화하다", "죽다", "찢다", "청소하다"];
+    let imageDB = [];
+    let materials = [];
+    let currentIndex = 0;
+    let answers = [];
+    let choiceLocked = false;
+    let retryCount = 0;
+
+    function unique(array) { return [...new Set(array)]; }
+    function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+
+    function renderSubject() {
+      const box = document.getElementById("subjectBox");
+      if (!selectedSubject) {
+        box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+        return;
+      }
+      box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || ""} ${selectedSubject.memo ? " · " + selectedSubject.memo : ""}`;
+    }
+
+    async function imageExists(src) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(src);
+        img.onerror = () => resolve(null);
+        img.src = src + "?v=" + Date.now();
+      });
+    }
+
+    async function findImage(name) {
+      const candidates = [
+        `이미지/동사/${name}.png`,
+        `이미지/동사/${name}.PNG`,
+        `동사/${name}.png`,
+        `동사/${name}.PNG`,
+        `${name}.png`,
+        `${name}.PNG`
+      ];
+      for (const src of candidates) {
+        const ok = await imageExists(src);
+        if (ok) return src;
+      }
+      return null;
+    }
+
+    async function autoLoadImages() {
+      const status = document.getElementById("loadStatus");
+      imageDB = [];
+      for (const name of VERBS) {
+        const url = await findImage(name);
+        if (url) imageDB.push({ name, url });
+      }
+      generateMaterials();
+      status.innerHTML = `자동 연동 완료: <b>${imageDB.length}</b>개 이미지가 불러와졌습니다. 이미지가 안 뜨면 HTML 파일과 같은 위치에 <b>이미지/동사/걷다.png</b> 형식으로 넣어주세요.`;
+    }
+
+    function buildOptions(item) {
+      const choiceCount = Number(document.getElementById("choiceCount").value) === 4 ? 4 : 2;
+      const pool = shuffle(imageDB.map(v => v.name).filter(v => v !== item.name));
+      return shuffle(unique([item.name, ...pool]).slice(0, choiceCount));
+    }
+
+    function generateMaterials() {
+      const countValue = document.getElementById("count").value;
+      const orderMode = document.getElementById("orderMode").value;
+      let source = orderMode === "random" ? shuffle(imageDB) : [...imageDB];
+      const limit = countValue === "all" ? source.length : Number(countValue);
+      materials = source.slice(0, Math.min(limit, source.length)).map((item, idx) => ({ ...item, no: idx + 1, choices: buildOptions(item), memo: "" }));
+      currentIndex = 0;
+      answers = [];
+      renderPreview();
+    }
+
+    function renderPreview() {
+      const title = document.getElementById("previewTitle");
+      const list = document.getElementById("previewList");
+      title.textContent = `생성 자료 ${materials.length}개`;
+      if (!imageDB.length) {
+        list.innerHTML = `<div class="thumb-card">불러온 이미지가 없습니다. 이미지 폴더 위치와 파일명을 확인해 주세요.</div>`;
+        return;
+      }
+      list.innerHTML = materials.map(item => `<div class="thumb-card"><img src="${item.url}" alt=""><div>${item.name}</div></div>`).join("");
+    }
+
+    function startTraining() {
+      if (!imageDB.length) { alert("불러온 이미지가 없습니다. 이미지 폴더 위치와 파일명을 확인해 주세요."); return; }
+      if (!materials.length) generateMaterials();
+      document.getElementById("setupView").classList.add("hidden");
+      document.getElementById("previewView").classList.add("hidden");
+      document.getElementById("trainingView").classList.remove("hidden");
+      document.getElementById("finishView").classList.add("hidden");
+      currentIndex = 0;
+      answers = [];
+      showItem();
+    }
+
+    function showItem() {
+      choiceLocked = false;
+      retryCount = 0;
+      const item = materials[currentIndex];
+      const responseMode = document.getElementById("responseMode").value;
+      document.getElementById("trainingTitle").textContent = `${currentIndex + 1} / ${materials.length}`;
+      document.getElementById("targetImage").src = item.url;
+      document.getElementById("targetImage").alt = item.name;
+      document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
+      document.getElementById("itemMemo").value = item.memo || "";
+      const feedbackBox = document.getElementById("feedbackBox");
+      feedbackBox.style.display = "none";
+      feedbackBox.textContent = "";
+      feedbackBox.className = "feedback";
+      document.getElementById("nextBtn").style.display = "none";
+
+      const oralCorrectBtn = document.getElementById("oralCorrectBtn");
+      const oralWrongBtn = document.getElementById("oralWrongBtn");
+      oralCorrectBtn.disabled = false; oralWrongBtn.disabled = false;
+      oralCorrectBtn.classList.remove("correct-choice", "wrong-choice");
+      oralWrongBtn.classList.remove("correct-choice", "wrong-choice");
+
+      if (responseMode === "oral") {
+        document.getElementById("answerOptions").classList.add("hidden");
+        document.getElementById("oralBox").classList.remove("hidden");
+      } else {
+        document.getElementById("answerOptions").classList.remove("hidden");
+        document.getElementById("oralBox").classList.add("hidden");
+        document.getElementById("answerOptions").innerHTML = item.choices.map(choice => `<button class="answer-btn" onclick="selectAnswer(this, '${choice.replace(/'/g,"\\'")}')">${choice}</button>`).join("");
+      }
+    }
+
+    function saveMemo() {
+      if (materials[currentIndex]) materials[currentIndex].memo = document.getElementById("itemMemo").value.trim();
+    }
+
+    function showFeedback(message, isCorrectStyle) {
+      const feedbackBox = document.getElementById("feedbackBox");
+      feedbackBox.style.display = "block";
+      feedbackBox.textContent = message;
+      feedbackBox.className = "feedback " + (isCorrectStyle ? "correct" : "wrong");
+    }
+
+    function setAnswerButtonsDisabled(disabled) {
+      document.querySelectorAll(".answer-btn").forEach(btn => btn.disabled = disabled);
+    }
+
+    function markChoiceResult(selectedButton, selectedChoice) {
+      const item = materials[currentIndex];
+      document.querySelectorAll(".answer-btn").forEach(btn => {
+        if (btn.textContent === item.name) btn.classList.add("correct-choice");
+        if (btn === selectedButton && selectedChoice !== item.name) btn.classList.add("wrong-choice");
+      });
+    }
+
+    function setOralButtonsDisabled(disabled) {
+      document.getElementById("oralCorrectBtn").disabled = disabled;
+      document.getElementById("oralWrongBtn").disabled = disabled;
+    }
+
+    function selectAnswer(button, choice) {
+      if (choiceLocked) return;
+      saveMemo();
+      const item = materials[currentIndex];
+      const isCorrect = choice === item.name;
+
+      if (isCorrect) {
+        choiceLocked = true;
+        setAnswerButtonsDisabled(true);
+        markChoiceResult(button, choice);
+        showFeedback("정답입니다.", true);
+        const countedCorrect = retryCount === 0;
+        answers.push({ word:item.name, answer:item.name, response:choice, correct:countedCorrect, retry:retryCount, memo:item.memo || "" });
+        setTimeout(nextItem, 1200);
+        return;
+      }
+
+      retryCount += 1;
+
+      if (retryCount === 1) {
+        button.classList.add("wrong-choice");
+        showFeedback("다시 풀어보세요.", false);
+        setTimeout(() => button.classList.remove("wrong-choice"), 800);
+        return;
+      }
+
+      choiceLocked = true;
+      setAnswerButtonsDisabled(true);
+      markChoiceResult(button, choice);
+      showFeedback(`정답은 "${item.name}"입니다. 다음 문제를 눌러주세요.`, false);
+      answers.push({ word:item.name, answer:item.name, response:choice, correct:false, retry:retryCount, memo:item.memo || "" });
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function recordOralAnswer(result) {
+      if (choiceLocked) return;
+      saveMemo();
+      const item = materials[currentIndex];
+
+      if (result === "correct") {
+        choiceLocked = true;
+        setOralButtonsDisabled(true);
+        document.getElementById("oralCorrectBtn").classList.add("correct-choice");
+        showFeedback("정답입니다.", true);
+        const countedCorrect = retryCount === 0;
+        answers.push({ word:item.name, answer:item.name, response:"", correct:countedCorrect, retry:retryCount, memo:item.memo || "" });
+        setTimeout(nextItem, 1200);
+        return;
+      }
+
+      retryCount += 1;
+
+      if (retryCount === 1) {
+        document.getElementById("oralWrongBtn").classList.add("wrong-choice");
+        showFeedback("다시 풀어보세요.", false);
+        setTimeout(() => document.getElementById("oralWrongBtn").classList.remove("wrong-choice"), 800);
+        return;
+      }
+
+      choiceLocked = true;
+      setOralButtonsDisabled(true);
+      document.getElementById("oralWrongBtn").classList.add("wrong-choice");
+      showFeedback(`정답은 "${item.name}"입니다. 다음 문제를 눌러주세요.`, false);
+      answers.push({ word:item.name, answer:item.name, response:"오답", correct:false, retry:retryCount, memo:item.memo || "" });
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function nextQuestionManual() {
+      if (!choiceLocked) return;
+      nextItem();
+    }
+
+    function nextItem() {
+      currentIndex++;
+      if (currentIndex >= materials.length) finishTraining();
+      else showItem();
+    }
+
+    function finishTraining() {
+      document.getElementById("progressBar").style.width = "100%";
+      document.getElementById("trainingView").classList.add("hidden");
+      document.getElementById("finishView").classList.remove("hidden");
+      const total = answers.length;
+      const correct = answers.filter(a => a.correct).length;
+      const wrong = total - correct;
+      const rate = total ? Math.round((correct / total) * 100) : 0;
+      const subjectName = selectedSubject ? selectedSubject.name : "대상자";
+      document.getElementById("finishText").textContent = `${subjectName}님의 ${TRAINING_NAME} 훈련이 완료되었습니다.`;
+      document.getElementById("summaryGrid").innerHTML = `
+        <div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div>
+        <div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정답</span></div>
+        <div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>오답</span></div>
+        <div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+      const history = Store.load("speech_training_history", []);
+      history.push({ id:Date.now(), subjectId:selectedSubjectId, subjectName, training:TRAINING_NAME, date:new Date().toISOString(), total, correct, wrong, rate, answers });
+      Store.save("speech_training_history", history);
+    }
+
+    renderSubject();
+    autoLoadImages();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1525 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>문장완성하기훈련(주어)</title>
+<style>
+* { box-sizing:border-box; }
+body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+.app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+.brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+.logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+.primary { background:#246bfe; color:white; }
+.secondary { background:#eef3ff; color:#246bfe; }
+.gray { background:#edf1f6; color:#5d687b; }
+.panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+.panel h2 { margin:0 0 16px; font-size:22px; }
+.setup-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+textarea { min-height:74px; resize:vertical; }
+.subject-box,.help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+.help-box { margin-top:16px; font-size:14px; }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+.word-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.item-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:15px; padding:14px; font-size:15px; line-height:1.5; }
+.item-card strong { color:#246bfe; margin-right:5px; }
+.hidden { display:none !important; }
+.progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+.progress-bar { height:100%; width:0%; background:#246bfe; }
+.question { color:#246bfe; font-size:25px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+.training-box { background:#f8faff; border-radius:24px; padding:38px 24px; text-align:center; margin-bottom:18px; min-height:300px; display:grid; place-items:center; }
+.training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:22px; }
+.sentence { font-size:38px; font-weight:900; line-height:1.45; word-break:keep-all; }
+.blank { display:inline-block; min-width:140px; padding:0 10px 4px; color:#246bfe; border-bottom:5px solid #246bfe; }
+.answer-options { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:12px; }
+.answer-btn { background:#eef3ff; color:#246bfe; border:1px solid #dbe7ff; border-radius:16px; min-height:68px; padding:15px 12px; font-size:22px; font-weight:900; }
+.answer-btn:hover { background:#dfeaff; }
+.answer-btn.correct-choice { background:#16a06f; color:white; border-color:#16a06f; }
+.answer-btn.wrong-choice { background:#e54848; color:white; border-color:#e54848; }
+.feedback { display:none; margin-top:12px; padding:16px; border-radius:16px; font-size:24px; font-weight:900; text-align:center; }
+.stats-mini { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; font-size:13px; }
+.stats-mini div { background:#f8faff; border:1px solid #e2e8f0; border-radius:12px; padding:8px 10px; display:flex; justify-content:space-between; gap:6px; }
+.stats-mini b { color:#246bfe; }
+.result-panel { background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); border-radius:24px; padding:16px; border:1px solid #edf2f7; box-shadow:0 10px 28px rgba(15,30,60,.05); }
+.summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+.summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+.summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+.summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+.summary-card span { color:#334155; font-size:15px; font-weight:800; }
+.summary-card.correct strong { color:#16a06f; }
+.summary-card.wrong strong { color:#e54848; }
+.summary-card.total strong,.summary-card.rate strong { color:#246bfe; }
+.summary-icon.correct { background:#16a06f; }
+.summary-icon.wrong { background:#e54848; }
+.summary-icon.total,.summary-icon.rate { background:#246bfe; }
+.summary-icon.total,.summary-icon.rate{background:#246bfe}
+@media (max-width:900px){ .setup-grid{grid-template-columns:1fr 1fr;} .word-grid{grid-template-columns:repeat(2,1fr);} .stats-mini{grid-template-columns:1fr;} .summary-grid{grid-template-columns:repeat(2,1fr);} .topbar{align-items:flex-start; flex-direction:column;} }
+@media (max-width:560px){ .setup-grid,.word-grid,.answer-options,.summary-grid{grid-template-columns:1fr;} .description{font-size:26px;} .question{font-size:21px;} }
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar"><div class="brand"><div class="logo">주</div><span>문장완성하기훈련 (주어)</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+
+<section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+
+<section id="setupView" class="panel">
+<h2>훈련 설정</h2>
+<div class="setup-grid">
+<div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="40">40개</option><option value="50">50개</option><option value="100">100개</option></select></div>
+<div><label for="choiceCount">보기 개수</label><select id="choiceCount" onchange="generateMaterials()"><option value="2" selected>2개 보기</option><option value="4">4개 보기</option></select></div>
+<div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
+</div>
+<div class="help-box">주어 전용 문장 완성 훈련입니다. 빈칸에 알맞은 주어를 고르는 활동으로, 동물·사람·사물·교통·자연·장소·신체 문항을 포함했습니다.</div>
+<div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
+</section>
+
+<section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
+<section id="statsView" class="panel"><h2>문항 수</h2><div id="statsBox"></div></section>
+
+<section id="trainingView" class="panel hidden">
+<div id="question" class="question">빈칸에 알맞은 주어를 고르세요.</div>
+<div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+<div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="sentence" class="sentence"></div></div></div>
+<div id="answerOptions" class="answer-options"></div>
+<div id="feedbackBox" class="feedback"></div>
+<div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
+<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+</section>
+
+<section id="finishView" class="panel hidden">
+<h2>훈련 결과</h2>
+<p id="finishText"></p>
+<div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div>
+<div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+</section>
+</main>
+
+<script>
+const Store = { load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }, save(key, value) { localStorage.setItem(key, JSON.stringify(value)); } };
+const subjects = Store.load("speech_subjects", []);
+const selectedSubjectId = Store.load("speech_selected_subject", null);
+const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+
+const SENTENCE_DB = [
+  {
+    "answer": "해",
+    "sentence": "___가 낮에 밝게 빛납니다.",
+    "wrongs": ["달", "별", "구름", "돌", "의자"]
+  },
+  {
+    "answer": "달",
+    "sentence": "___이 밤하늘에 떠 있습니다.",
+    "wrongs": ["해", "꽃", "나무", "컵", "신발"]
+  },
+  {
+    "answer": "별",
+    "sentence": "___이 밤하늘에서 반짝입니다.",
+    "wrongs": ["돌", "물", "의자", "가방", "연필"]
+  },
+  {
+    "answer": "비",
+    "sentence": "___가 하늘에서 떨어집니다.",
+    "wrongs": ["책", "신발", "의자", "연필", "가방"]
+  },
+  {
+    "answer": "눈",
+    "sentence": "___이 겨울에 하얗게 내립니다.",
+    "wrongs": ["비누", "수건", "컵", "전화기", "연필"]
+  },
+  {
+    "answer": "바람",
+    "sentence": "___이 불면 나뭇잎이 흔들립니다.",
+    "wrongs": ["돌", "책", "의자", "컵", "신발"]
+  },
+  {
+    "answer": "구름",
+    "sentence": "___이 하늘에 떠 있습니다.",
+    "wrongs": ["돌", "물", "의자", "신발", "컵"]
+  },
+  {
+    "answer": "무지개",
+    "sentence": "___가 비가 그친 뒤 하늘에 나타납니다.",
+    "wrongs": ["의자", "신발", "연필", "가방", "수건"]
+  },
+  {
+    "answer": "번개",
+    "sentence": "___가 번쩍하고 하늘을 밝힙니다.",
+    "wrongs": ["꽃", "나무", "책", "컵", "모자"]
+  },
+  {
+    "answer": "천둥",
+    "sentence": "___이 우르르 큰 소리를 냅니다.",
+    "wrongs": ["연필", "공책", "의자", "신발", "컵"]
+  },
+  {
+    "answer": "꽃",
+    "sentence": "___이 봄에 예쁘게 핍니다.",
+    "wrongs": ["돌", "물", "의자", "신발", "컵"]
+  },
+  {
+    "answer": "나무",
+    "sentence": "___가 땅에 뿌리를 내리고 자랍니다.",
+    "wrongs": ["컵", "신발", "연필", "수건", "전화기"]
+  },
+  {
+    "answer": "풀",
+    "sentence": "___이 땅에서 초록색으로 자랍니다.",
+    "wrongs": ["의자", "컵", "신발", "연필", "가위"]
+  },
+  {
+    "answer": "잎",
+    "sentence": "___이 나무 가지에 달려 있습니다.",
+    "wrongs": ["신발", "공책", "컵", "수건", "전화기"]
+  },
+  {
+    "answer": "씨앗",
+    "sentence": "___이 땅속에서 싹을 틔웁니다.",
+    "wrongs": ["의자", "신발", "컵", "책상", "전화기"]
+  },
+  {
+    "answer": "뿌리",
+    "sentence": "___가 땅속에서 물을 빨아들입니다.",
+    "wrongs": ["꽃잎", "구름", "신발", "컵", "연필"]
+  },
+  {
+    "answer": "줄기",
+    "sentence": "___가 잎과 꽃을 받쳐 줍니다.",
+    "wrongs": ["구름", "신발", "모자", "컵", "가방"]
+  },
+  {
+    "answer": "꽃잎",
+    "sentence": "___이 꽃을 예쁘게 보이게 합니다.",
+    "wrongs": ["돌", "신발", "전화기", "의자", "연필"]
+  },
+  {
+    "answer": "열매",
+    "sentence": "___가 나무에 맺힙니다.",
+    "wrongs": ["신발", "책", "컵", "수건", "의자"]
+  },
+  {
+    "answer": "솔방울",
+    "sentence": "___이 소나무에 달립니다.",
+    "wrongs": ["바나나", "연필", "신발", "수건", "컵"]
+  },
+  {
+    "answer": "산",
+    "sentence": "___이 높이 솟아 있습니다.",
+    "wrongs": ["물", "공책", "컵", "신발", "전화기"]
+  },
+  {
+    "answer": "강",
+    "sentence": "___이 길게 흐릅니다.",
+    "wrongs": ["의자", "신발", "책상", "연필", "모자"]
+  },
+  {
+    "answer": "바다",
+    "sentence": "___는 넓고 짠물이 가득한 곳입니다.",
+    "wrongs": ["학교", "의자", "컵", "신발", "연필"]
+  },
+  {
+    "answer": "호수",
+    "sentence": "___는 땅 위에 물이 고여 있는 곳입니다.",
+    "wrongs": ["책상", "신발", "연필", "모자", "가방"]
+  },
+  {
+    "answer": "섬",
+    "sentence": "___은 사방이 물로 둘러싸인 땅입니다.",
+    "wrongs": ["의자", "컵", "신발", "연필", "수건"]
+  },
+  {
+    "answer": "모래",
+    "sentence": "___가 해변에 많이 있습니다.",
+    "wrongs": ["책", "연필", "의자", "신발", "전화기"]
+  },
+  {
+    "answer": "돌",
+    "sentence": "___은 단단하고 무거운 물건입니다.",
+    "wrongs": ["물", "구름", "바람", "비", "눈"]
+  },
+  {
+    "answer": "흙",
+    "sentence": "___은 식물이 자라는 데 필요합니다.",
+    "wrongs": ["컵", "신발", "연필", "책상", "모자"]
+  },
+  {
+    "answer": "물",
+    "sentence": "___은 사람이 마실 수 있는 액체입니다.",
+    "wrongs": ["돌", "의자", "신발", "연필", "모자"]
+  },
+  {
+    "answer": "얼음",
+    "sentence": "___은 물이 얼어서 단단해진 것입니다.",
+    "wrongs": ["불", "연필", "수건", "책", "의자"]
+  },
+  {
+    "answer": "불",
+    "sentence": "___은 뜨겁고 물건을 태울 수 있습니다.",
+    "wrongs": ["얼음", "물", "꽃", "책", "신발"]
+  },
+  {
+    "answer": "연기",
+    "sentence": "___가 불이 날 때 위로 올라갑니다.",
+    "wrongs": ["돌", "컵", "의자", "연필", "가방"]
+  },
+  {
+    "answer": "공기",
+    "sentence": "___는 우리가 숨 쉴 때 필요합니다.",
+    "wrongs": ["돌", "책상", "신발", "연필", "컵"]
+  },
+  {
+    "answer": "그림자",
+    "sentence": "___가 빛을 막으면 생깁니다.",
+    "wrongs": ["소리", "냄새", "물", "바람", "구름"]
+  },
+  {
+    "answer": "소리",
+    "sentence": "___가 귀에 들립니다.",
+    "wrongs": ["냄새", "그림자", "색", "맛", "모양"]
+  },
+  {
+    "answer": "냄새",
+    "sentence": "___가 코로 느껴집니다.",
+    "wrongs": ["소리", "그림자", "색", "모양", "무게"]
+  },
+  {
+    "answer": "새",
+    "sentence": "___가 날개로 하늘을 납니다.",
+    "wrongs": ["물고기", "의자", "신발", "책", "컵"]
+  },
+  {
+    "answer": "물고기",
+    "sentence": "___가 물속에서 헤엄칩니다.",
+    "wrongs": ["새", "고양이", "의자", "연필", "신발"]
+  },
+  {
+    "answer": "강아지",
+    "sentence": "___가 멍멍 짖습니다.",
+    "wrongs": ["고양이", "닭", "물고기", "책상", "컵"]
+  },
+  {
+    "answer": "고양이",
+    "sentence": "___가 야옹 하고 웁니다.",
+    "wrongs": ["강아지", "소", "새", "의자", "신발"]
+  },
+  {
+    "answer": "닭",
+    "sentence": "___이 꼬끼오 하고 웁니다.",
+    "wrongs": ["고양이", "강아지", "물고기", "책", "컵"]
+  },
+  {
+    "answer": "소",
+    "sentence": "___가 음메 하고 웁니다.",
+    "wrongs": ["닭", "고양이", "새", "의자", "연필"]
+  },
+  {
+    "answer": "돼지",
+    "sentence": "___가 꿀꿀 하고 웁니다.",
+    "wrongs": ["소", "닭", "고양이", "책상", "컵"]
+  },
+  {
+    "answer": "말",
+    "sentence": "___이 히히힝 하고 웁니다.",
+    "wrongs": ["물", "컵", "책상", "수건", "모자"]
+  },
+  {
+    "answer": "양",
+    "sentence": "___이 매애 하고 웁니다.",
+    "wrongs": ["닭", "고양이", "물고기", "의자", "컵"]
+  },
+  {
+    "answer": "염소",
+    "sentence": "___가 뿔이 있고 풀을 먹습니다.",
+    "wrongs": ["물고기", "새", "의자", "책", "신발"]
+  },
+  {
+    "answer": "토끼",
+    "sentence": "___가 깡충깡충 뜁니다.",
+    "wrongs": ["거북이", "물고기", "컵", "가방", "의자"]
+  },
+  {
+    "answer": "거북이",
+    "sentence": "___가 등껍질을 가지고 천천히 기어갑니다.",
+    "wrongs": ["새", "말", "연필", "컵", "신발"]
+  },
+  {
+    "answer": "개구리",
+    "sentence": "___가 개굴개굴 웁니다.",
+    "wrongs": ["강아지", "고양이", "소", "의자", "컵"]
+  },
+  {
+    "answer": "오리",
+    "sentence": "___가 꽥꽥 하고 웁니다.",
+    "wrongs": ["닭", "소", "고양이", "책", "연필"]
+  },
+  {
+    "answer": "벌",
+    "sentence": "___이 꽃에서 꿀을 모읍니다.",
+    "wrongs": ["물고기", "소", "의자", "책", "신발"]
+  },
+  {
+    "answer": "나비",
+    "sentence": "___가 꽃 주변을 팔랑팔랑 날아다닙니다.",
+    "wrongs": ["거북이", "물고기", "의자", "컵", "연필"]
+  },
+  {
+    "answer": "개미",
+    "sentence": "___가 줄을 지어 기어갑니다.",
+    "wrongs": ["새", "물고기", "소", "컵", "신발"]
+  },
+  {
+    "answer": "모기",
+    "sentence": "___가 사람의 피를 빨아먹습니다.",
+    "wrongs": ["나비", "벌", "개미", "토끼", "소"]
+  },
+  {
+    "answer": "파리",
+    "sentence": "___가 음식 주변을 날아다닙니다.",
+    "wrongs": ["소", "돼지", "말", "책상", "의자"]
+  },
+  {
+    "answer": "잠자리",
+    "sentence": "___가 날아다닙니다.",
+    "wrongs": ["거북이", "물고기", "고양이", "컵", "신발"]
+  },
+  {
+    "answer": "사자",
+    "sentence": "___가 갈기를 가진 동물의 왕이라고 불립니다.",
+    "wrongs": ["토끼", "고양이", "물고기", "닭", "오리"]
+  },
+  {
+    "answer": "호랑이",
+    "sentence": "___는 줄무늬 털을 가진 큰 동물입니다.",
+    "wrongs": ["토끼", "양", "닭", "물고기", "개미"]
+  },
+  {
+    "answer": "코끼리",
+    "sentence": "___가 긴 코를 가지고 있습니다.",
+    "wrongs": ["기린", "토끼", "개미", "새", "물고기"]
+  },
+  {
+    "answer": "기린",
+    "sentence": "___은 목이 아주 긴 동물입니다.",
+    "wrongs": ["코끼리", "토끼", "고양이", "닭", "물고기"]
+  },
+  {
+    "answer": "원숭이",
+    "sentence": "___가 나무를 타고 있습니다.",
+    "wrongs": ["물고기", "소", "돼지", "컵", "신발"]
+  },
+  {
+    "answer": "곰",
+    "sentence": "___은 겨울잠을 자는 동물입니다.",
+    "wrongs": ["닭", "고양이", "물고기", "벌", "나비"]
+  },
+  {
+    "answer": "펭귄",
+    "sentence": "___은 남극에 사는 새입니다.",
+    "wrongs": ["사자", "호랑이", "고양이", "소", "말"]
+  },
+  {
+    "answer": "고래",
+    "sentence": "___는 바다에 사는 아주 큰 동물입니다.",
+    "wrongs": ["개미", "나비", "토끼", "닭", "의자"]
+  },
+  {
+    "answer": "상어",
+    "sentence": "___는 날카로운 이빨을 가진 바다 동물입니다.",
+    "wrongs": ["토끼", "양", "닭", "개미", "고양이"]
+  },
+  {
+    "answer": "문어",
+    "sentence": "___는 다리가 여덟 개입니다.",
+    "wrongs": ["물고기", "고래", "새", "토끼", "닭"]
+  },
+  {
+    "answer": "게",
+    "sentence": "___가 집게발을 가지고 옆으로 걷습니다.",
+    "wrongs": ["개구리", "토끼", "새", "소", "말"]
+  },
+  {
+    "answer": "달팽이",
+    "sentence": "___가 등에 집을 지고 천천히 기어갑니다.",
+    "wrongs": ["새", "물고기", "말", "소", "나비"]
+  },
+  {
+    "answer": "눈",
+    "sentence": "___으로 사물을 봅니다.",
+    "wrongs": ["귀", "코", "입", "손", "발"]
+  },
+  {
+    "answer": "귀",
+    "sentence": "___로 소리를 듣습니다.",
+    "wrongs": ["눈", "코", "입", "손", "발"]
+  },
+  {
+    "answer": "코",
+    "sentence": "___로 냄새를 맡습니다.",
+    "wrongs": ["눈", "귀", "입", "손", "발"]
+  },
+  {
+    "answer": "입",
+    "sentence": "___으로 음식을 먹습니다.",
+    "wrongs": ["눈", "귀", "코", "손", "발"]
+  },
+  {
+    "answer": "손",
+    "sentence": "___으로 물건을 잡습니다.",
+    "wrongs": ["눈", "귀", "코", "발", "무릎"]
+  },
+  {
+    "answer": "발",
+    "sentence": "___로 걷거나 뜁니다.",
+    "wrongs": ["눈", "귀", "코", "입", "손"]
+  },
+  {
+    "answer": "이",
+    "sentence": "___로 음식을 씹습니다.",
+    "wrongs": ["눈", "귀", "코", "손", "발"]
+  },
+  {
+    "answer": "혀",
+    "sentence": "___로 음식의 맛을 느낍니다.",
+    "wrongs": ["눈", "귀", "손", "발", "머리"]
+  },
+  {
+    "answer": "머리카락",
+    "sentence": "___이 머리 위에서 자랍니다.",
+    "wrongs": ["손톱", "발톱", "신발", "컵", "연필"]
+  },
+  {
+    "answer": "손톱",
+    "sentence": "___이 손가락 끝에서 자랍니다.",
+    "wrongs": ["머리카락", "발", "귀", "컵", "책"]
+  },
+  {
+    "answer": "발톱",
+    "sentence": "___이 발가락 끝에서 자랍니다.",
+    "wrongs": ["손톱", "머리카락", "코", "연필", "컵"]
+  },
+  {
+    "answer": "팔",
+    "sentence": "___로 물건을 들어 올립니다.",
+    "wrongs": ["귀", "코", "눈", "입", "머리카락"]
+  },
+  {
+    "answer": "다리",
+    "sentence": "___로 서거나 걸을 수 있습니다.",
+    "wrongs": ["귀", "코", "눈", "입", "머리카락"]
+  },
+  {
+    "answer": "무릎",
+    "sentence": "___은 다리를 굽힐 때 접히는 부분입니다.",
+    "wrongs": ["코", "귀", "눈", "손톱", "머리카락"]
+  },
+  {
+    "answer": "어깨",
+    "sentence": "___는 팔과 몸이 이어지는 부분입니다.",
+    "wrongs": ["발톱", "눈", "코", "혀", "손톱"]
+  },
+  {
+    "answer": "배",
+    "sentence": "___가 고프면 음식을 먹고 싶어집니다.",
+    "wrongs": ["귀", "눈", "손톱", "발톱", "머리카락"]
+  },
+  {
+    "answer": "심장",
+    "sentence": "___이 몸속에서 쿵쿵 뜁니다.",
+    "wrongs": ["신발", "컵", "연필", "책", "의자"]
+  },
+  {
+    "answer": "뼈",
+    "sentence": "___가 몸을 단단하게 받쳐 줍니다.",
+    "wrongs": ["물", "공기", "구름", "바람", "연기"]
+  },
+  {
+    "answer": "피",
+    "sentence": "___가 몸속에 흐릅니다.",
+    "wrongs": ["돌", "연필", "신발", "컵", "책상"]
+  },
+  {
+    "answer": "학교",
+    "sentence": "___는 학생이 공부하는 곳입니다.",
+    "wrongs": ["식당", "병원", "공원", "마트", "카페"]
+  },
+  {
+    "answer": "병원",
+    "sentence": "___은 아픈 사람이 치료받으러 가는 곳입니다.",
+    "wrongs": ["학교", "식당", "공원", "마트", "카페"]
+  },
+  {
+    "answer": "식당",
+    "sentence": "___은 밥을 사 먹는 곳입니다.",
+    "wrongs": ["학교", "병원", "도서관", "공원", "은행"]
+  },
+  {
+    "answer": "도서관",
+    "sentence": "___은 책을 읽거나 빌리는 곳입니다.",
+    "wrongs": ["식당", "병원", "시장", "주차장", "카페"]
+  },
+  {
+    "answer": "마트",
+    "sentence": "___는 여러 가지 물건을 사는 곳입니다.",
+    "wrongs": ["병원", "학교", "도서관", "공원", "정류장"]
+  },
+  {
+    "answer": "정류장",
+    "sentence": "___은 버스를 기다리는 곳입니다.",
+    "wrongs": ["식당", "병원", "방", "주방", "화장실"]
+  },
+  {
+    "answer": "집",
+    "sentence": "___은 가족이 함께 사는 곳입니다.",
+    "wrongs": ["학교", "병원", "공원", "마트", "정류장"]
+  },
+  {
+    "answer": "방",
+    "sentence": "___은 잠을 자거나 쉬는 곳입니다.",
+    "wrongs": ["운동장", "정류장", "시장", "병원", "은행"]
+  },
+  {
+    "answer": "주방",
+    "sentence": "___은 음식을 만드는 곳입니다.",
+    "wrongs": ["화장실", "운동장", "도서관", "정류장", "교실"]
+  },
+  {
+    "answer": "화장실",
+    "sentence": "___은 손을 씻거나 볼일을 보는 곳입니다.",
+    "wrongs": ["교실", "주방", "운동장", "도서관", "정류장"]
+  },
+  {
+    "answer": "교실",
+    "sentence": "___은 학생들이 수업을 듣는 방입니다.",
+    "wrongs": ["주방", "화장실", "시장", "은행", "정류장"]
+  },
+  {
+    "answer": "운동장",
+    "sentence": "___은 뛰어놀거나 운동하는 곳입니다.",
+    "wrongs": ["도서관", "병원", "주방", "화장실", "은행"]
+  },
+  {
+    "answer": "놀이터",
+    "sentence": "___는 아이들이 놀이기구를 타며 노는 곳입니다.",
+    "wrongs": ["병원", "은행", "주방", "화장실", "정류장"]
+  },
+  {
+    "answer": "시장",
+    "sentence": "___은 물건을 사고파는 곳입니다.",
+    "wrongs": ["교실", "방", "화장실", "정류장", "운동장"]
+  },
+  {
+    "answer": "은행",
+    "sentence": "___은 돈을 맡기거나 찾는 곳입니다.",
+    "wrongs": ["놀이터", "주방", "교실", "화장실", "운동장"]
+  },
+  {
+    "answer": "우체국",
+    "sentence": "___은 편지나 소포를 보내는 곳입니다.",
+    "wrongs": ["병원", "학교", "놀이터", "주방", "화장실"]
+  },
+  {
+    "answer": "약국",
+    "sentence": "___은 약을 사는 곳입니다.",
+    "wrongs": ["도서관", "학교", "운동장", "정류장", "공원"]
+  },
+  {
+    "answer": "공원",
+    "sentence": "___은 사람들이 산책하거나 쉬는 곳입니다.",
+    "wrongs": ["병원", "주방", "화장실", "은행", "교실"]
+  },
+  {
+    "answer": "동물원",
+    "sentence": "___은 여러 동물을 볼 수 있는 곳입니다.",
+    "wrongs": ["은행", "주방", "화장실", "교실", "정류장"]
+  },
+  {
+    "answer": "수영장",
+    "sentence": "___은 사람들이 수영하는 곳입니다.",
+    "wrongs": ["도서관", "은행", "약국", "교실", "우체국"]
+  },
+  {
+    "answer": "영화관",
+    "sentence": "___은 큰 화면으로 영화를 보는 곳입니다.",
+    "wrongs": ["병원", "학교", "약국", "정류장", "주방"]
+  },
+  {
+    "answer": "미용실",
+    "sentence": "___은 머리카락을 자르는 곳입니다.",
+    "wrongs": ["병원", "은행", "운동장", "도서관", "정류장"]
+  },
+  {
+    "answer": "빵집",
+    "sentence": "___은 빵을 파는 곳입니다.",
+    "wrongs": ["약국", "병원", "은행", "운동장", "화장실"]
+  },
+  {
+    "answer": "꽃집",
+    "sentence": "___은 꽃을 파는 곳입니다.",
+    "wrongs": ["약국", "은행", "주방", "교실", "정류장"]
+  },
+  {
+    "answer": "세탁소",
+    "sentence": "___는 옷을 깨끗하게 빨아 주는 곳입니다.",
+    "wrongs": ["도서관", "병원", "은행", "공원", "놀이터"]
+  },
+  {
+    "answer": "경찰서",
+    "sentence": "___는 경찰관이 일하는 곳입니다.",
+    "wrongs": ["식당", "빵집", "놀이터", "주방", "방"]
+  },
+  {
+    "answer": "소방서",
+    "sentence": "___는 소방관이 일하는 곳입니다.",
+    "wrongs": ["학교", "마트", "방", "화장실", "도서관"]
+  },
+  {
+    "answer": "기차역",
+    "sentence": "___은 기차를 타고 내리는 곳입니다.",
+    "wrongs": ["버스", "시장", "주방", "병원", "공원"]
+  },
+  {
+    "answer": "공항",
+    "sentence": "___은 비행기를 타고 내리는 곳입니다.",
+    "wrongs": ["기차역", "정류장", "교실", "식당", "약국"]
+  },
+  {
+    "answer": "항구",
+    "sentence": "___는 배가 드나드는 곳입니다.",
+    "wrongs": ["공항", "학교", "병원", "마트", "놀이터"]
+  },
+  {
+    "answer": "선생님",
+    "sentence": "___이 학생을 가르칩니다.",
+    "wrongs": ["의사", "요리사", "운전기사", "가수", "경찰관"]
+  },
+  {
+    "answer": "의사",
+    "sentence": "___가 아픈 사람을 치료합니다.",
+    "wrongs": ["선생님", "요리사", "학생", "화가", "운동선수"]
+  },
+  {
+    "answer": "학생",
+    "sentence": "___이 학교에서 공부합니다.",
+    "wrongs": ["의사", "경찰관", "요리사", "운전기사", "가수"]
+  },
+  {
+    "answer": "요리사",
+    "sentence": "___가 음식을 만듭니다.",
+    "wrongs": ["의사", "학생", "경찰관", "화가", "운동선수"]
+  },
+  {
+    "answer": "경찰관",
+    "sentence": "___이 사람들을 안전하게 지킵니다.",
+    "wrongs": ["요리사", "학생", "가수", "화가", "의자"]
+  },
+  {
+    "answer": "소방관",
+    "sentence": "___이 불을 끕니다.",
+    "wrongs": ["선생님", "요리사", "학생", "가수", "화가"]
+  },
+  {
+    "answer": "가수",
+    "sentence": "___가 노래를 부릅니다.",
+    "wrongs": ["의사", "학생", "소방관", "운전기사", "경찰관"]
+  },
+  {
+    "answer": "화가",
+    "sentence": "___가 그림을 그립니다.",
+    "wrongs": ["요리사", "의사", "경찰관", "학생", "운전기사"]
+  },
+  {
+    "answer": "운전기사",
+    "sentence": "___가 버스를 운전합니다.",
+    "wrongs": ["선생님", "의사", "요리사", "가수", "학생"]
+  },
+  {
+    "answer": "운동선수",
+    "sentence": "___가 경기장에서 운동 경기를 합니다.",
+    "wrongs": ["의자", "책상", "컵", "연필", "수건"]
+  },
+  {
+    "answer": "간호사",
+    "sentence": "___가 병원에서 환자를 돌봅니다.",
+    "wrongs": ["가수", "화가", "요리사", "운전기사", "학생"]
+  },
+  {
+    "answer": "농부",
+    "sentence": "___가 밭에서 곡식과 채소를 기릅니다.",
+    "wrongs": ["의사", "경찰관", "가수", "화가", "학생"]
+  },
+  {
+    "answer": "어부",
+    "sentence": "___가 바다에서 물고기를 잡습니다.",
+    "wrongs": ["농부", "의사", "학생", "가수", "화가"]
+  },
+  {
+    "answer": "목수",
+    "sentence": "___가 나무로 가구를 만듭니다.",
+    "wrongs": ["의사", "가수", "경찰관", "학생", "운동선수"]
+  },
+  {
+    "answer": "우편배달부",
+    "sentence": "___가 편지와 소포를 배달합니다.",
+    "wrongs": ["요리사", "화가", "학생", "가수", "의사"]
+  },
+  {
+    "answer": "빵",
+    "sentence": "___은 밀가루로 만든 음식입니다.",
+    "wrongs": ["의자", "공책", "연필", "신발", "전화기"]
+  },
+  {
+    "answer": "밥",
+    "sentence": "___은 쌀로 지은 음식입니다.",
+    "wrongs": ["의자", "신발", "책상", "연필", "가방"]
+  },
+  {
+    "answer": "김치",
+    "sentence": "___는 배추나 무로 만든 매운 반찬입니다.",
+    "wrongs": ["우유", "빵", "사탕", "의자", "연필"]
+  },
+  {
+    "answer": "국",
+    "sentence": "___은 물에 재료를 넣고 끓인 음식입니다.",
+    "wrongs": ["신발", "책", "연필", "모자", "가방"]
+  },
+  {
+    "answer": "라면",
+    "sentence": "___은 면을 끓여 먹는 음식입니다.",
+    "wrongs": ["의자", "수건", "신발", "가방", "연필"]
+  },
+  {
+    "answer": "우유",
+    "sentence": "___는 하얀색의 마시는 음식입니다.",
+    "wrongs": ["돌", "연필", "의자", "신발", "책상"]
+  },
+  {
+    "answer": "주스",
+    "sentence": "___는 과일로 만든 마실 것입니다.",
+    "wrongs": ["책", "신발", "의자", "연필", "수건"]
+  },
+  {
+    "answer": "사과",
+    "sentence": "___는 빨갛거나 초록색인 과일입니다.",
+    "wrongs": ["의자", "신발", "연필", "가방", "수건"]
+  },
+  {
+    "answer": "바나나",
+    "sentence": "___는 길고 노란색인 과일입니다.",
+    "wrongs": ["책상", "의자", "컵", "신발", "연필"]
+  },
+  {
+    "answer": "포도",
+    "sentence": "___는 작은 알들이 송이로 달린 과일입니다.",
+    "wrongs": ["신발", "책", "수건", "연필", "의자"]
+  },
+  {
+    "answer": "수박",
+    "sentence": "___은 겉은 초록색이고 속은 빨간 과일입니다.",
+    "wrongs": ["연필", "신발", "컵", "책", "모자"]
+  },
+  {
+    "answer": "딸기",
+    "sentence": "___는 빨갛고 씨가 겉에 있는 과일입니다.",
+    "wrongs": ["의자", "신발", "책상", "전화기", "수건"]
+  },
+  {
+    "answer": "귤",
+    "sentence": "___은 껍질을 까서 먹는 주황색 과일입니다.",
+    "wrongs": ["연필", "책", "의자", "신발", "컵"]
+  },
+  {
+    "answer": "복숭아",
+    "sentence": "___는 겉에 보송보송한 털이 있는 과일입니다.",
+    "wrongs": ["책상", "컵", "수건", "신발", "연필"]
+  },
+  {
+    "answer": "감",
+    "sentence": "___은 가을에 먹는 주황색 과일입니다.",
+    "wrongs": ["연필", "신발", "책", "컵", "수건"]
+  },
+  {
+    "answer": "당근",
+    "sentence": "___은 주황색 채소입니다.",
+    "wrongs": ["바나나", "포도", "컵", "신발", "연필"]
+  },
+  {
+    "answer": "오이",
+    "sentence": "___는 길고 초록색인 채소입니다.",
+    "wrongs": ["딸기", "우유", "책", "신발", "컵"]
+  },
+  {
+    "answer": "감자",
+    "sentence": "___는 땅속에서 자라는 둥근 채소입니다.",
+    "wrongs": ["사과", "바나나", "의자", "신발", "책"]
+  },
+  {
+    "answer": "고구마",
+    "sentence": "___는 달콤하고 땅속에서 자라는 음식입니다.",
+    "wrongs": ["포도", "우유", "연필", "컵", "의자"]
+  },
+  {
+    "answer": "양파",
+    "sentence": "___는 껍질을 벗기면 눈물이 날 수 있는 채소입니다.",
+    "wrongs": ["수박", "우유", "신발", "책", "연필"]
+  },
+  {
+    "answer": "마늘",
+    "sentence": "___은 작고 매운맛이 나는 양념 채소입니다.",
+    "wrongs": ["사과", "바나나", "컵", "의자", "수건"]
+  },
+  {
+    "answer": "달걀",
+    "sentence": "___은 닭이 낳는 음식입니다.",
+    "wrongs": ["우유", "빵", "연필", "신발", "책"]
+  },
+  {
+    "answer": "치즈",
+    "sentence": "___는 우유로 만드는 음식입니다.",
+    "wrongs": ["돌", "연필", "신발", "책상", "컵"]
+  },
+  {
+    "answer": "아이스크림",
+    "sentence": "___은 차갑고 달콤한 간식입니다.",
+    "wrongs": ["국", "밥", "김치", "의자", "연필"]
+  },
+  {
+    "answer": "사탕",
+    "sentence": "___은 작고 달콤하게 빨아 먹는 간식입니다.",
+    "wrongs": ["김치", "국", "신발", "책", "수건"]
+  },
+  {
+    "answer": "초콜릿",
+    "sentence": "___은 갈색이고 달콤한 간식입니다.",
+    "wrongs": ["당근", "오이", "신발", "의자", "컵"]
+  },
+  {
+    "answer": "과자",
+    "sentence": "___는 바삭바삭하게 먹는 간식입니다.",
+    "wrongs": ["물", "우유", "책상", "연필", "신발"]
+  },
+  {
+    "answer": "떡",
+    "sentence": "___은 쌀로 만든 쫄깃한 음식입니다.",
+    "wrongs": ["책", "의자", "신발", "수건", "연필"]
+  },
+  {
+    "answer": "국수",
+    "sentence": "___는 긴 면으로 된 음식입니다.",
+    "wrongs": ["의자", "신발", "책", "연필", "가방"]
+  },
+  {
+    "answer": "책",
+    "sentence": "___은 글과 그림을 읽는 물건입니다.",
+    "wrongs": ["신발", "컵", "수건", "의자", "모자"]
+  },
+  {
+    "answer": "연필",
+    "sentence": "___은 글씨를 쓰는 물건입니다.",
+    "wrongs": ["컵", "신발", "수건", "의자", "모자"]
+  },
+  {
+    "answer": "지우개",
+    "sentence": "___는 연필로 쓴 글씨를 지웁니다.",
+    "wrongs": ["연필", "책", "신발", "컵", "수건"]
+  },
+  {
+    "answer": "공책",
+    "sentence": "___은 글씨를 쓰거나 그림을 그리는 종이 묶음입니다.",
+    "wrongs": ["신발", "컵", "수건", "모자", "의자"]
+  },
+  {
+    "answer": "가위",
+    "sentence": "___는 종이를 자르는 물건입니다.",
+    "wrongs": ["컵", "신발", "수건", "모자", "가방"]
+  },
+  {
+    "answer": "풀",
+    "sentence": "___은 종이를 붙일 때 쓰는 물건입니다.",
+    "wrongs": ["가위", "연필", "신발", "컵", "수건"]
+  },
+  {
+    "answer": "자",
+    "sentence": "___는 길이를 재거나 선을 그을 때 씁니다.",
+    "wrongs": ["컵", "신발", "모자", "수건", "가방"]
+  },
+  {
+    "answer": "색연필",
+    "sentence": "___은 여러 색으로 그림을 그릴 때 씁니다.",
+    "wrongs": ["신발", "컵", "수건", "의자", "모자"]
+  },
+  {
+    "answer": "크레파스",
+    "sentence": "___는 색칠할 때 쓰는 미술 도구입니다.",
+    "wrongs": ["신발", "컵", "전화기", "수건", "모자"]
+  },
+  {
+    "answer": "가방",
+    "sentence": "___은 책과 물건을 넣고 메는 물건입니다.",
+    "wrongs": ["컵", "신발", "수건", "의자", "모자"]
+  },
+  {
+    "answer": "시계",
+    "sentence": "___는 시간을 알려 줍니다.",
+    "wrongs": ["컵", "신발", "수건", "연필", "의자"]
+  },
+  {
+    "answer": "우산",
+    "sentence": "___은 비를 막아 줍니다.",
+    "wrongs": ["책", "연필", "컵", "수건", "신발"]
+  },
+  {
+    "answer": "신발",
+    "sentence": "___은 발에 신고 다닙니다.",
+    "wrongs": ["모자", "컵", "책", "연필", "수건"]
+  },
+  {
+    "answer": "모자",
+    "sentence": "___는 머리에 씁니다.",
+    "wrongs": ["신발", "컵", "책", "연필", "수건"]
+  },
+  {
+    "answer": "옷",
+    "sentence": "___은 몸에 입습니다.",
+    "wrongs": ["신발", "컵", "책", "연필", "의자"]
+  },
+  {
+    "answer": "양말",
+    "sentence": "___은 발에 신고 신발 안에 신습니다.",
+    "wrongs": ["모자", "장갑", "컵", "책", "연필"]
+  },
+  {
+    "answer": "장갑",
+    "sentence": "___은 손에 끼는 물건입니다.",
+    "wrongs": ["양말", "모자", "신발", "컵", "책"]
+  },
+  {
+    "answer": "목도리",
+    "sentence": "___는 목에 두르는 물건입니다.",
+    "wrongs": ["신발", "양말", "컵", "연필", "책"]
+  },
+  {
+    "answer": "안경",
+    "sentence": "___은 눈에 쓰고 잘 보이게 도와줍니다.",
+    "wrongs": ["신발", "모자", "컵", "수건", "가방"]
+  },
+  {
+    "answer": "마스크",
+    "sentence": "___는 입과 코를 가릴 때 씁니다.",
+    "wrongs": ["신발", "책", "연필", "컵", "의자"]
+  },
+  {
+    "answer": "컵",
+    "sentence": "___은 물을 담아 마실 때 씁니다.",
+    "wrongs": ["신발", "책", "수건", "연필", "모자"]
+  },
+  {
+    "answer": "숟가락",
+    "sentence": "___은 밥이나 국을 떠먹을 때 씁니다.",
+    "wrongs": ["연필", "신발", "수건", "책", "모자"]
+  },
+  {
+    "answer": "젓가락",
+    "sentence": "___은 음식을 집어 먹을 때 씁니다.",
+    "wrongs": ["신발", "책", "수건", "컵", "모자"]
+  },
+  {
+    "answer": "그릇",
+    "sentence": "___은 음식을 담을 때 씁니다.",
+    "wrongs": ["신발", "책", "연필", "수건", "모자"]
+  },
+  {
+    "answer": "접시",
+    "sentence": "___는 음식을 올려놓는 물건입니다.",
+    "wrongs": ["신발", "책", "연필", "수건", "모자"]
+  },
+  {
+    "answer": "냄비",
+    "sentence": "___는 음식을 끓일 때 씁니다.",
+    "wrongs": ["신발", "책", "연필", "모자", "가방"]
+  },
+  {
+    "answer": "프라이팬",
+    "sentence": "___은 음식을 볶거나 부칠 때 씁니다.",
+    "wrongs": ["컵", "신발", "책", "수건", "모자"]
+  },
+  {
+    "answer": "칼",
+    "sentence": "___은 음식을 자를 때 조심해서 씁니다.",
+    "wrongs": ["컵", "수건", "신발", "모자", "가방"]
+  },
+  {
+    "answer": "도마",
+    "sentence": "___는 음식을 자를 때 밑에 놓는 물건입니다.",
+    "wrongs": ["신발", "책", "컵", "수건", "모자"]
+  },
+  {
+    "answer": "수건",
+    "sentence": "___은 젖은 손이나 몸을 닦을 때 씁니다.",
+    "wrongs": ["책", "연필", "신발", "모자", "가방"]
+  },
+  {
+    "answer": "비누",
+    "sentence": "___는 손이나 몸을 씻을 때 사용합니다.",
+    "wrongs": ["연필", "책", "의자", "신발", "모자"]
+  },
+  {
+    "answer": "칫솔",
+    "sentence": "___은 이를 닦을 때 사용합니다.",
+    "wrongs": ["수건", "책", "신발", "컵", "가위"]
+  },
+  {
+    "answer": "치약",
+    "sentence": "___은 칫솔에 묻혀 이를 닦을 때 씁니다.",
+    "wrongs": ["비누", "수건", "책", "신발", "연필"]
+  },
+  {
+    "answer": "빗",
+    "sentence": "___은 머리카락을 가지런히 할 때 씁니다.",
+    "wrongs": ["칫솔", "컵", "신발", "책", "수건"]
+  },
+  {
+    "answer": "침대",
+    "sentence": "___는 잠을 잘 때 눕는 물건입니다.",
+    "wrongs": ["책상", "의자", "컵", "연필", "가위"]
+  },
+  {
+    "answer": "이불",
+    "sentence": "___은 잘 때 몸을 덮습니다.",
+    "wrongs": ["신발", "컵", "책", "연필", "가방"]
+  },
+  {
+    "answer": "베개",
+    "sentence": "___는 잘 때 머리를 받치는 물건입니다.",
+    "wrongs": ["신발", "컵", "책", "연필", "가방"]
+  },
+  {
+    "answer": "책상",
+    "sentence": "___은 공부하거나 글씨를 쓸 때 사용합니다.",
+    "wrongs": ["신발", "컵", "모자", "수건", "전화기"]
+  },
+  {
+    "answer": "의자",
+    "sentence": "___는 사람이 앉는 물건입니다.",
+    "wrongs": ["책", "연필", "가방", "수건", "신발"]
+  },
+  {
+    "answer": "문",
+    "sentence": "___은 방에 들어가거나 나올 때 여닫습니다.",
+    "wrongs": ["창문", "책", "컵", "연필", "신발"]
+  },
+  {
+    "answer": "창문",
+    "sentence": "___은 바깥을 보거나 환기할 때 엽니다.",
+    "wrongs": ["문", "신발", "컵", "책", "수건"]
+  },
+  {
+    "answer": "전등",
+    "sentence": "___은 방을 밝게 비춥니다.",
+    "wrongs": ["신발", "책", "컵", "연필", "수건"]
+  },
+  {
+    "answer": "냉장고",
+    "sentence": "___는 음식을 차갑게 보관합니다.",
+    "wrongs": ["책상", "의자", "신발", "연필", "가방"]
+  },
+  {
+    "answer": "텔레비전",
+    "sentence": "___은 화면으로 영상을 보여 줍니다.",
+    "wrongs": ["수건", "신발", "컵", "연필", "가위"]
+  },
+  {
+    "answer": "전화기",
+    "sentence": "___는 멀리 있는 사람과 이야기할 때 씁니다.",
+    "wrongs": ["의자", "책상", "수건", "신발", "모자"]
+  },
+  {
+    "answer": "컴퓨터",
+    "sentence": "___는 글을 쓰거나 정보를 찾을 때 사용합니다.",
+    "wrongs": ["컵", "신발", "수건", "모자", "가위"]
+  },
+  {
+    "answer": "세탁기",
+    "sentence": "___는 더러운 옷을 빨아 줍니다.",
+    "wrongs": ["냉장고", "텔레비전", "책상", "컵", "모자"]
+  },
+  {
+    "answer": "청소기",
+    "sentence": "___는 먼지를 빨아들여 청소합니다.",
+    "wrongs": ["냉장고", "전화기", "책", "신발", "컵"]
+  },
+  {
+    "answer": "선풍기",
+    "sentence": "___는 바람을 만들어 시원하게 해 줍니다.",
+    "wrongs": ["냉장고", "책", "신발", "컵", "연필"]
+  },
+  {
+    "answer": "에어컨",
+    "sentence": "___은 더운 방을 시원하게 해 줍니다.",
+    "wrongs": ["전등", "책상", "신발", "컵", "수건"]
+  },
+  {
+    "answer": "난로",
+    "sentence": "___는 추운 방을 따뜻하게 해 줍니다.",
+    "wrongs": ["선풍기", "컵", "책", "연필", "신발"]
+  },
+  {
+    "answer": "버스",
+    "sentence": "___는 많은 사람을 태우고 도로를 달립니다.",
+    "wrongs": ["책", "의자", "컵", "신발", "수건"]
+  },
+  {
+    "answer": "자동차",
+    "sentence": "___는 사람이 타고 도로 위를 달립니다.",
+    "wrongs": ["물고기", "책상", "구름", "연필", "꽃"]
+  },
+  {
+    "answer": "비행기",
+    "sentence": "___는 사람을 태우고 하늘을 날아갑니다.",
+    "wrongs": ["버스", "기차", "자전거", "의자", "컵"]
+  },
+  {
+    "answer": "기차",
+    "sentence": "___는 철길 위를 달립니다.",
+    "wrongs": ["비행기", "배", "신발", "책", "수건"]
+  },
+  {
+    "answer": "배",
+    "sentence": "___는 물 위를 떠다닙니다.",
+    "wrongs": ["자동차", "기차", "의자", "연필", "신발"]
+  },
+  {
+    "answer": "자전거",
+    "sentence": "___는 페달을 밟아 움직입니다.",
+    "wrongs": ["비행기", "책상", "컵", "수건", "모자"]
+  },
+  {
+    "answer": "오토바이",
+    "sentence": "___는 두 바퀴로 도로를 달립니다.",
+    "wrongs": ["배", "비행기", "책상", "컵", "수건"]
+  },
+  {
+    "answer": "택시",
+    "sentence": "___는 손님을 원하는 곳까지 태워 줍니다.",
+    "wrongs": ["기차", "배", "비행기", "신발", "컵"]
+  },
+  {
+    "answer": "구급차",
+    "sentence": "___는 아픈 사람을 병원으로 데려갑니다.",
+    "wrongs": ["소방차", "버스", "자전거", "책", "의자"]
+  },
+  {
+    "answer": "소방차",
+    "sentence": "___는 불이 난 곳으로 달려갑니다.",
+    "wrongs": ["구급차", "자전거", "배", "책", "컵"]
+  },
+  {
+    "answer": "경찰차",
+    "sentence": "___는 경찰관이 타고 순찰할 때 씁니다.",
+    "wrongs": ["기차", "배", "비행기", "신발", "책"]
+  },
+  {
+    "answer": "트럭",
+    "sentence": "___은 무거운 짐을 싣고 달립니다.",
+    "wrongs": ["자전거", "책상", "의자", "컵", "수건"]
+  },
+  {
+    "answer": "지하철",
+    "sentence": "___은 땅속이나 도시의 철길을 달립니다.",
+    "wrongs": ["배", "자전거", "신발", "책", "모자"]
+  },
+  {
+    "answer": "헬리콥터",
+    "sentence": "___는 위의 날개가 돌며 하늘을 납니다.",
+    "wrongs": ["기차", "배", "자전거", "컵", "책"]
+  },
+  {
+    "answer": "로켓",
+    "sentence": "___은 우주로 날아갑니다.",
+    "wrongs": ["버스", "자전거", "배", "책상", "의자"]
+  },
+  {
+    "answer": "봄",
+    "sentence": "___에는 꽃이 많이 핍니다.",
+    "wrongs": ["겨울", "밤", "바다", "의자", "컵"]
+  },
+  {
+    "answer": "여름",
+    "sentence": "___에는 날씨가 덥습니다.",
+    "wrongs": ["겨울", "밤", "신발", "책", "의자"]
+  },
+  {
+    "answer": "가을",
+    "sentence": "___에는 나뭇잎이 노랗고 빨갛게 물듭니다.",
+    "wrongs": ["여름", "밤", "컵", "연필", "신발"]
+  },
+  {
+    "answer": "겨울",
+    "sentence": "___에는 날씨가 춥고 눈이 내릴 수 있습니다.",
+    "wrongs": ["여름", "낮", "의자", "책", "컵"]
+  },
+  {
+    "answer": "아침",
+    "sentence": "___에는 잠에서 깨어 하루를 시작합니다.",
+    "wrongs": ["밤", "겨울", "바다", "책상", "신발"]
+  },
+  {
+    "answer": "점심",
+    "sentence": "___에는 낮에 먹는 밥을 먹습니다.",
+    "wrongs": ["아침", "밤", "겨울", "의자", "컵"]
+  },
+  {
+    "answer": "저녁",
+    "sentence": "___에는 하루 일을 마치고 밥을 먹습니다.",
+    "wrongs": ["아침", "점심", "봄", "신발", "책"]
+  },
+  {
+    "answer": "밤",
+    "sentence": "___에는 어두워지고 잠을 잡니다.",
+    "wrongs": ["낮", "봄", "여름", "의자", "컵"]
+  },
+  {
+    "answer": "월요일",
+    "sentence": "___은 일요일 다음에 오는 요일입니다.",
+    "wrongs": ["화요일", "토요일", "금요일", "봄", "겨울"]
+  },
+  {
+    "answer": "일요일",
+    "sentence": "___은 토요일 다음에 오는 요일입니다.",
+    "wrongs": ["월요일", "화요일", "수요일", "여름", "밤"]
+  }
+];
+
+let materials = [];
+let currentIndex = 0;
+let answers = [];
+let choiceLocked = false;
+let retryCount = 0;
+
+function unique(array) { return [...new Set(array)]; }
+function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+
+function renderSubject() {
+  const box = document.getElementById("subjectBox");
+  if (!selectedSubject) {
+    box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+    return;
+  }
+  box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`;
+}
+
+function getSettings() {
+  return {
+    count: Number(document.getElementById("count").value) || 10,
+    choiceCount: Number(document.getElementById("choiceCount").value) === 4 ? 4 : 2,
+    orderMode: document.getElementById("orderMode").value
+  };
+}
+
+function makeChoices(item, settings) {
+  const needWrong = settings.choiceCount - 1;
+  let wrongs = Array.isArray(item.wrongs) ? item.wrongs.filter(answer => answer !== item.answer) : [];
+  wrongs = shuffle(unique(wrongs)).slice(0, needWrong);
+  if (wrongs.length < needWrong) {
+    const pool = unique(SENTENCE_DB.map(x => x.answer).filter(answer => answer !== item.answer && !wrongs.includes(answer)));
+    wrongs.push(...shuffle(pool).slice(0, needWrong - wrongs.length));
+  }
+  return shuffle([item.answer, ...wrongs.slice(0, needWrong)]);
+}
+
+function buildMaterials() {
+  const settings = getSettings();
+  const source = settings.orderMode === "random" ? shuffle(SENTENCE_DB) : [...SENTENCE_DB];
+  return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
+    ...item,
+    choices: makeChoices(item, settings),
+    question: "빈칸에 알맞은 주어를 고르세요."
+  }));
+}
+
+function sentenceToHtml(sentence) {
+  return sentence.replace("___", `<span class="blank">&nbsp;</span>`);
+}
+
+function safeText(value) {
+  return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function generateMaterials() {
+  materials = buildMaterials();
+  renderPreview();
+}
+
+function renderPreview() {
+  const settings = getSettings();
+  const previewTitle = document.getElementById("previewTitle");
+  const previewList = document.getElementById("previewList");
+  previewTitle.textContent = `주어 · ${settings.choiceCount}개 보기 · 문장 완성 ${materials.length}개`;
+  if (materials.length === 0) {
+    previewList.innerHTML = `<div class="item-card">문항이 없습니다.</div>`;
+    return;
+  }
+  previewList.innerHTML = materials.map((item, index) =>
+    `<div class="item-card"><strong>${index + 1}.</strong>${safeText(item.sentence.replace("___", "_____"))}</div>`
+  ).join("");
+}
+
+function renderStats() {
+  document.getElementById("statsBox").innerHTML =
+    `<div class="stats-mini"><div><span>주어 문항</span><b>${SENTENCE_DB.length}</b></div><div><span>보기</span><b>2개/4개</b></div><div><span>재시도</span><b>1회</b></div></div>`;
+}
+
+function startTraining() {
+  if (!selectedSubject) {
+    alert("대상자를 먼저 등록하거나 선택해주세요.");
+    location.href = "main.html";
+    return;
+  }
+  if (materials.length === 0) generateMaterials();
+  if (materials.length === 0) return;
+  currentIndex = 0;
+  answers = [];
+  choiceLocked = false;
+  retryCount = 0;
+  document.getElementById("setupView").classList.add("hidden");
+  document.getElementById("previewView").classList.add("hidden");
+  document.getElementById("statsView").classList.add("hidden");
+  document.getElementById("trainingView").classList.remove("hidden");
+  document.getElementById("finishView").classList.add("hidden");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const item = materials[currentIndex];
+  choiceLocked = false;
+  retryCount = 0;
+  document.getElementById("itemMemo").value = "";
+  document.getElementById("trainingTitle").textContent = `${currentIndex + 1}번 문항 / ${materials.length}개`;
+  document.getElementById("question").textContent = item.question;
+  document.getElementById("sentence").innerHTML = sentenceToHtml(item.sentence);
+  document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
+
+  const feedbackBox = document.getElementById("feedbackBox");
+  feedbackBox.style.display = "none";
+  feedbackBox.textContent = "";
+
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("answerOptions").innerHTML = item.choices.map(choice => {
+    const safe = safeText(choice);
+    return `<button class="answer-btn" data-choice="${safe}" onclick="chooseAnswer(this, this.dataset.choice)">${safe}</button>`;
+  }).join("");
+}
+
+function showFeedback(message, isCorrectStyle) {
+  const feedbackBox = document.getElementById("feedbackBox");
+  feedbackBox.style.display = "block";
+  feedbackBox.textContent = message;
+  feedbackBox.style.background = isCorrectStyle ? "#e8fff4" : "#fff1f1";
+  feedbackBox.style.color = isCorrectStyle ? "#16a06f" : "#e54848";
+  feedbackBox.style.border = isCorrectStyle ? "1px solid #a7f3d0" : "1px solid #fecaca";
+}
+
+function markChoices(selectedButton, selected) {
+  const item = materials[currentIndex];
+  document.querySelectorAll(".answer-btn").forEach(btn => {
+    if (btn.textContent === item.answer) btn.classList.add("correct-choice");
+    if (btn === selectedButton && selected !== item.answer) btn.classList.add("wrong-choice");
+  });
+}
+
+function chooseAnswer(button, selected) {
+  if (choiceLocked) return;
+
+  const item = materials[currentIndex];
+  const isCorrect = selected === item.answer;
+
+  if (isCorrect) {
+    choiceLocked = true;
+    markChoices(button, selected);
+    const countedCorrect = retryCount === 0;
+
+    if (countedCorrect) showFeedback("정답입니다.", true);
+    else showFeedback("정답입니다.", false);
+
+    setTimeout(() => recordAnswer(countedCorrect ? "correct" : "wrong", selected, retryCount), 1200);
+    return;
+  }
+
+  retryCount += 1;
+
+  if (retryCount === 1) {
+    button.classList.add("wrong-choice");
+    showFeedback("다시 풀어보세요.", false);
+    setTimeout(() => button.classList.remove("wrong-choice"), 800);
+    return;
+  }
+
+  choiceLocked = true;
+  markChoices(button, selected);
+  showFeedback("정답을 확인한 뒤 다음 문제를 눌러주세요.", false);
+  document.getElementById("nextBtn").style.display = "inline-block";
+}
+
+function nextQuestionManual() {
+  if (!choiceLocked) return;
+  recordAnswer("wrong", "오답", retryCount);
+}
+
+function recordAnswer(result, selected, retry) {
+  const item = materials[currentIndex];
+  answers.push({
+    index: currentIndex + 1,
+    sentence: item.sentence,
+    answer: item.answer,
+    selected: selected || "",
+    type: "문장완성하기(주어)",
+    result,
+    retry: retry || 0,
+    memo: document.getElementById("itemMemo").value || ""
+  });
+  currentIndex++;
+  if (currentIndex >= materials.length) finishTraining();
+  else renderQuestion();
+}
+
+function finishTraining() {
+  document.getElementById("trainingView").classList.add("hidden");
+  document.getElementById("finishView").classList.remove("hidden");
+  document.getElementById("progressBar").style.width = "100%";
+  const total = answers.length;
+  const correct = answers.filter(answer => answer.result === "correct").length;
+  const wrong = total - correct;
+  const rate = total ? Math.round((correct / total) * 100) : 0;
+
+document.getElementById("finishText").textContent = `${selectedSubject ? selectedSubject.name + " 대상자" : "대상자"}의 문장완성하기(주어) 훈련이 완료되었습니다.`;
+document.getElementById("summaryGrid").innerHTML = `
+  <div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div>
+  <div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정답</span></div>
+  <div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>오답</span></div>
+  <div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+
+const history = Store.load("speech_training_history", []);
+history.unshift({
+  id: Date.now(),
+  type: "문장완성하기(주어)",
+  subjectId: selectedSubjectId,
+  subjectName: selectedSubject ? selectedSubject.name : "",
+  date: new Date().toISOString(),
+  total,
+  correct,
+  wrong,
+  rate,
+  answers
+});
+  Store.save("speech_training_history", history.slice(0, 200));
+}
+
+renderSubject();
+renderStats();
+generateMaterials();
+</script>
+</body>
+</html>

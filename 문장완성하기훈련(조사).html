@@ -1,0 +1,1396 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>문장완성하기훈련(조사)</title>
+<style>
+* { box-sizing:border-box; }
+body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+.app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+.brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+.logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+.primary { background:#246bfe; color:white; }
+.secondary { background:#eef3ff; color:#246bfe; }
+.gray { background:#edf1f6; color:#5d687b; }
+.panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+.panel h2 { margin:0 0 16px; font-size:22px; }
+.setup-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+textarea { min-height:74px; resize:vertical; }
+.subject-box,.help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+.help-box { margin-top:16px; font-size:14px; }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+.word-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.item-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:15px; padding:14px; font-size:15px; line-height:1.5; }
+.item-card strong { color:#246bfe; margin-right:5px; }
+.hidden { display:none !important; }
+.progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+.progress-bar { height:100%; width:0%; background:#246bfe; }
+.question { color:#246bfe; font-size:25px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+.training-box { background:#f8faff; border-radius:24px; padding:38px 24px; text-align:center; margin-bottom:18px; min-height:300px; display:grid; place-items:center; }
+.training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:22px; }
+.sentence { font-size:38px; font-weight:900; line-height:1.45; word-break:keep-all; }
+.blank { display:inline-block; min-width:140px; padding:0 10px 4px; color:#246bfe; border-bottom:5px solid #246bfe; }
+.answer-options { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:12px; }
+.answer-btn { background:#eef3ff; color:#246bfe; border:1px solid #dbe7ff; border-radius:16px; min-height:68px; padding:15px 12px; font-size:22px; font-weight:900; }
+.answer-btn:hover { background:#dfeaff; }
+.answer-btn.correct-choice { background:#16a06f; color:white; border-color:#16a06f; }
+.answer-btn.wrong-choice { background:#e54848; color:white; border-color:#e54848; }
+.feedback { display:none; margin-top:12px; padding:16px; border-radius:16px; font-size:24px; font-weight:900; text-align:center; }
+.stats-mini { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; font-size:13px; }
+.stats-mini div { background:#f8faff; border:1px solid #e2e8f0; border-radius:12px; padding:8px 10px; display:flex; justify-content:space-between; gap:6px; }
+.stats-mini b { color:#246bfe; }
+.result-panel { background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); border-radius:24px; padding:16px; border:1px solid #edf2f7; box-shadow:0 10px 28px rgba(15,30,60,.05); }
+.summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+.summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+.summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+.summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+.summary-card span { color:#334155; font-size:15px; font-weight:800; }
+.summary-card.correct strong { color:#16a06f; }
+.summary-card.wrong strong { color:#e54848; }
+.summary-card.total strong,.summary-card.rate strong { color:#246bfe; }
+.summary-icon.correct { background:#16a06f; }
+.summary-icon.wrong { background:#e54848; }
+.summary-icon.total,.summary-icon.rate { background:#246bfe; }
+.summary-icon.total,.summary-icon.rate{background:#246bfe}
+@media (max-width:900px){ .setup-grid{grid-template-columns:1fr 1fr;} .word-grid{grid-template-columns:repeat(2,1fr);} .stats-mini{grid-template-columns:1fr;} .summary-grid{grid-template-columns:repeat(2,1fr);} .topbar{align-items:flex-start; flex-direction:column;} }
+@media (max-width:560px){ .setup-grid,.word-grid,.answer-options,.summary-grid{grid-template-columns:1fr;} .description{font-size:26px;} .question{font-size:21px;} }
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar"><div class="brand"><div class="logo">조</div><span>문장완성하기훈련 (조사)</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+
+<section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+
+<section id="setupView" class="panel">
+<h2>훈련 설정</h2>
+<div class="setup-grid">
+<div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="40">40개</option><option value="50">50개</option><option value="100">100개</option></select></div>
+<div><label for="choiceCount">보기 개수</label><select id="choiceCount" onchange="generateMaterials()"><option value="2" selected>2개 보기</option><option value="4">4개 보기</option></select></div>
+<div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
+</div>
+<div class="help-box">조사 전용 문장 완성 훈련입니다. 빈칸에 알맞은 조사를 고르는 활동으로, 주격·목적격·장소·도구·동반·보조·소유 조사 문항을 포함했습니다.</div>
+<div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
+</section>
+
+<section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
+<section id="statsView" class="panel"><h2>문항 수</h2><div id="statsBox"></div></section>
+
+<section id="trainingView" class="panel hidden">
+<div id="question" class="question">빈칸에 알맞은 조사를 고르세요.</div>
+<div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+<div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="sentence" class="sentence"></div></div></div>
+<div id="answerOptions" class="answer-options"></div>
+<div id="feedbackBox" class="feedback"></div>
+<div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
+<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+</section>
+
+<section id="finishView" class="panel hidden">
+<h2>훈련 결과</h2>
+<p id="finishText"></p>
+<div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div>
+<div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+</section>
+</main>
+
+<script>
+const Store = { load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }, save(key, value) { localStorage.setItem(key, JSON.stringify(value)); } };
+const subjects = Store.load("speech_subjects", []);
+const selectedSubjectId = Store.load("speech_selected_subject", null);
+const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+
+const SENTENCE_DB = [
+  {
+    "answer": "은",
+    "sentence": "꽃___ 봄에 핍니다.",
+    "wrongs": [
+      "는",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "는",
+    "sentence": "나무___ 땅에 뿌리를 내립니다.",
+    "wrongs": [
+      "은",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "이",
+    "sentence": "바람___ 붑니다.",
+    "wrongs": [
+      "가",
+      "은",
+      "는",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "이",
+    "sentence": "구름___ 하늘에 떠 있습니다.",
+    "wrongs": [
+      "가",
+      "은",
+      "는",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "가",
+    "sentence": "해___ 밝게 빛납니다.",
+    "wrongs": [
+      "이",
+      "은",
+      "는",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "이",
+    "sentence": "달___ 밤하늘에 떠 있습니다.",
+    "wrongs": [
+      "가",
+      "은",
+      "는",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "이",
+    "sentence": "별___ 반짝입니다.",
+    "wrongs": [
+      "가",
+      "은",
+      "는",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "가",
+    "sentence": "비___ 내립니다.",
+    "wrongs": [
+      "이",
+      "은",
+      "는",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "이",
+    "sentence": "눈___ 하얗게 내립니다.",
+    "wrongs": [
+      "가",
+      "은",
+      "는",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "는",
+    "sentence": "학교___ 학생이 공부하는 곳입니다.",
+    "wrongs": [
+      "은",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "은",
+    "sentence": "병원___ 아픈 사람이 가는 곳입니다.",
+    "wrongs": [
+      "는",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "은",
+    "sentence": "식당___ 밥을 사 먹는 곳입니다.",
+    "wrongs": [
+      "는",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "은",
+    "sentence": "도서관___ 책을 읽는 곳입니다.",
+    "wrongs": [
+      "는",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "는",
+    "sentence": "마트___ 물건을 사는 곳입니다.",
+    "wrongs": [
+      "은",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "은",
+    "sentence": "정류장___ 버스를 기다리는 곳입니다.",
+    "wrongs": [
+      "는",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "은",
+    "sentence": "집___ 가족이 사는 곳입니다.",
+    "wrongs": [
+      "는",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "는",
+    "sentence": "침대___ 잠을 자는 곳입니다.",
+    "wrongs": [
+      "은",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "은",
+    "sentence": "주방___ 음식을 만드는 곳입니다.",
+    "wrongs": [
+      "는",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "은",
+    "sentence": "교실___ 학생들이 공부하는 곳입니다.",
+    "wrongs": [
+      "는",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "은",
+    "sentence": "운동장___ 뛰어노는 곳입니다.",
+    "wrongs": [
+      "는",
+      "이",
+      "가",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "을",
+    "sentence": "밥___ 먹습니다.",
+    "wrongs": [
+      "를",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "을",
+    "sentence": "물___ 마십니다.",
+    "wrongs": [
+      "를",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "를",
+    "sentence": "우유___ 마십니다.",
+    "wrongs": [
+      "을",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "를",
+    "sentence": "사과___ 먹습니다.",
+    "wrongs": [
+      "을",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "를",
+    "sentence": "원숭이는 바나나___ 먹습니다.",
+    "wrongs": [
+      "을",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "를",
+    "sentence": "포도___ 먹습니다.",
+    "wrongs": [
+      "을",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "을",
+    "sentence": "수박___ 먹습니다.",
+    "wrongs": [
+      "를",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "를",
+    "sentence": "아이가 딸기___ 먹습니다.",
+    "wrongs": [
+      "을",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "가",
+    "sentence": "아이___ 딸기를 먹습니다.",
+    "wrongs": [
+      "을",
+      "이",
+      "를",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "을",
+    "sentence": "귤___ 먹습니다.",
+    "wrongs": [
+      "를",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "을",
+    "sentence": "나는 빵___ 먹습니다.",
+    "wrongs": [
+      "를",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "을",
+    "sentence": "라면___ 먹습니다.",
+    "wrongs": [
+      "를",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "을",
+    "sentence": "학생아 책___ 읽고 있습니다.",
+    "wrongs": [
+      "를",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "가위___ 종이를 오립니다.",
+    "wrongs": [
+      "을",
+      "이",
+      "가",
+      "은",
+      "는"
+    ]
+  },
+  {
+    "answer": "에",
+    "sentence": "학생은 학교___ 갑니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에",
+    "sentence": "아픈 사람은 병원___ 갑니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에",
+    "sentence": "식당___ 갑니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에",
+    "sentence": "학생이 도서관___ 갑니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에",
+    "sentence": "엄마가 마트___ 갑니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "으로",
+    "sentence": "버스를 타기위해 정류장___ 갑니다.",
+    "wrongs": [
+      "에서",
+      "이",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에",
+    "sentence": "집___ 갑니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에",
+    "sentence": "방___ 들어갑니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에",
+    "sentence": "화장실___ 갑니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에서",
+    "sentence": "학생은 학교___ 공부를 합니다.",
+    "wrongs": [
+      "에",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에서",
+    "sentence": "의사는 병원___ 일합니다.",
+    "wrongs": [
+      "에",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에서",
+    "sentence": "식당___ 밥을 먹습니다.",
+    "wrongs": [
+      "에",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에서",
+    "sentence": "마트___ 물건을 삽니다.",
+    "wrongs": [
+      "에",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에서",
+    "sentence": "아이들이 운동장___ 뛰어놉니다.",
+    "wrongs": [
+      "에",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에서",
+    "sentence": "놀이터___ 그네를 탑니다.",
+    "wrongs": [
+      "에",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에서",
+    "sentence": "엄마가 시장___ 채소를 삽니다.",
+    "wrongs": [
+      "에",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "에서",
+    "sentence": "우체국___ 소포를 보냅니다.",
+    "wrongs": [
+      "에",
+      "으로",
+      "로",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "으로",
+    "sentence": "손___ 컵을 잡습니다.",
+    "wrongs": [
+      "로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "발___ 공을 찹니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "으로",
+    "sentence": "눈___ 사물을 봅니다.",
+    "wrongs": [
+      "로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "귀___ 소리를 듣습니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "코___ 냄새를 맡습니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "으로",
+    "sentence": "입___ 음식을 먹습니다.",
+    "wrongs": [
+      "로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "이___ 음식을 씹습니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "혀___ 맛을 느낍니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "연필___ 글씨를 씁니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "나는 가위___ 종이를 자릅니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "칼___ 채소를 자릅니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "으로",
+    "sentence": "색연필___ 그림을 색칠합니다.",
+    "wrongs": [
+      "로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "빗___ 머리카락을 빗습니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "으로",
+    "sentence": "수건___ 손을 닦습니다.",
+    "wrongs": [
+      "로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "로",
+    "sentence": "비누___ 손을 씻습니다.",
+    "wrongs": [
+      "으로",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "와",
+    "sentence": "친구___ 함께 놀았습니다.",
+    "wrongs": [
+      "과",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "과",
+    "sentence": "동생___ 함께 밥을 먹었습니다.",
+    "wrongs": [
+      "와",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "와",
+    "sentence": "강아지___ 고양이가 마당에 있습니다.",
+    "wrongs": [
+      "과",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "과",
+    "sentence": "책___ 연필이 책상 위에 있습니다.",
+    "wrongs": [
+      "와",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "와",
+    "sentence": "사과___ 바나나를 먹었습니다.",
+    "wrongs": [
+      "과",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "와",
+    "sentence": "의자___ 책상이 교실에 있습니다.",
+    "wrongs": [
+      "과",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "과",
+    "sentence": "꽃___ 나무가 정원에 있습니다.",
+    "wrongs": [
+      "와",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "와",
+    "sentence": "우유___ 빵을 아침에 먹었습니다.",
+    "wrongs": [
+      "과",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "과",
+    "sentence": "밥___ 국을 함께 먹었습니다.",
+    "wrongs": [
+      "와",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "와",
+    "sentence": "엄마___ 아빠가 집에 계십니다.",
+    "wrongs": [
+      "과",
+      "에",
+      "에서",
+      "을",
+      "를"
+    ]
+  },
+  {
+    "answer": "는",
+    "sentence": "나___ 학교에 갑니다.",
+    "wrongs": [
+      "만",
+      "을",
+      "를",
+      "에",
+      "에서"
+    ]
+  },
+  {
+    "answer": "과",
+    "sentence": "동생___ 함께 사과를 먹었습니다.",
+    "wrongs": [
+      "만",
+      "을",
+      "를",
+      "에",
+      "에서"
+    ]
+  },
+  {
+    "answer": "와",
+    "sentence": "친구___ 공원에 왔습니다.",
+    "wrongs": [
+      "만",
+      "을",
+      "를",
+      "에",
+      "에서"
+    ]
+  },
+  {
+    "answer": "도",
+    "sentence": "아빠___ 요리를 합니다.",
+    "wrongs": [
+      "만",
+      "을",
+      "를",
+      "에",
+      "에서"
+    ]
+  },
+  {
+    "answer": "에게",
+    "sentence": "학생이 선생님___ 질문했습니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "을",
+      "를",
+      "와"
+    ]
+  },
+  {
+    "answer": "에게",
+    "sentence": "아이가 엄마___ 편지를 주었습니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "을",
+      "를",
+      "와"
+    ]
+  },
+  {
+    "answer": "에게",
+    "sentence": "나는 동생___ 과자를 나눠 주었습니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "을",
+      "를",
+      "와"
+    ]
+  },
+  {
+    "answer": "에게",
+    "sentence": "아빠가 아이___ 책을 읽어 주었습니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "을",
+      "를",
+      "와"
+    ]
+  },
+  {
+    "answer": "한테",
+    "sentence": "나는 친구___ 장난감을 빌려주었습니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "을",
+      "를",
+      "와"
+    ]
+  },
+  {
+    "answer": "에게",
+    "sentence": "동생이 누나___ 도움을 받았습니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "을",
+      "를",
+      "와"
+    ]
+  },
+  {
+    "answer": "한테",
+    "sentence": "아이는 엄마___ 사탕을 받았습니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "을",
+      "를",
+      "와"
+    ]
+  },
+  {
+    "answer": "한테",
+    "sentence": "나는 선생님___ 칭찬을 받았습니다.",
+    "wrongs": [
+      "에서",
+      "으로",
+      "을",
+      "를",
+      "와"
+    ]
+  },
+  {
+    "answer": "의",
+    "sentence": "이것은 나___ 가방입니다.",
+    "wrongs": [
+      "을",
+      "를",
+      "에",
+      "에서",
+      "로"
+    ]
+  },
+  {
+    "answer": "의",
+    "sentence": "저것은 동생___ 장난감입니다.",
+    "wrongs": [
+      "을",
+      "를",
+      "에",
+      "에서",
+      "로"
+    ]
+  },
+  {
+    "answer": "의",
+    "sentence": "이 책은 선생님___ 책입니다.",
+    "wrongs": [
+      "을",
+      "를",
+      "에",
+      "에서",
+      "로"
+    ]
+  },
+  {
+    "answer": "의",
+    "sentence": "이 신발은 아빠___ 신발입니다.",
+    "wrongs": [
+      "을",
+      "를",
+      "에",
+      "에서",
+      "로"
+    ]
+  },
+  {
+    "answer": "의",
+    "sentence": "저 모자는 엄마___ 모자입니다.",
+    "wrongs": [
+      "을",
+      "를",
+      "에",
+      "에서",
+      "로"
+    ]
+  },
+  {
+    "answer": "의",
+    "sentence": "이 공책은 친구___ 공책입니다.",
+    "wrongs": [
+      "을",
+      "를",
+      "에",
+      "에서",
+      "로"
+    ]
+  },
+  {
+    "answer": "의",
+    "sentence": "이 연필은 학생___ 연필입니다.",
+    "wrongs": [
+      "을",
+      "를",
+      "에",
+      "에서",
+      "로"
+    ]
+  },
+  {
+    "answer": "의",
+    "sentence": "저 인형은 아이___ 인형입니다.",
+    "wrongs": [
+      "을",
+      "를",
+      "에",
+      "에서",
+      "로"
+    ]
+  }
+];
+
+let materials = [];
+let currentIndex = 0;
+let answers = [];
+let choiceLocked = false;
+let retryCount = 0;
+
+function unique(array) { return [...new Set(array)]; }
+function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+
+function renderSubject() {
+  const box = document.getElementById("subjectBox");
+  if (!selectedSubject) {
+    box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+    return;
+  }
+  box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`;
+}
+
+function getSettings() {
+  return {
+    count: Number(document.getElementById("count").value) || 10,
+    choiceCount: Number(document.getElementById("choiceCount").value) === 4 ? 4 : 2,
+    orderMode: document.getElementById("orderMode").value
+  };
+}
+
+function makeChoices(item, settings) {
+  const needWrong = settings.choiceCount - 1;
+  let wrongs = Array.isArray(item.wrongs) ? item.wrongs.filter(answer => answer !== item.answer) : [];
+  wrongs = shuffle(unique(wrongs)).slice(0, needWrong);
+  if (wrongs.length < needWrong) {
+    const pool = unique(SENTENCE_DB.map(x => x.answer).filter(answer => answer !== item.answer && !wrongs.includes(answer)));
+    wrongs.push(...shuffle(pool).slice(0, needWrong - wrongs.length));
+  }
+  return shuffle([item.answer, ...wrongs.slice(0, needWrong)]);
+}
+
+function buildMaterials() {
+  const settings = getSettings();
+  const source = settings.orderMode === "random" ? shuffle(SENTENCE_DB) : [...SENTENCE_DB];
+  return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
+    ...item,
+    choices: makeChoices(item, settings),
+    question: "빈칸에 알맞은 조사를 고르세요."
+  }));
+}
+
+function sentenceToHtml(sentence) {
+  return sentence.replace("___", `<span class="blank">&nbsp;</span>`);
+}
+
+function safeText(value) {
+  return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function generateMaterials() {
+  materials = buildMaterials();
+  renderPreview();
+}
+
+function renderPreview() {
+  const settings = getSettings();
+  const previewTitle = document.getElementById("previewTitle");
+  const previewList = document.getElementById("previewList");
+  previewTitle.textContent = `조사 · ${settings.choiceCount}개 보기 · 문장 완성 ${materials.length}개`;
+  if (materials.length === 0) {
+    previewList.innerHTML = `<div class="item-card">문항이 없습니다.</div>`;
+    return;
+  }
+  previewList.innerHTML = materials.map((item, index) =>
+    `<div class="item-card"><strong>${index + 1}.</strong>${safeText(item.sentence.replace("___", "_____"))}</div>`
+  ).join("");
+}
+
+function renderStats() {
+  document.getElementById("statsBox").innerHTML =
+    `<div class="stats-mini"><div><span>조사 문항</span><b>${SENTENCE_DB.length}</b></div><div><span>보기</span><b>2개/4개</b></div><div><span>재시도</span><b>1회</b></div></div>`;
+}
+
+function startTraining() {
+  if (!selectedSubject) {
+    alert("대상자를 먼저 등록하거나 선택해주세요.");
+    location.href = "main.html";
+    return;
+  }
+  if (materials.length === 0) generateMaterials();
+  if (materials.length === 0) return;
+  currentIndex = 0;
+  answers = [];
+  choiceLocked = false;
+  retryCount = 0;
+  document.getElementById("setupView").classList.add("hidden");
+  document.getElementById("previewView").classList.add("hidden");
+  document.getElementById("statsView").classList.add("hidden");
+  document.getElementById("trainingView").classList.remove("hidden");
+  document.getElementById("finishView").classList.add("hidden");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const item = materials[currentIndex];
+  choiceLocked = false;
+  retryCount = 0;
+  document.getElementById("itemMemo").value = "";
+  document.getElementById("trainingTitle").textContent = `${currentIndex + 1}번 문항 / ${materials.length}개`;
+  document.getElementById("question").textContent = item.question;
+  document.getElementById("sentence").innerHTML = sentenceToHtml(item.sentence);
+  document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
+
+  const feedbackBox = document.getElementById("feedbackBox");
+  feedbackBox.style.display = "none";
+  feedbackBox.textContent = "";
+
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("answerOptions").innerHTML = item.choices.map(choice => {
+    const safe = safeText(choice);
+    return `<button class="answer-btn" data-choice="${safe}" onclick="chooseAnswer(this, this.dataset.choice)">${safe}</button>`;
+  }).join("");
+}
+
+function showFeedback(message, isCorrectStyle) {
+  const feedbackBox = document.getElementById("feedbackBox");
+  feedbackBox.style.display = "block";
+  feedbackBox.textContent = message;
+  feedbackBox.style.background = isCorrectStyle ? "#e8fff4" : "#fff1f1";
+  feedbackBox.style.color = isCorrectStyle ? "#16a06f" : "#e54848";
+  feedbackBox.style.border = isCorrectStyle ? "1px solid #a7f3d0" : "1px solid #fecaca";
+}
+
+function markChoices(selectedButton, selected) {
+  const item = materials[currentIndex];
+  document.querySelectorAll(".answer-btn").forEach(btn => {
+    if (btn.textContent === item.answer) btn.classList.add("correct-choice");
+    if (btn === selectedButton && selected !== item.answer) btn.classList.add("wrong-choice");
+  });
+}
+
+function chooseAnswer(button, selected) {
+  if (choiceLocked) return;
+
+  const item = materials[currentIndex];
+  const isCorrect = selected === item.answer;
+
+  if (isCorrect) {
+    choiceLocked = true;
+    markChoices(button, selected);
+    const countedCorrect = retryCount === 0;
+
+    if (countedCorrect) showFeedback("정답입니다.", true);
+    else showFeedback("정답입니다.", false);
+
+    setTimeout(() => recordAnswer(countedCorrect ? "correct" : "wrong", selected, retryCount), 1200);
+    return;
+  }
+
+  retryCount += 1;
+
+  if (retryCount === 1) {
+    button.classList.add("wrong-choice");
+    showFeedback("다시 풀어보세요.", false);
+    setTimeout(() => button.classList.remove("wrong-choice"), 800);
+    return;
+  }
+
+  choiceLocked = true;
+  markChoices(button, selected);
+  showFeedback("정답을 확인한 뒤 다음 문제를 눌러주세요.", false);
+  document.getElementById("nextBtn").style.display = "inline-block";
+}
+
+function nextQuestionManual() {
+  if (!choiceLocked) return;
+  recordAnswer("wrong", "오답", retryCount);
+}
+
+function recordAnswer(result, selected, retry) {
+  const item = materials[currentIndex];
+  answers.push({
+    index: currentIndex + 1,
+    sentence: item.sentence,
+    answer: item.answer,
+    selected: selected || "",
+    type: "문장완성하기(조사)",
+    result,
+    retry: retry || 0,
+    memo: document.getElementById("itemMemo").value || ""
+  });
+  currentIndex++;
+  if (currentIndex >= materials.length) finishTraining();
+  else renderQuestion();
+}
+
+function finishTraining() {
+  document.getElementById("trainingView").classList.add("hidden");
+  document.getElementById("finishView").classList.remove("hidden");
+  document.getElementById("progressBar").style.width = "100%";
+  const total = answers.length;
+  const correct = answers.filter(answer => answer.result === "correct").length;
+  const wrong = total - correct;
+  const rate = total ? Math.round((correct / total) * 100) : 0;
+
+document.getElementById("finishText").textContent = `${selectedSubject ? selectedSubject.name + " 대상자" : "대상자"}의 문장완성하기(조사) 훈련이 완료되었습니다.`;
+document.getElementById("summaryGrid").innerHTML = `
+  <div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div>
+  <div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정답</span></div>
+  <div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>오답</span></div>
+  <div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+
+const history = Store.load("speech_training_history", []);
+history.unshift({
+  id: Date.now(),
+  type: "문장완성하기(조사)",
+  subjectId: selectedSubjectId,
+  subjectName: selectedSubject ? selectedSubject.name : "",
+  date: new Date().toISOString(),
+  total,
+  correct,
+  wrong,
+  rate,
+  answers
+});
+  Store.save("speech_training_history", history.slice(0, 200));
+}
+
+renderSubject();
+renderStats();
+generateMaterials();
+</script>
+</body>
+</html>

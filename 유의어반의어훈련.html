@@ -1,0 +1,5128 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>유의어·반의어 훈련</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+    .app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+    .logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+    button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+    .primary { background:#246bfe; color:white; } .secondary { background:#eef3ff; color:#246bfe; } .gray { background:#edf1f6; color:#5d687b; }
+    .blue { background:#246bfe; color:white; } .red { background:#e54848; color:white; }
+    .panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+    .panel h2 { margin:0 0 16px; font-size:22px; }
+    .setup-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+    label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+    select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+    textarea { min-height:74px; resize:vertical; }
+    .subject-box, .help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+    .help-box { margin-top:16px; font-size:14px; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .word-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .item-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:15px; padding:14px; font-size:15px; line-height:1.5; }
+    .item-card strong { color:#246bfe; margin-right:5px; }
+    .tag { display:inline-block; margin-left:6px; padding:3px 8px; border-radius:999px; background:#eef3ff; color:#246bfe; font-size:12px; font-weight:900; }
+    .type-tag { display:inline-block; margin-left:6px; padding:3px 8px; border-radius:999px; font-size:12px; font-weight:900; }
+    .syn { background:#e9f9f2; color:#16a06f; } .ant { background:#fff0f0; color:#e54848; }
+    .hidden { display:none !important; }
+    .progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+    .progress-bar { height:100%; width:0%; background:#246bfe; }
+    .question { color:#246bfe; font-size:25px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+    .training-box { background:#f8faff; border-radius:24px; padding:38px 24px; text-align:center; margin-bottom:18px; min-height:300px; display:grid; place-items:center; }
+    .training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:22px; }
+    .target-word { font-size:72px; font-weight:900; line-height:1.1; word-break:keep-all; letter-spacing:-1px; }
+    .hint-line { display:none; }
+    .mode-label { display:inline-block; padding:8px 18px; border-radius:999px; margin-top:30px; font-size:17px; font-weight:900; background:white; border:1px solid #dbe7ff; color:#246bfe; }
+    .answer-options { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:12px; }
+    .answer-btn { background:#eef3ff; color:#246bfe; border:1px solid #dbe7ff; border-radius:16px; min-height:68px; padding:15px 12px; font-size:24px; font-weight:900; }
+    .answer-btn:hover { background:#dfeaff; }
+    .answer-btn.correct-choice { background:#16a06f; color:white; border-color:#16a06f; }
+    .answer-btn.wrong-choice { background:#e54848; color:white; border-color:#e54848; }
+
+    #feedbackBox.correct { background:#e8fff4; color:#16a06f; border:1px solid #a7f3d0; }
+    #feedbackBox.wrong { background:#fff1f1; color:#e54848; border:1px solid #fecaca; }
+    .oral-box button.correct-choice { background:#16a06f; color:white; }
+    .oral-box button.wrong-choice { background:#e54848; color:white; }
+
+    .oral-box { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .stats-mini { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; font-size:13px; }
+    .stats-mini div { background:#f8faff; border:1px solid #e2e8f0; border-radius:12px; padding:8px 10px; display:flex; justify-content:space-between; gap:6px; }
+    .stats-mini b { color:#246bfe; }
+    .result-panel { background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); border-radius:24px; padding:16px; border:1px solid #edf2f7; box-shadow:0 10px 28px rgba(15,30,60,.05); }
+    .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+    .summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+    .summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+    .summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+    .summary-card span { color:#334155; font-size:15px; font-weight:800; }
+    .summary-card.total strong,.summary-card.rate strong { color:#246bfe; } .summary-card.correct strong { color:#16a06f; } .summary-card.wrong strong { color:#e54848; }
+    .summary-icon.total,.summary-icon.rate { background:#246bfe; } .summary-icon.correct { background:#16a06f; } .summary-icon.wrong { background:#e54848; }
+    @media (max-width:900px){ .setup-grid{grid-template-columns:1fr 1fr;} .word-grid{grid-template-columns:repeat(2,1fr);} .stats-mini{grid-template-columns:repeat(2,1fr);} .topbar{align-items:flex-start; flex-direction:column;} }
+    @media (max-width:560px){ .setup-grid,.word-grid,.answer-options,.summary-grid,.oral-box{grid-template-columns:1fr;} .target-word{font-size:52px;} .question{font-size:21px;} .hint-line { display:none; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar"><div class="brand"><div class="logo">뜻</div><span>유의어·반의어 훈련</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+    <section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+    <section id="setupView" class="panel"><h2>훈련 설정</h2>
+      <div class="setup-grid">
+        <div><label for="relationMode">훈련 유형</label><select id="relationMode" onchange="generateMaterials(); renderStats()"><option value="mixed" selected>유의어+반의어 혼합</option><option value="synonym">유의어만</option><option value="antonym">반의어만</option></select></div>
+        <div><label for="responseMode">응답 방식</label><select id="responseMode" onchange="generateMaterials()"><option value="choice" selected>보기 선택형</option><option value="oral">표현형(정오답 기록)</option></select></div>
+        <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="40">40개</option><option value="50">50개</option></select></div>
+        <div><label for="choiceCount">보기 개수</label><select id="choiceCount" onchange="generateMaterials()"><option value="2" selected>2개 보기</option><option value="4">4개 보기</option></select></div>
+        <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
+      </div>
+      <div class="help-box">제시된 어휘를 듣거나 읽은 뒤, 같은 뜻의 말(유의어) 또는 반대 뜻의 말(반의어)을 찾거나 말하는 훈련입니다. 어휘 이해, 의미 연결, 표현 능력 평가에 활용할 수 있습니다.</div>
+      <div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
+    </section>
+    <section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
+    <section id="statsView" class="panel"><h2>유형별 문항 수</h2><div id="statsBox"></div></section>
+    <section id="trainingView" class="panel hidden"><div id="question" class="question">제시어와 알맞은 관계의 단어를 고르세요.</div><div class="progress-line"><div id="progressBar" class="progress-bar"></div></div><div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="targetWord" class="target-word"></div><div id="hintLine" class="hint-line"></div><div id="modeLabel" class="mode-label"></div></div></div><div id="answerOptions" class="answer-options"></div><div id="oralBox" class="oral-box hidden"><button id="oralCorrectBtn" class="blue" onclick="recordOralAnswer('correct')">정답</button><button id="oralWrongBtn" class="red" onclick="recordOralAnswer('wrong')">오답</button></div><div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div><div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div><div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div></section>
+    <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
+  </main>
+  <script>
+    const Store = { load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }, save(key, value) { localStorage.setItem(key, JSON.stringify(value)); } };
+    const subjects = Store.load("speech_subjects", []);
+    const selectedSubjectId = Store.load("speech_selected_subject", null);
+    const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+
+    const PAIR_DB = [
+      {
+            "type": "synonym",
+            "word": "아름답다",
+            "answer": "예쁘다",
+            "pair": "예쁘다",
+            "options": [
+                  "예쁘다",
+                  "곱다",
+                  "커다랗다",
+                  "조그맣다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "예쁘다",
+            "answer": "곱다",
+            "pair": "곱다",
+            "options": [
+                  "곱다",
+                  "커다랗다",
+                  "조그맣다",
+                  "자그마하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "크다",
+            "answer": "커다랗다",
+            "pair": "커다랗다",
+            "options": [
+                  "커다랗다",
+                  "조그맣다",
+                  "자그마하다",
+                  "신속하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "작다",
+            "answer": "조그맣다",
+            "pair": "조그맣다",
+            "options": [
+                  "조그맣다",
+                  "자그마하다",
+                  "신속하다",
+                  "재빠르다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "작다",
+            "answer": "자그마하다",
+            "pair": "자그마하다",
+            "options": [
+                  "자그마하다",
+                  "신속하다",
+                  "재빠르다",
+                  "더디다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "빠르다",
+            "answer": "신속하다",
+            "pair": "신속하다",
+            "options": [
+                  "신속하다",
+                  "재빠르다",
+                  "더디다",
+                  "굼뜨다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "빠르다",
+            "answer": "재빠르다",
+            "pair": "재빠르다",
+            "options": [
+                  "재빠르다",
+                  "더디다",
+                  "굼뜨다",
+                  "청결하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "느리다",
+            "answer": "더디다",
+            "pair": "더디다",
+            "options": [
+                  "더디다",
+                  "굼뜨다",
+                  "청결하다",
+                  "말끔하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "느리다",
+            "answer": "굼뜨다",
+            "pair": "굼뜨다",
+            "options": [
+                  "굼뜨다",
+                  "청결하다",
+                  "말끔하다",
+                  "지저분하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "깨끗하다",
+            "answer": "청결하다",
+            "pair": "청결하다",
+            "options": [
+                  "청결하다",
+                  "말끔하다",
+                  "지저분하다",
+                  "불결하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "깨끗하다",
+            "answer": "말끔하다",
+            "pair": "말끔하다",
+            "options": [
+                  "말끔하다",
+                  "지저분하다",
+                  "불결하다",
+                  "환하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "더럽다",
+            "answer": "지저분하다",
+            "pair": "지저분하다",
+            "options": [
+                  "지저분하다",
+                  "불결하다",
+                  "환하다",
+                  "명랑하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "더럽다",
+            "answer": "불결하다",
+            "pair": "불결하다",
+            "options": [
+                  "불결하다",
+                  "환하다",
+                  "명랑하다",
+                  "컴컴하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "밝다",
+            "answer": "환하다",
+            "pair": "환하다",
+            "options": [
+                  "환하다",
+                  "명랑하다",
+                  "컴컴하다",
+                  "캄캄하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "밝다",
+            "answer": "명랑하다",
+            "pair": "명랑하다",
+            "options": [
+                  "명랑하다",
+                  "컴컴하다",
+                  "캄캄하다",
+                  "고요하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "어둡다",
+            "answer": "컴컴하다",
+            "pair": "컴컴하다",
+            "options": [
+                  "컴컴하다",
+                  "캄캄하다",
+                  "고요하다",
+                  "잠잠하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "어둡다",
+            "answer": "캄캄하다",
+            "pair": "캄캄하다",
+            "options": [
+                  "캄캄하다",
+                  "고요하다",
+                  "잠잠하다",
+                  "소란스럽다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "조용하다",
+            "answer": "고요하다",
+            "pair": "고요하다",
+            "options": [
+                  "고요하다",
+                  "잠잠하다",
+                  "소란스럽다",
+                  "떠들썩하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "조용하다",
+            "answer": "잠잠하다",
+            "pair": "잠잠하다",
+            "options": [
+                  "잠잠하다",
+                  "소란스럽다",
+                  "떠들썩하다",
+                  "널찍하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "시끄럽다",
+            "answer": "소란스럽다",
+            "pair": "소란스럽다",
+            "options": [
+                  "소란스럽다",
+                  "떠들썩하다",
+                  "널찍하다",
+                  "비좁다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "시끄럽다",
+            "answer": "떠들썩하다",
+            "pair": "떠들썩하다",
+            "options": [
+                  "떠들썩하다",
+                  "널찍하다",
+                  "비좁다",
+                  "우뚝하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "넓다",
+            "answer": "널찍하다",
+            "pair": "널찍하다",
+            "options": [
+                  "널찍하다",
+                  "비좁다",
+                  "우뚝하다",
+                  "나지막하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "좁다",
+            "answer": "비좁다",
+            "pair": "비좁다",
+            "options": [
+                  "비좁다",
+                  "우뚝하다",
+                  "나지막하다",
+                  "기다랗다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "높다",
+            "answer": "우뚝하다",
+            "pair": "우뚝하다",
+            "options": [
+                  "우뚝하다",
+                  "나지막하다",
+                  "기다랗다",
+                  "짤막하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "낮다",
+            "answer": "나지막하다",
+            "pair": "나지막하다",
+            "options": [
+                  "나지막하다",
+                  "기다랗다",
+                  "짤막하다",
+                  "묵직하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "길다",
+            "answer": "기다랗다",
+            "pair": "기다랗다",
+            "options": [
+                  "기다랗다",
+                  "짤막하다",
+                  "묵직하다",
+                  "경쾌하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "짧다",
+            "answer": "짤막하다",
+            "pair": "짤막하다",
+            "options": [
+                  "짤막하다",
+                  "묵직하다",
+                  "경쾌하다",
+                  "견고하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "무겁다",
+            "answer": "묵직하다",
+            "pair": "묵직하다",
+            "options": [
+                  "묵직하다",
+                  "경쾌하다",
+                  "견고하다",
+                  "딱딱하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "가볍다",
+            "answer": "경쾌하다",
+            "pair": "경쾌하다",
+            "options": [
+                  "경쾌하다",
+                  "견고하다",
+                  "딱딱하다",
+                  "연하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "단단하다",
+            "answer": "견고하다",
+            "pair": "견고하다",
+            "options": [
+                  "견고하다",
+                  "딱딱하다",
+                  "연하다",
+                  "온화하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "단단하다",
+            "answer": "딱딱하다",
+            "pair": "딱딱하다",
+            "options": [
+                  "딱딱하다",
+                  "연하다",
+                  "온화하다",
+                  "포근하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "부드럽다",
+            "answer": "연하다",
+            "pair": "연하다",
+            "options": [
+                  "연하다",
+                  "온화하다",
+                  "포근하다",
+                  "차다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "부드럽다",
+            "answer": "온화하다",
+            "pair": "온화하다",
+            "options": [
+                  "온화하다",
+                  "포근하다",
+                  "차다",
+                  "무덥다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "따뜻하다",
+            "answer": "포근하다",
+            "pair": "포근하다",
+            "options": [
+                  "포근하다",
+                  "차다",
+                  "무덥다",
+                  "쌀쌀하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "차갑다",
+            "answer": "차다",
+            "pair": "차다",
+            "options": [
+                  "차다",
+                  "무덥다",
+                  "쌀쌀하다",
+                  "수많다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "덥다",
+            "answer": "무덥다",
+            "pair": "무덥다",
+            "options": [
+                  "무덥다",
+                  "쌀쌀하다",
+                  "수많다",
+                  "드물다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "춥다",
+            "answer": "쌀쌀하다",
+            "pair": "쌀쌀하다",
+            "options": [
+                  "쌀쌀하다",
+                  "수많다",
+                  "드물다",
+                  "동일하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "많다",
+            "answer": "수많다",
+            "pair": "수많다",
+            "options": [
+                  "수많다",
+                  "드물다",
+                  "동일하다",
+                  "상이하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "적다",
+            "answer": "드물다",
+            "pair": "드물다",
+            "options": [
+                  "드물다",
+                  "동일하다",
+                  "상이하다",
+                  "유사하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "같다",
+            "answer": "동일하다",
+            "pair": "동일하다",
+            "options": [
+                  "동일하다",
+                  "상이하다",
+                  "유사하다",
+                  "신선하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "다르다",
+            "answer": "상이하다",
+            "pair": "상이하다",
+            "options": [
+                  "상이하다",
+                  "유사하다",
+                  "신선하다",
+                  "오래되다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "비슷하다",
+            "answer": "유사하다",
+            "pair": "유사하다",
+            "options": [
+                  "유사하다",
+                  "신선하다",
+                  "오래되다",
+                  "훌륭하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "새롭다",
+            "answer": "신선하다",
+            "pair": "신선하다",
+            "options": [
+                  "신선하다",
+                  "오래되다",
+                  "훌륭하다",
+                  "안 좋다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "낡다",
+            "answer": "오래되다",
+            "pair": "오래되다",
+            "options": [
+                  "오래되다",
+                  "훌륭하다",
+                  "안 좋다",
+                  "간단하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "좋다",
+            "answer": "훌륭하다",
+            "pair": "훌륭하다",
+            "options": [
+                  "훌륭하다",
+                  "안 좋다",
+                  "간단하다",
+                  "힘들다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "나쁘다",
+            "answer": "안 좋다",
+            "pair": "안 좋다",
+            "options": [
+                  "안 좋다",
+                  "간단하다",
+                  "힘들다",
+                  "흥미롭다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "쉽다",
+            "answer": "간단하다",
+            "pair": "간단하다",
+            "options": [
+                  "간단하다",
+                  "힘들다",
+                  "흥미롭다",
+                  "따분하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "어렵다",
+            "answer": "힘들다",
+            "pair": "힘들다",
+            "options": [
+                  "힘들다",
+                  "흥미롭다",
+                  "따분하다",
+                  "맛나다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "재미있다",
+            "answer": "흥미롭다",
+            "pair": "흥미롭다",
+            "options": [
+                  "흥미롭다",
+                  "따분하다",
+                  "맛나다",
+                  "맛이 없다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "지루하다",
+            "answer": "따분하다",
+            "pair": "따분하다",
+            "options": [
+                  "따분하다",
+                  "맛나다",
+                  "맛이 없다",
+                  "심심하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "맛있다",
+            "answer": "맛나다",
+            "pair": "맛나다",
+            "options": [
+                  "맛나다",
+                  "맛이 없다",
+                  "심심하다",
+                  "얼큰하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "맛없다",
+            "answer": "맛이 없다",
+            "pair": "맛이 없다",
+            "options": [
+                  "맛이 없다",
+                  "심심하다",
+                  "얼큰하다",
+                  "달콤하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "싱겁다",
+            "answer": "심심하다",
+            "pair": "심심하다",
+            "options": [
+                  "심심하다",
+                  "얼큰하다",
+                  "달콤하다",
+                  "즐겁다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "맵다",
+            "answer": "얼큰하다",
+            "pair": "얼큰하다",
+            "options": [
+                  "얼큰하다",
+                  "달콤하다",
+                  "즐겁다",
+                  "행복하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "달다",
+            "answer": "달콤하다",
+            "pair": "달콤하다",
+            "options": [
+                  "달콤하다",
+                  "즐겁다",
+                  "행복하다",
+                  "유쾌하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "기쁘다",
+            "answer": "즐겁다",
+            "pair": "즐겁다",
+            "options": [
+                  "즐겁다",
+                  "행복하다",
+                  "유쾌하다",
+                  "서럽다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "기쁘다",
+            "answer": "행복하다",
+            "pair": "행복하다",
+            "options": [
+                  "행복하다",
+                  "유쾌하다",
+                  "서럽다",
+                  "우울하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "즐겁다",
+            "answer": "유쾌하다",
+            "pair": "유쾌하다",
+            "options": [
+                  "유쾌하다",
+                  "서럽다",
+                  "우울하다",
+                  "분노하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "슬프다",
+            "answer": "서럽다",
+            "pair": "서럽다",
+            "options": [
+                  "서럽다",
+                  "우울하다",
+                  "분노하다",
+                  "성나다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "슬프다",
+            "answer": "우울하다",
+            "pair": "우울하다",
+            "options": [
+                  "우울하다",
+                  "분노하다",
+                  "성나다",
+                  "두렵다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "화나다",
+            "answer": "분노하다",
+            "pair": "분노하다",
+            "options": [
+                  "분노하다",
+                  "성나다",
+                  "두렵다",
+                  "염려하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "화나다",
+            "answer": "성나다",
+            "pair": "성나다",
+            "options": [
+                  "성나다",
+                  "두렵다",
+                  "염려하다",
+                  "감사하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "무섭다",
+            "answer": "두렵다",
+            "pair": "두렵다",
+            "options": [
+                  "두렵다",
+                  "염려하다",
+                  "감사하다",
+                  "죄송하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "걱정하다",
+            "answer": "염려하다",
+            "pair": "염려하다",
+            "options": [
+                  "염려하다",
+                  "감사하다",
+                  "죄송하다",
+                  "깜짝 놀라다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "고맙다",
+            "answer": "감사하다",
+            "pair": "감사하다",
+            "options": [
+                  "감사하다",
+                  "죄송하다",
+                  "깜짝 놀라다",
+                  "안락하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "미안하다",
+            "answer": "죄송하다",
+            "pair": "죄송하다",
+            "options": [
+                  "죄송하다",
+                  "깜짝 놀라다",
+                  "안락하다",
+                  "거북하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "놀라다",
+            "answer": "깜짝 놀라다",
+            "pair": "깜짝 놀라다",
+            "options": [
+                  "깜짝 놀라다",
+                  "안락하다",
+                  "거북하다",
+                  "쓸쓸하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "편하다",
+            "answer": "안락하다",
+            "pair": "안락하다",
+            "options": [
+                  "안락하다",
+                  "거북하다",
+                  "쓸쓸하다",
+                  "보고 싶다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "불편하다",
+            "answer": "거북하다",
+            "pair": "거북하다",
+            "options": [
+                  "거북하다",
+                  "쓸쓸하다",
+                  "보고 싶다",
+                  "바라다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "외롭다",
+            "answer": "쓸쓸하다",
+            "pair": "쓸쓸하다",
+            "options": [
+                  "쓸쓸하다",
+                  "보고 싶다",
+                  "바라다",
+                  "선호하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "그립다",
+            "answer": "보고 싶다",
+            "pair": "보고 싶다",
+            "options": [
+                  "보고 싶다",
+                  "바라다",
+                  "선호하다",
+                  "꺼리다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "원하다",
+            "answer": "바라다",
+            "pair": "바라다",
+            "options": [
+                  "바라다",
+                  "선호하다",
+                  "꺼리다",
+                  "아끼다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "좋아하다",
+            "answer": "선호하다",
+            "pair": "선호하다",
+            "options": [
+                  "선호하다",
+                  "꺼리다",
+                  "아끼다",
+                  "싫어하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "싫어하다",
+            "answer": "꺼리다",
+            "pair": "꺼리다",
+            "options": [
+                  "꺼리다",
+                  "아끼다",
+                  "싫어하다",
+                  "신뢰하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "사랑하다",
+            "answer": "아끼다",
+            "pair": "아끼다",
+            "options": [
+                  "아끼다",
+                  "싫어하다",
+                  "신뢰하다",
+                  "불신하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "미워하다",
+            "answer": "싫어하다",
+            "pair": "싫어하다",
+            "options": [
+                  "싫어하다",
+                  "신뢰하다",
+                  "불신하다",
+                  "솔직하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "믿다",
+            "answer": "신뢰하다",
+            "pair": "신뢰하다",
+            "options": [
+                  "신뢰하다",
+                  "불신하다",
+                  "솔직하다",
+                  "선하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "의심하다",
+            "answer": "불신하다",
+            "pair": "불신하다",
+            "options": [
+                  "불신하다",
+                  "솔직하다",
+                  "선하다",
+                  "상냥하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "정직하다",
+            "answer": "솔직하다",
+            "pair": "솔직하다",
+            "options": [
+                  "솔직하다",
+                  "선하다",
+                  "상냥하다",
+                  "다정하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "착하다",
+            "answer": "선하다",
+            "pair": "선하다",
+            "options": [
+                  "선하다",
+                  "상냥하다",
+                  "다정하다",
+                  "버릇없다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "친절하다",
+            "answer": "상냥하다",
+            "pair": "상냥하다",
+            "options": [
+                  "상냥하다",
+                  "다정하다",
+                  "버릇없다",
+                  "씩씩하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "친절하다",
+            "answer": "다정하다",
+            "pair": "다정하다",
+            "options": [
+                  "다정하다",
+                  "버릇없다",
+                  "씩씩하다",
+                  "수줍다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "무례하다",
+            "answer": "버릇없다",
+            "pair": "버릇없다",
+            "options": [
+                  "버릇없다",
+                  "씩씩하다",
+                  "수줍다",
+                  "보행하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "용감하다",
+            "answer": "씩씩하다",
+            "pair": "씩씩하다",
+            "options": [
+                  "씩씩하다",
+                  "수줍다",
+                  "보행하다",
+                  "달리다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "부끄럽다",
+            "answer": "수줍다",
+            "pair": "수줍다",
+            "options": [
+                  "수줍다",
+                  "보행하다",
+                  "달리다",
+                  "쳐다보다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "걷다",
+            "answer": "보행하다",
+            "pair": "보행하다",
+            "options": [
+                  "보행하다",
+                  "달리다",
+                  "쳐다보다",
+                  "경청하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "뛰다",
+            "answer": "달리다",
+            "pair": "달리다",
+            "options": [
+                  "달리다",
+                  "쳐다보다",
+                  "경청하다",
+                  "이야기하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "보다",
+            "answer": "쳐다보다",
+            "pair": "쳐다보다",
+            "options": [
+                  "쳐다보다",
+                  "경청하다",
+                  "이야기하다",
+                  "질문하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "듣다",
+            "answer": "경청하다",
+            "pair": "경청하다",
+            "options": [
+                  "경청하다",
+                  "이야기하다",
+                  "질문하다",
+                  "응답하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "말하다",
+            "answer": "이야기하다",
+            "pair": "이야기하다",
+            "options": [
+                  "이야기하다",
+                  "질문하다",
+                  "응답하다",
+                  "섭취하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "묻다",
+            "answer": "질문하다",
+            "pair": "질문하다",
+            "options": [
+                  "질문하다",
+                  "응답하다",
+                  "섭취하다",
+                  "들이켜다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "대답하다",
+            "answer": "응답하다",
+            "pair": "응답하다",
+            "options": [
+                  "응답하다",
+                  "섭취하다",
+                  "들이켜다",
+                  "잠자다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "먹다",
+            "answer": "섭취하다",
+            "pair": "섭취하다",
+            "options": [
+                  "섭취하다",
+                  "들이켜다",
+                  "잠자다",
+                  "휴식하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "마시다",
+            "answer": "들이켜다",
+            "pair": "들이켜다",
+            "options": [
+                  "들이켜다",
+                  "잠자다",
+                  "휴식하다",
+                  "도와주다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "자다",
+            "answer": "잠자다",
+            "pair": "잠자다",
+            "options": [
+                  "잠자다",
+                  "휴식하다",
+                  "도와주다",
+                  "지원하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "쉬다",
+            "answer": "휴식하다",
+            "pair": "휴식하다",
+            "options": [
+                  "휴식하다",
+                  "도와주다",
+                  "지원하다",
+                  "수리하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "돕다",
+            "answer": "도와주다",
+            "pair": "도와주다",
+            "options": [
+                  "도와주다",
+                  "지원하다",
+                  "수리하다",
+                  "제작하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "돕다",
+            "answer": "지원하다",
+            "pair": "지원하다",
+            "options": [
+                  "지원하다",
+                  "수리하다",
+                  "제작하다",
+                  "이용하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "고치다",
+            "answer": "수리하다",
+            "pair": "수리하다",
+            "options": [
+                  "수리하다",
+                  "제작하다",
+                  "이용하다",
+                  "발견하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "만들다",
+            "answer": "제작하다",
+            "pair": "제작하다",
+            "options": [
+                  "제작하다",
+                  "이용하다",
+                  "발견하다",
+                  "상실하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "사용하다",
+            "answer": "이용하다",
+            "pair": "이용하다",
+            "options": [
+                  "이용하다",
+                  "발견하다",
+                  "상실하다",
+                  "회상하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "찾다",
+            "answer": "발견하다",
+            "pair": "발견하다",
+            "options": [
+                  "발견하다",
+                  "상실하다",
+                  "회상하다",
+                  "망각하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "잃다",
+            "answer": "상실하다",
+            "pair": "상실하다",
+            "options": [
+                  "상실하다",
+                  "회상하다",
+                  "망각하다",
+                  "대기하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "기억하다",
+            "answer": "회상하다",
+            "pair": "회상하다",
+            "options": [
+                  "회상하다",
+                  "망각하다",
+                  "대기하다",
+                  "이동하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "잊다",
+            "answer": "망각하다",
+            "pair": "망각하다",
+            "options": [
+                  "망각하다",
+                  "대기하다",
+                  "이동하다",
+                  "정지하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "기다리다",
+            "answer": "대기하다",
+            "pair": "대기하다",
+            "options": [
+                  "대기하다",
+                  "이동하다",
+                  "정지하다",
+                  "오르다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "움직이다",
+            "answer": "이동하다",
+            "pair": "이동하다",
+            "options": [
+                  "이동하다",
+                  "정지하다",
+                  "오르다",
+                  "하강하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "멈추다",
+            "answer": "정지하다",
+            "pair": "정지하다",
+            "options": [
+                  "정지하다",
+                  "오르다",
+                  "하강하다",
+                  "입장하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "올라가다",
+            "answer": "오르다",
+            "pair": "오르다",
+            "options": [
+                  "오르다",
+                  "하강하다",
+                  "입장하다",
+                  "나가다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "내려가다",
+            "answer": "하강하다",
+            "pair": "하강하다",
+            "options": [
+                  "하강하다",
+                  "입장하다",
+                  "나가다",
+                  "건네다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "들어가다",
+            "answer": "입장하다",
+            "pair": "입장하다",
+            "options": [
+                  "입장하다",
+                  "나가다",
+                  "건네다",
+                  "수령하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "나오다",
+            "answer": "나가다",
+            "pair": "나가다",
+            "options": [
+                  "나가다",
+                  "건네다",
+                  "수령하다",
+                  "개방하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "주다",
+            "answer": "건네다",
+            "pair": "건네다",
+            "options": [
+                  "건네다",
+                  "수령하다",
+                  "개방하다",
+                  "폐쇄하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "받다",
+            "answer": "수령하다",
+            "pair": "수령하다",
+            "options": [
+                  "수령하다",
+                  "개방하다",
+                  "폐쇄하다",
+                  "밀어내다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "열다",
+            "answer": "개방하다",
+            "pair": "개방하다",
+            "options": [
+                  "개방하다",
+                  "폐쇄하다",
+                  "밀어내다",
+                  "끌어당기다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "닫다",
+            "answer": "폐쇄하다",
+            "pair": "폐쇄하다",
+            "options": [
+                  "폐쇄하다",
+                  "밀어내다",
+                  "끌어당기다",
+                  "붙잡다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "밀다",
+            "answer": "밀어내다",
+            "pair": "밀어내다",
+            "options": [
+                  "밀어내다",
+                  "끌어당기다",
+                  "붙잡다",
+                  "내려놓다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "당기다",
+            "answer": "끌어당기다",
+            "pair": "끌어당기다",
+            "options": [
+                  "끌어당기다",
+                  "붙잡다",
+                  "내려놓다",
+                  "착석하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "잡다",
+            "answer": "붙잡다",
+            "pair": "붙잡다",
+            "options": [
+                  "붙잡다",
+                  "내려놓다",
+                  "착석하다",
+                  "기립하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "놓다",
+            "answer": "내려놓다",
+            "pair": "내려놓다",
+            "options": [
+                  "내려놓다",
+                  "착석하다",
+                  "기립하다",
+                  "드러눕다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "앉다",
+            "answer": "착석하다",
+            "pair": "착석하다",
+            "options": [
+                  "착석하다",
+                  "기립하다",
+                  "드러눕다",
+                  "세척하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "일어서다",
+            "answer": "기립하다",
+            "pair": "기립하다",
+            "options": [
+                  "기립하다",
+                  "드러눕다",
+                  "세척하다",
+                  "착용하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "눕다",
+            "answer": "드러눕다",
+            "pair": "드러눕다",
+            "options": [
+                  "드러눕다",
+                  "세척하다",
+                  "착용하다",
+                  "개시하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "씻다",
+            "answer": "세척하다",
+            "pair": "세척하다",
+            "options": [
+                  "세척하다",
+                  "착용하다",
+                  "개시하다",
+                  "마무리하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "입다",
+            "answer": "착용하다",
+            "pair": "착용하다",
+            "options": [
+                  "착용하다",
+                  "개시하다",
+                  "마무리하다",
+                  "마지막"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "시작하다",
+            "answer": "개시하다",
+            "pair": "개시하다",
+            "options": [
+                  "개시하다",
+                  "마무리하다",
+                  "마지막",
+                  "시작"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "끝내다",
+            "answer": "마무리하다",
+            "pair": "마무리하다",
+            "options": [
+                  "마무리하다",
+                  "마지막",
+                  "시작",
+                  "떠남"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "끝",
+            "answer": "마지막",
+            "pair": "마지막",
+            "options": [
+                  "마지막",
+                  "시작",
+                  "떠남",
+                  "도달"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "처음",
+            "answer": "시작",
+            "pair": "시작",
+            "options": [
+                  "시작",
+                  "떠남",
+                  "도달",
+                  "대비하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "출발",
+            "answer": "떠남",
+            "pair": "떠남",
+            "options": [
+                  "떠남",
+                  "도달",
+                  "대비하다",
+                  "정돈하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "도착",
+            "answer": "도달",
+            "pair": "도달",
+            "options": [
+                  "도달",
+                  "대비하다",
+                  "정돈하다",
+                  "소제하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "준비하다",
+            "answer": "대비하다",
+            "pair": "대비하다",
+            "options": [
+                  "대비하다",
+                  "정돈하다",
+                  "소제하다",
+                  "적다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "정리하다",
+            "answer": "정돈하다",
+            "pair": "정돈하다",
+            "options": [
+                  "정돈하다",
+                  "소제하다",
+                  "적다",
+                  "해설하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "청소하다",
+            "answer": "소제하다",
+            "pair": "소제하다",
+            "options": [
+                  "소제하다",
+                  "적다",
+                  "해설하다",
+                  "통보하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "기록하다",
+            "answer": "적다",
+            "pair": "적다",
+            "options": [
+                  "적다",
+                  "해설하다",
+                  "통보하다",
+                  "점검하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "설명하다",
+            "answer": "해설하다",
+            "pair": "해설하다",
+            "options": [
+                  "해설하다",
+                  "통보하다",
+                  "점검하다",
+                  "고르다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "알리다",
+            "answer": "통보하다",
+            "pair": "통보하다",
+            "options": [
+                  "통보하다",
+                  "점검하다",
+                  "고르다",
+                  "판단하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "확인하다",
+            "answer": "점검하다",
+            "pair": "점검하다",
+            "options": [
+                  "점검하다",
+                  "고르다",
+                  "판단하다",
+                  "부탁하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "선택하다",
+            "answer": "고르다",
+            "pair": "고르다",
+            "options": [
+                  "고르다",
+                  "판단하다",
+                  "부탁하다",
+                  "받아들이다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "결정하다",
+            "answer": "판단하다",
+            "pair": "판단하다",
+            "options": [
+                  "판단하다",
+                  "부탁하다",
+                  "받아들이다",
+                  "거부하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "요청하다",
+            "answer": "부탁하다",
+            "pair": "부탁하다",
+            "options": [
+                  "부탁하다",
+                  "받아들이다",
+                  "거부하다",
+                  "참가하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "수락하다",
+            "answer": "받아들이다",
+            "pair": "받아들이다",
+            "options": [
+                  "받아들이다",
+                  "거부하다",
+                  "참가하다",
+                  "협조하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "거절하다",
+            "answer": "거부하다",
+            "pair": "거부하다",
+            "options": [
+                  "거부하다",
+                  "참가하다",
+                  "협조하다",
+                  "애쓰다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "참여하다",
+            "answer": "참가하다",
+            "pair": "참가하다",
+            "options": [
+                  "참가하다",
+                  "협조하다",
+                  "애쓰다",
+                  "단념하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "협력하다",
+            "answer": "협조하다",
+            "pair": "협조하다",
+            "options": [
+                  "협조하다",
+                  "애쓰다",
+                  "단념하다",
+                  "도전하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "노력하다",
+            "answer": "애쓰다",
+            "pair": "애쓰다",
+            "options": [
+                  "애쓰다",
+                  "단념하다",
+                  "도전하다",
+                  "해내다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "포기하다",
+            "answer": "단념하다",
+            "pair": "단념하다",
+            "options": [
+                  "단념하다",
+                  "도전하다",
+                  "해내다",
+                  "좌절하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "시도하다",
+            "answer": "도전하다",
+            "pair": "도전하다",
+            "options": [
+                  "도전하다",
+                  "해내다",
+                  "좌절하다",
+                  "향상하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "성공하다",
+            "answer": "해내다",
+            "pair": "해내다",
+            "options": [
+                  "해내다",
+                  "좌절하다",
+                  "향상하다",
+                  "나빠지다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "실패하다",
+            "answer": "좌절하다",
+            "pair": "좌절하다",
+            "options": [
+                  "좌절하다",
+                  "향상하다",
+                  "나빠지다",
+                  "지속하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "개선하다",
+            "answer": "향상하다",
+            "pair": "향상하다",
+            "options": [
+                  "향상하다",
+                  "나빠지다",
+                  "지속하다",
+                  "늘어나다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "악화하다",
+            "answer": "나빠지다",
+            "pair": "나빠지다",
+            "options": [
+                  "나빠지다",
+                  "지속하다",
+                  "늘어나다",
+                  "줄어들다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "유지하다",
+            "answer": "지속하다",
+            "pair": "지속하다",
+            "options": [
+                  "지속하다",
+                  "늘어나다",
+                  "줄어들다",
+                  "예방하다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "증가하다",
+            "answer": "늘어나다",
+            "pair": "늘어나다",
+            "options": [
+                  "늘어나다",
+                  "줄어들다",
+                  "예방하다",
+                  "지키다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "감소하다",
+            "answer": "줄어들다",
+            "pair": "줄어들다",
+            "options": [
+                  "줄어들다",
+                  "예방하다",
+                  "지키다",
+                  "부수다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "방지하다",
+            "answer": "예방하다",
+            "pair": "예방하다",
+            "options": [
+                  "예방하다",
+                  "지키다",
+                  "부수다",
+                  "잇다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "보호하다",
+            "answer": "지키다",
+            "pair": "지키다",
+            "options": [
+                  "지키다",
+                  "부수다",
+                  "잇다",
+                  "떼어놓다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "파괴하다",
+            "answer": "부수다",
+            "pair": "부수다",
+            "options": [
+                  "부수다",
+                  "잇다",
+                  "떼어놓다",
+                  "질환"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "연결하다",
+            "answer": "잇다",
+            "pair": "잇다",
+            "options": [
+                  "잇다",
+                  "떼어놓다",
+                  "질환",
+                  "상태"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "분리하다",
+            "answer": "떼어놓다",
+            "pair": "떼어놓다",
+            "options": [
+                  "떼어놓다",
+                  "질환",
+                  "상태",
+                  "아픔"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "병",
+            "answer": "질환",
+            "pair": "질환",
+            "options": [
+                  "질환",
+                  "상태",
+                  "아픔",
+                  "머리 아픔"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "증상",
+            "answer": "상태",
+            "pair": "상태",
+            "options": [
+                  "상태",
+                  "아픔",
+                  "머리 아픔",
+                  "배 아픔"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "통증",
+            "answer": "아픔",
+            "pair": "아픔",
+            "options": [
+                  "아픔",
+                  "머리 아픔",
+                  "배 아픔",
+                  "콜록거림"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "두통",
+            "answer": "머리 아픔",
+            "pair": "머리 아픔",
+            "options": [
+                  "머리 아픔",
+                  "배 아픔",
+                  "콜록거림",
+                  "숨쉬기"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "복통",
+            "answer": "배 아픔",
+            "pair": "배 아픔",
+            "options": [
+                  "배 아픔",
+                  "콜록거림",
+                  "숨쉬기",
+                  "현기증"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "기침",
+            "answer": "콜록거림",
+            "pair": "콜록거림",
+            "options": [
+                  "콜록거림",
+                  "숨쉬기",
+                  "현기증",
+                  "피곤함"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "호흡",
+            "answer": "숨쉬기",
+            "pair": "숨쉬기",
+            "options": [
+                  "숨쉬기",
+                  "현기증",
+                  "피곤함",
+                  "호전"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "어지럼",
+            "answer": "현기증",
+            "pair": "현기증",
+            "options": [
+                  "현기증",
+                  "피곤함",
+                  "호전",
+                  "처치"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "피로",
+            "answer": "피곤함",
+            "pair": "피곤함",
+            "options": [
+                  "피곤함",
+                  "호전",
+                  "처치",
+                  "검진"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "회복",
+            "answer": "호전",
+            "pair": "호전",
+            "options": [
+                  "호전",
+                  "처치",
+                  "검진",
+                  "진찰"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "치료",
+            "answer": "처치",
+            "pair": "처치",
+            "options": [
+                  "처치",
+                  "검진",
+                  "진찰",
+                  "약 지시"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "검사",
+            "answer": "검진",
+            "pair": "검진",
+            "options": [
+                  "검진",
+                  "진찰",
+                  "약 지시",
+                  "약 먹기"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "진료",
+            "answer": "진찰",
+            "pair": "진찰",
+            "options": [
+                  "진찰",
+                  "약 지시",
+                  "약 먹기",
+                  "의료진"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "처방",
+            "answer": "약 지시",
+            "pair": "약 지시",
+            "options": [
+                  "약 지시",
+                  "약 먹기",
+                  "의료진",
+                  "간호 인력"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "복용",
+            "answer": "약 먹기",
+            "pair": "약 먹기",
+            "options": [
+                  "약 먹기",
+                  "의료진",
+                  "간호 인력",
+                  "재활 전문가"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "의사",
+            "answer": "의료진",
+            "pair": "의료진",
+            "options": [
+                  "의료진",
+                  "간호 인력",
+                  "재활 전문가",
+                  "대상자"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "간호사",
+            "answer": "간호 인력",
+            "pair": "간호 인력",
+            "options": [
+                  "간호 인력",
+                  "재활 전문가",
+                  "대상자",
+                  "가족"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "치료사",
+            "answer": "재활 전문가",
+            "pair": "재활 전문가",
+            "options": [
+                  "재활 전문가",
+                  "대상자",
+                  "가족",
+                  "회복 훈련"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "환자",
+            "answer": "대상자",
+            "pair": "대상자",
+            "options": [
+                  "대상자",
+                  "가족",
+                  "회복 훈련",
+                  "걷기"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "보호자",
+            "answer": "가족",
+            "pair": "가족",
+            "options": [
+                  "가족",
+                  "회복 훈련",
+                  "걷기",
+                  "힘"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "재활",
+            "answer": "회복 훈련",
+            "pair": "회복 훈련",
+            "options": [
+                  "회복 훈련",
+                  "걷기",
+                  "힘",
+                  "평형"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "보행",
+            "answer": "걷기",
+            "pair": "걷기",
+            "options": [
+                  "걷기",
+                  "힘",
+                  "평형",
+                  "활동"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "근력",
+            "answer": "힘",
+            "pair": "힘",
+            "options": [
+                  "힘",
+                  "평형",
+                  "활동",
+                  "연습"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "균형",
+            "answer": "평형",
+            "pair": "평형",
+            "options": [
+                  "평형",
+                  "활동",
+                  "연습",
+                  "검사"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "운동",
+            "answer": "활동",
+            "pair": "활동",
+            "options": [
+                  "활동",
+                  "연습",
+                  "검사",
+                  "목적"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "훈련",
+            "answer": "연습",
+            "pair": "연습",
+            "options": [
+                  "연습",
+                  "검사",
+                  "목적",
+                  "방식"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "평가",
+            "answer": "검사",
+            "pair": "검사",
+            "options": [
+                  "검사",
+                  "목적",
+                  "방식",
+                  "차례"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "목표",
+            "answer": "목적",
+            "pair": "목적",
+            "options": [
+                  "목적",
+                  "방식",
+                  "차례",
+                  "시각"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "방법",
+            "answer": "방식",
+            "pair": "방식",
+            "options": [
+                  "방식",
+                  "차례",
+                  "시각",
+                  "일자"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "순서",
+            "answer": "차례",
+            "pair": "차례",
+            "options": [
+                  "차례",
+                  "시각",
+                  "일자",
+                  "성명"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "시간",
+            "answer": "시각",
+            "pair": "시각",
+            "options": [
+                  "시각",
+                  "일자",
+                  "성명",
+                  "거주지"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "날짜",
+            "answer": "일자",
+            "pair": "일자",
+            "options": [
+                  "일자",
+                  "성명",
+                  "거주지",
+                  "통화"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "이름",
+            "answer": "성명",
+            "pair": "성명",
+            "options": [
+                  "성명",
+                  "거주지",
+                  "통화",
+                  "뉴스"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "주소",
+            "answer": "거주지",
+            "pair": "거주지",
+            "options": [
+                  "거주지",
+                  "통화",
+                  "뉴스",
+                  "그림"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "전화",
+            "answer": "통화",
+            "pair": "통화",
+            "options": [
+                  "통화",
+                  "뉴스",
+                  "그림",
+                  "물품"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "소식",
+            "answer": "뉴스",
+            "pair": "뉴스",
+            "options": [
+                  "뉴스",
+                  "그림",
+                  "물품",
+                  "의복"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "사진",
+            "answer": "그림",
+            "pair": "그림",
+            "options": [
+                  "그림",
+                  "물품",
+                  "의복",
+                  "먹거리"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "물건",
+            "answer": "물품",
+            "pair": "물품",
+            "options": [
+                  "물품",
+                  "의복",
+                  "먹거리",
+                  "예쁘다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "옷",
+            "answer": "의복",
+            "pair": "의복",
+            "options": [
+                  "의복",
+                  "먹거리",
+                  "예쁘다",
+                  "곱다"
+            ]
+      },
+      {
+            "type": "synonym",
+            "word": "음식",
+            "answer": "먹거리",
+            "pair": "먹거리",
+            "options": [
+                  "먹거리",
+                  "예쁘다",
+                  "곱다",
+                  "커다랗다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "크다",
+            "answer": "작다",
+            "pair": "작다",
+            "options": [
+                  "작다",
+                  "낮다",
+                  "짧다",
+                  "좁다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "높다",
+            "answer": "낮다",
+            "pair": "낮다",
+            "options": [
+                  "낮다",
+                  "짧다",
+                  "좁다",
+                  "얇다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "길다",
+            "answer": "짧다",
+            "pair": "짧다",
+            "options": [
+                  "짧다",
+                  "좁다",
+                  "얇다",
+                  "가늘다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "넓다",
+            "answer": "좁다",
+            "pair": "좁다",
+            "options": [
+                  "좁다",
+                  "얇다",
+                  "가늘다",
+                  "얕다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "두껍다",
+            "answer": "얇다",
+            "pair": "얇다",
+            "options": [
+                  "얇다",
+                  "가늘다",
+                  "얕다",
+                  "가볍다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "굵다",
+            "answer": "가늘다",
+            "pair": "가늘다",
+            "options": [
+                  "가늘다",
+                  "얕다",
+                  "가볍다",
+                  "적다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "깊다",
+            "answer": "얕다",
+            "pair": "얕다",
+            "options": [
+                  "얕다",
+                  "가볍다",
+                  "적다",
+                  "텅 빔"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "무겁다",
+            "answer": "가볍다",
+            "pair": "가볍다",
+            "options": [
+                  "가볍다",
+                  "적다",
+                  "텅 빔",
+                  "느리다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "많다",
+            "answer": "적다",
+            "pair": "적다",
+            "options": [
+                  "적다",
+                  "텅 빔",
+                  "느리다",
+                  "늦다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "가득",
+            "answer": "텅 빔",
+            "pair": "텅 빔",
+            "options": [
+                  "텅 빔",
+                  "느리다",
+                  "늦다",
+                  "어렵다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "빠르다",
+            "answer": "느리다",
+            "pair": "느리다",
+            "options": [
+                  "느리다",
+                  "늦다",
+                  "어렵다",
+                  "복잡하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "이르다",
+            "answer": "늦다",
+            "pair": "늦다",
+            "options": [
+                  "늦다",
+                  "어렵다",
+                  "복잡하다",
+                  "불편하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "쉽다",
+            "answer": "어렵다",
+            "pair": "어렵다",
+            "options": [
+                  "어렵다",
+                  "복잡하다",
+                  "불편하다",
+                  "더럽다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "단순하다",
+            "answer": "복잡하다",
+            "pair": "복잡하다",
+            "options": [
+                  "복잡하다",
+                  "불편하다",
+                  "더럽다",
+                  "어둡다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "편하다",
+            "answer": "불편하다",
+            "pair": "불편하다",
+            "options": [
+                  "불편하다",
+                  "더럽다",
+                  "어둡다",
+                  "차갑다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "깨끗하다",
+            "answer": "더럽다",
+            "pair": "더럽다",
+            "options": [
+                  "더럽다",
+                  "어둡다",
+                  "차갑다",
+                  "춥다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "밝다",
+            "answer": "어둡다",
+            "pair": "어둡다",
+            "options": [
+                  "어둡다",
+                  "차갑다",
+                  "춥다",
+                  "젖다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "따뜻하다",
+            "answer": "차갑다",
+            "pair": "차갑다",
+            "options": [
+                  "차갑다",
+                  "춥다",
+                  "젖다",
+                  "딱딱하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "덥다",
+            "answer": "춥다",
+            "pair": "춥다",
+            "options": [
+                  "춥다",
+                  "젖다",
+                  "딱딱하다",
+                  "약하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "마르다",
+            "answer": "젖다",
+            "pair": "젖다",
+            "options": [
+                  "젖다",
+                  "딱딱하다",
+                  "약하다",
+                  "아프다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "부드럽다",
+            "answer": "딱딱하다",
+            "pair": "딱딱하다",
+            "options": [
+                  "딱딱하다",
+                  "약하다",
+                  "아프다",
+                  "위험하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "강하다",
+            "answer": "약하다",
+            "pair": "약하다",
+            "options": [
+                  "약하다",
+                  "아프다",
+                  "위험하다",
+                  "비정상"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "건강하다",
+            "answer": "아프다",
+            "pair": "아프다",
+            "options": [
+                  "아프다",
+                  "위험하다",
+                  "비정상",
+                  "낡다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "안전하다",
+            "answer": "위험하다",
+            "pair": "위험하다",
+            "options": [
+                  "위험하다",
+                  "비정상",
+                  "낡다",
+                  "나쁘다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "정상",
+            "answer": "비정상",
+            "pair": "비정상",
+            "options": [
+                  "비정상",
+                  "낡다",
+                  "나쁘다",
+                  "못되다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "새롭다",
+            "answer": "낡다",
+            "pair": "낡다",
+            "options": [
+                  "낡다",
+                  "나쁘다",
+                  "못되다",
+                  "못생기다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "좋다",
+            "answer": "나쁘다",
+            "pair": "나쁘다",
+            "options": [
+                  "나쁘다",
+                  "못되다",
+                  "못생기다",
+                  "시끄럽다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "착하다",
+            "answer": "못되다",
+            "pair": "못되다",
+            "options": [
+                  "못되다",
+                  "못생기다",
+                  "시끄럽다",
+                  "멀다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "예쁘다",
+            "answer": "못생기다",
+            "pair": "못생기다",
+            "options": [
+                  "못생기다",
+                  "시끄럽다",
+                  "멀다",
+                  "밖"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "조용하다",
+            "answer": "시끄럽다",
+            "pair": "시끄럽다",
+            "options": [
+                  "시끄럽다",
+                  "멀다",
+                  "밖",
+                  "겉"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "가깝다",
+            "answer": "멀다",
+            "pair": "멀다",
+            "options": [
+                  "멀다",
+                  "밖",
+                  "겉",
+                  "아래"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "안",
+            "answer": "밖",
+            "pair": "밖",
+            "options": [
+                  "밖",
+                  "겉",
+                  "아래",
+                  "뒤"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "속",
+            "answer": "겉",
+            "pair": "겉",
+            "options": [
+                  "겉",
+                  "아래",
+                  "뒤",
+                  "오른쪽"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "위",
+            "answer": "아래",
+            "pair": "아래",
+            "options": [
+                  "아래",
+                  "뒤",
+                  "오른쪽",
+                  "바깥쪽"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "앞",
+            "answer": "뒤",
+            "pair": "뒤",
+            "options": [
+                  "뒤",
+                  "오른쪽",
+                  "바깥쪽",
+                  "왼편"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "왼쪽",
+            "answer": "오른쪽",
+            "pair": "오른쪽",
+            "options": [
+                  "오른쪽",
+                  "바깥쪽",
+                  "왼편",
+                  "후방"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "안쪽",
+            "answer": "바깥쪽",
+            "pair": "바깥쪽",
+            "options": [
+                  "바깥쪽",
+                  "왼편",
+                  "후방",
+                  "가장자리"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "오른편",
+            "answer": "왼편",
+            "pair": "왼편",
+            "options": [
+                  "왼편",
+                  "후방",
+                  "가장자리",
+                  "아래쪽"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "전방",
+            "answer": "후방",
+            "pair": "후방",
+            "options": [
+                  "후방",
+                  "가장자리",
+                  "아래쪽",
+                  "서쪽"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "중앙",
+            "answer": "가장자리",
+            "pair": "가장자리",
+            "options": [
+                  "가장자리",
+                  "아래쪽",
+                  "서쪽",
+                  "북쪽"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "위쪽",
+            "answer": "아래쪽",
+            "pair": "아래쪽",
+            "options": [
+                  "아래쪽",
+                  "서쪽",
+                  "북쪽",
+                  "출구"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "동쪽",
+            "answer": "서쪽",
+            "pair": "서쪽",
+            "options": [
+                  "서쪽",
+                  "북쪽",
+                  "출구",
+                  "실외"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "남쪽",
+            "answer": "북쪽",
+            "pair": "북쪽",
+            "options": [
+                  "북쪽",
+                  "출구",
+                  "실외",
+                  "저녁"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "입구",
+            "answer": "출구",
+            "pair": "출구",
+            "options": [
+                  "출구",
+                  "실외",
+                  "저녁",
+                  "밤"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "실내",
+            "answer": "실외",
+            "pair": "실외",
+            "options": [
+                  "실외",
+                  "저녁",
+                  "밤",
+                  "오후"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "아침",
+            "answer": "저녁",
+            "pair": "저녁",
+            "options": [
+                  "저녁",
+                  "밤",
+                  "오후",
+                  "내일"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "낮",
+            "answer": "밤",
+            "pair": "밤",
+            "options": [
+                  "밤",
+                  "오후",
+                  "내일",
+                  "오늘"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "오전",
+            "answer": "오후",
+            "pair": "오후",
+            "options": [
+                  "오후",
+                  "내일",
+                  "오늘",
+                  "미래"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "오늘",
+            "answer": "내일",
+            "pair": "내일",
+            "options": [
+                  "내일",
+                  "오늘",
+                  "미래",
+                  "나중"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "어제",
+            "answer": "오늘",
+            "pair": "오늘",
+            "options": [
+                  "오늘",
+                  "미래",
+                  "나중",
+                  "마지막"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "과거",
+            "answer": "미래",
+            "pair": "미래",
+            "options": [
+                  "미래",
+                  "나중",
+                  "마지막",
+                  "끝"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "먼저",
+            "answer": "나중",
+            "pair": "나중",
+            "options": [
+                  "나중",
+                  "마지막",
+                  "끝",
+                  "도착"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "처음",
+            "answer": "마지막",
+            "pair": "마지막",
+            "options": [
+                  "마지막",
+                  "끝",
+                  "도착",
+                  "늦게"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "시작",
+            "answer": "끝",
+            "pair": "끝",
+            "options": [
+                  "끝",
+                  "도착",
+                  "늦게",
+                  "가끔"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "출발",
+            "answer": "도착",
+            "pair": "도착",
+            "options": [
+                  "도착",
+                  "늦게",
+                  "가끔",
+                  "드물게"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "일찍",
+            "answer": "늦게",
+            "pair": "늦게",
+            "options": [
+                  "늦게",
+                  "가끔",
+                  "드물게",
+                  "오래"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "항상",
+            "answer": "가끔",
+            "pair": "가끔",
+            "options": [
+                  "가끔",
+                  "드물게",
+                  "오래",
+                  "식후"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "자주",
+            "answer": "드물게",
+            "pair": "드물게",
+            "options": [
+                  "드물게",
+                  "오래",
+                  "식후",
+                  "슬프다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "잠시",
+            "answer": "오래",
+            "pair": "오래",
+            "options": [
+                  "오래",
+                  "식후",
+                  "슬프다",
+                  "괴롭다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "식전",
+            "answer": "식후",
+            "pair": "식후",
+            "options": [
+                  "식후",
+                  "슬프다",
+                  "괴롭다",
+                  "불행하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "기쁘다",
+            "answer": "슬프다",
+            "pair": "슬프다",
+            "options": [
+                  "슬프다",
+                  "괴롭다",
+                  "불행하다",
+                  "울다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "즐겁다",
+            "answer": "괴롭다",
+            "pair": "괴롭다",
+            "options": [
+                  "괴롭다",
+                  "불행하다",
+                  "울다",
+                  "미워하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "행복하다",
+            "answer": "불행하다",
+            "pair": "불행하다",
+            "options": [
+                  "불행하다",
+                  "울다",
+                  "미워하다",
+                  "싫어하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "웃다",
+            "answer": "울다",
+            "pair": "울다",
+            "options": [
+                  "울다",
+                  "미워하다",
+                  "싫어하다",
+                  "불안"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "사랑하다",
+            "answer": "미워하다",
+            "pair": "미워하다",
+            "options": [
+                  "미워하다",
+                  "싫어하다",
+                  "불안",
+                  "절망"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "좋아하다",
+            "answer": "싫어하다",
+            "pair": "싫어하다",
+            "options": [
+                  "싫어하다",
+                  "불안",
+                  "절망",
+                  "겁이 많다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "안심",
+            "answer": "불안",
+            "pair": "불안",
+            "options": [
+                  "불안",
+                  "절망",
+                  "겁이 많다",
+                  "흥분하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "희망",
+            "answer": "절망",
+            "pair": "절망",
+            "options": [
+                  "절망",
+                  "겁이 많다",
+                  "흥분하다",
+                  "불만족하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "용감하다",
+            "answer": "겁이 많다",
+            "pair": "겁이 많다",
+            "options": [
+                  "겁이 많다",
+                  "흥분하다",
+                  "불만족하다",
+                  "원망하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "침착하다",
+            "answer": "흥분하다",
+            "pair": "흥분하다",
+            "options": [
+                  "흥분하다",
+                  "불만족하다",
+                  "원망하다",
+                  "불친절하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "만족하다",
+            "answer": "불만족하다",
+            "pair": "불만족하다",
+            "options": [
+                  "불만족하다",
+                  "원망하다",
+                  "불친절하다",
+                  "부정직하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "고맙다",
+            "answer": "원망하다",
+            "pair": "원망하다",
+            "options": [
+                  "원망하다",
+                  "불친절하다",
+                  "부정직하다",
+                  "의심하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "친절하다",
+            "answer": "불친절하다",
+            "pair": "불친절하다",
+            "options": [
+                  "불친절하다",
+                  "부정직하다",
+                  "의심하다",
+                  "듣다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "정직하다",
+            "answer": "부정직하다",
+            "pair": "부정직하다",
+            "options": [
+                  "부정직하다",
+                  "의심하다",
+                  "듣다",
+                  "대답하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "믿다",
+            "answer": "의심하다",
+            "pair": "의심하다",
+            "options": [
+                  "의심하다",
+                  "듣다",
+                  "대답하다",
+                  "받다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "말하다",
+            "answer": "듣다",
+            "pair": "듣다",
+            "options": [
+                  "듣다",
+                  "대답하다",
+                  "받다",
+                  "닫다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "묻다",
+            "answer": "대답하다",
+            "pair": "대답하다",
+            "options": [
+                  "대답하다",
+                  "받다",
+                  "닫다",
+                  "끄다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "주다",
+            "answer": "받다",
+            "pair": "받다",
+            "options": [
+                  "받다",
+                  "닫다",
+                  "끄다",
+                  "나오다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "열다",
+            "answer": "닫다",
+            "pair": "닫다",
+            "options": [
+                  "닫다",
+                  "끄다",
+                  "나오다",
+                  "내려가다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "켜다",
+            "answer": "끄다",
+            "pair": "끄다",
+            "options": [
+                  "끄다",
+                  "나오다",
+                  "내려가다",
+                  "당기다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "들어가다",
+            "answer": "나오다",
+            "pair": "나오다",
+            "options": [
+                  "나오다",
+                  "내려가다",
+                  "당기다",
+                  "일어서다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "올라가다",
+            "answer": "내려가다",
+            "pair": "내려가다",
+            "options": [
+                  "내려가다",
+                  "당기다",
+                  "일어서다",
+                  "일어나다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "밀다",
+            "answer": "당기다",
+            "pair": "당기다",
+            "options": [
+                  "당기다",
+                  "일어서다",
+                  "일어나다",
+                  "놓다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "앉다",
+            "answer": "일어서다",
+            "pair": "일어서다",
+            "options": [
+                  "일어서다",
+                  "일어나다",
+                  "놓다",
+                  "빼다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "눕다",
+            "answer": "일어나다",
+            "pair": "일어나다",
+            "options": [
+                  "일어나다",
+                  "놓다",
+                  "빼다",
+                  "떼다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "잡다",
+            "answer": "놓다",
+            "pair": "놓다",
+            "options": [
+                  "놓다",
+                  "빼다",
+                  "떼다",
+                  "펴다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "넣다",
+            "answer": "빼다",
+            "pair": "빼다",
+            "options": [
+                  "빼다",
+                  "떼다",
+                  "펴다",
+                  "풀다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "붙이다",
+            "answer": "떼다",
+            "pair": "떼다",
+            "options": [
+                  "떼다",
+                  "펴다",
+                  "풀다",
+                  "흩다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "접다",
+            "answer": "펴다",
+            "pair": "펴다",
+            "options": [
+                  "펴다",
+                  "풀다",
+                  "흩다",
+                  "잃다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "묶다",
+            "answer": "풀다",
+            "pair": "풀다",
+            "options": [
+                  "풀다",
+                  "흩다",
+                  "잃다",
+                  "잊다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "모으다",
+            "answer": "흩다",
+            "pair": "흩다",
+            "options": [
+                  "흩다",
+                  "잃다",
+                  "잊다",
+                  "모르다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "찾다",
+            "answer": "잃다",
+            "pair": "잃다",
+            "options": [
+                  "잃다",
+                  "잊다",
+                  "모르다",
+                  "받다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "기억하다",
+            "answer": "잊다",
+            "pair": "잊다",
+            "options": [
+                  "잊다",
+                  "모르다",
+                  "받다",
+                  "팔다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "알다",
+            "answer": "모르다",
+            "pair": "모르다",
+            "options": [
+                  "모르다",
+                  "받다",
+                  "팔다",
+                  "갚다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "보내다",
+            "answer": "받다",
+            "pair": "받다",
+            "options": [
+                  "받다",
+                  "팔다",
+                  "갚다",
+                  "가다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "사다",
+            "answer": "팔다",
+            "pair": "팔다",
+            "options": [
+                  "팔다",
+                  "갚다",
+                  "가다",
+                  "움직이다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "빌리다",
+            "answer": "갚다",
+            "pair": "갚다",
+            "options": [
+                  "갚다",
+                  "가다",
+                  "움직이다",
+                  "더럽히다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "오다",
+            "answer": "가다",
+            "pair": "가다",
+            "options": [
+                  "가다",
+                  "움직이다",
+                  "더럽히다",
+                  "벗다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "멈추다",
+            "answer": "움직이다",
+            "pair": "움직이다",
+            "options": [
+                  "움직이다",
+                  "더럽히다",
+                  "벗다",
+                  "굶다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "씻다",
+            "answer": "더럽히다",
+            "pair": "더럽히다",
+            "options": [
+                  "더럽히다",
+                  "벗다",
+                  "굶다",
+                  "깨다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "입다",
+            "answer": "벗다",
+            "pair": "벗다",
+            "options": [
+                  "벗다",
+                  "굶다",
+                  "깨다",
+                  "일하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "먹다",
+            "answer": "굶다",
+            "pair": "굶다",
+            "options": [
+                  "굶다",
+                  "깨다",
+                  "일하다",
+                  "쉬다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "자다",
+            "answer": "깨다",
+            "pair": "깨다",
+            "options": [
+                  "깨다",
+                  "일하다",
+                  "쉬다",
+                  "실패하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "쉬다",
+            "answer": "일하다",
+            "pair": "일하다",
+            "options": [
+                  "일하다",
+                  "쉬다",
+                  "실패하다",
+                  "반대하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "운동하다",
+            "answer": "쉬다",
+            "pair": "쉬다",
+            "options": [
+                  "쉬다",
+                  "실패하다",
+                  "반대하다",
+                  "거절하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "성공하다",
+            "answer": "실패하다",
+            "pair": "실패하다",
+            "options": [
+                  "실패하다",
+                  "반대하다",
+                  "거절하다",
+                  "빠지다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "찬성하다",
+            "answer": "반대하다",
+            "pair": "반대하다",
+            "options": [
+                  "반대하다",
+                  "거절하다",
+                  "빠지다",
+                  "경쟁하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "수락하다",
+            "answer": "거절하다",
+            "pair": "거절하다",
+            "options": [
+                  "거절하다",
+                  "빠지다",
+                  "경쟁하다",
+                  "포기하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "참여하다",
+            "answer": "빠지다",
+            "pair": "빠지다",
+            "options": [
+                  "빠지다",
+                  "경쟁하다",
+                  "포기하다",
+                  "방치하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "협력하다",
+            "answer": "경쟁하다",
+            "pair": "경쟁하다",
+            "options": [
+                  "경쟁하다",
+                  "포기하다",
+                  "방치하다",
+                  "분리하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "노력하다",
+            "answer": "포기하다",
+            "pair": "포기하다",
+            "options": [
+                  "포기하다",
+                  "방치하다",
+                  "분리하다",
+                  "감소하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "보호하다",
+            "answer": "방치하다",
+            "pair": "방치하다",
+            "options": [
+                  "방치하다",
+                  "분리하다",
+                  "감소하다",
+                  "줄이다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "연결하다",
+            "answer": "분리하다",
+            "pair": "분리하다",
+            "options": [
+                  "분리하다",
+                  "감소하다",
+                  "줄이다",
+                  "악화하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "증가하다",
+            "answer": "감소하다",
+            "pair": "감소하다",
+            "options": [
+                  "감소하다",
+                  "줄이다",
+                  "악화하다",
+                  "바꾸다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "늘리다",
+            "answer": "줄이다",
+            "pair": "줄이다",
+            "options": [
+                  "줄이다",
+                  "악화하다",
+                  "바꾸다",
+                  "어지럽히다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "개선하다",
+            "answer": "악화하다",
+            "pair": "악화하다",
+            "options": [
+                  "악화하다",
+                  "바꾸다",
+                  "어지럽히다",
+                  "더럽히다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "유지하다",
+            "answer": "바꾸다",
+            "pair": "바꾸다",
+            "options": [
+                  "바꾸다",
+                  "어지럽히다",
+                  "더럽히다",
+                  "금지하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "정리하다",
+            "answer": "어지럽히다",
+            "pair": "어지럽히다",
+            "options": [
+                  "어지럽히다",
+                  "더럽히다",
+                  "금지하다",
+                  "비공개"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "청소하다",
+            "answer": "더럽히다",
+            "pair": "더럽히다",
+            "options": [
+                  "더럽히다",
+                  "금지하다",
+                  "비공개",
+                  "미완료"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "허락하다",
+            "answer": "금지하다",
+            "pair": "금지하다",
+            "options": [
+                  "금지하다",
+                  "비공개",
+                  "미완료",
+                  "미확인"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "공개",
+            "answer": "비공개",
+            "pair": "비공개",
+            "options": [
+                  "비공개",
+                  "미완료",
+                  "미확인",
+                  "불가능"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "완료",
+            "answer": "미완료",
+            "pair": "미완료",
+            "options": [
+                  "미완료",
+                  "미확인",
+                  "불가능",
+                  "불필요"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "확인",
+            "answer": "미확인",
+            "pair": "미확인",
+            "options": [
+                  "미확인",
+                  "불가능",
+                  "불필요",
+                  "부분"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "가능",
+            "answer": "불가능",
+            "pair": "불가능",
+            "options": [
+                  "불가능",
+                  "불필요",
+                  "부분",
+                  "개별"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "필요",
+            "answer": "불필요",
+            "pair": "불필요",
+            "options": [
+                  "불필요",
+                  "부분",
+                  "개별",
+                  "부정"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "전체",
+            "answer": "부분",
+            "pair": "부분",
+            "options": [
+                  "부분",
+                  "개별",
+                  "부정",
+                  "거짓"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "공통",
+            "answer": "개별",
+            "pair": "개별",
+            "options": [
+                  "개별",
+                  "부정",
+                  "거짓",
+                  "오답"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "긍정",
+            "answer": "부정",
+            "pair": "부정",
+            "options": [
+                  "부정",
+                  "거짓",
+                  "오답",
+                  "거절"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "진실",
+            "answer": "거짓",
+            "pair": "거짓",
+            "options": [
+                  "거짓",
+                  "오답",
+                  "거절",
+                  "불합격"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "정답",
+            "answer": "오답",
+            "pair": "오답",
+            "options": [
+                  "오답",
+                  "거절",
+                  "불합격",
+                  "결석"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "승인",
+            "answer": "거절",
+            "pair": "거절",
+            "options": [
+                  "거절",
+                  "불합격",
+                  "결석",
+                  "낭비"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "합격",
+            "answer": "불합격",
+            "pair": "불합격",
+            "options": [
+                  "불합격",
+                  "결석",
+                  "낭비",
+                  "무시"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "참석",
+            "answer": "결석",
+            "pair": "결석",
+            "options": [
+                  "결석",
+                  "낭비",
+                  "무시",
+                  "대답"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "절약",
+            "answer": "낭비",
+            "pair": "낭비",
+            "options": [
+                  "낭비",
+                  "무시",
+                  "대답",
+                  "해결"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "존중",
+            "answer": "무시",
+            "pair": "무시",
+            "options": [
+                  "무시",
+                  "대답",
+                  "해결",
+                  "방해"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "질문",
+            "answer": "대답",
+            "pair": "대답",
+            "options": [
+                  "대답",
+                  "해결",
+                  "방해",
+                  "금지"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "문제",
+            "answer": "해결",
+            "pair": "해결",
+            "options": [
+                  "해결",
+                  "방해",
+                  "금지",
+                  "해로움"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "도움",
+            "answer": "방해",
+            "pair": "방해",
+            "options": [
+                  "방해",
+                  "금지",
+                  "해로움",
+                  "퇴원"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "허용",
+            "answer": "금지",
+            "pair": "금지",
+            "options": [
+                  "금지",
+                  "해로움",
+                  "퇴원",
+                  "질병"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "유익",
+            "answer": "해로움",
+            "pair": "해로움",
+            "options": [
+                  "해로움",
+                  "퇴원",
+                  "질병",
+                  "악화"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "입원",
+            "answer": "퇴원",
+            "pair": "퇴원",
+            "options": [
+                  "퇴원",
+                  "질병",
+                  "악화",
+                  "통증 없음"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "건강",
+            "answer": "질병",
+            "pair": "질병",
+            "options": [
+                  "질병",
+                  "악화",
+                  "통증 없음",
+                  "이완"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "회복",
+            "answer": "악화",
+            "pair": "악화",
+            "options": [
+                  "악화",
+                  "통증 없음",
+                  "이완",
+                  "휴식"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "호전",
+            "answer": "악화",
+            "pair": "악화",
+            "options": [
+                  "악화",
+                  "통증 없음",
+                  "이완",
+                  "휴식"
+            ]
+      },
+{
+  "type": "antonym",
+  "word": "아프다",
+  "answer": "편안하다",
+  "pair": "편안하다",
+  "options": [
+    "편안하다",
+    "이완하다",
+    "휴식하다",
+    "정지하다"
+  ]
+      },
+      {
+            "type": "antonym",
+            "word": "긴장",
+            "answer": "이완",
+            "pair": "이완",
+            "options": [
+                  "이완",
+                  "휴식",
+                  "정지",
+                  "만성"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "활동",
+            "answer": "휴식",
+            "pair": "휴식",
+            "options": [
+                  "휴식",
+                  "정지",
+                  "만성",
+                  "불안정"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "움직임",
+            "answer": "정지",
+            "pair": "정지",
+            "options": [
+                  "정지",
+                  "만성",
+                  "불안정",
+                  "의식 없음"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "급성",
+            "answer": "만성",
+            "pair": "만성",
+            "options": [
+                  "만성",
+                  "불안정",
+                  "의식 없음",
+                  "금식"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "안정",
+            "answer": "불안정",
+            "pair": "불안정",
+            "options": [
+                  "불안정",
+                  "의식 없음",
+                  "금식",
+                  "중단"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "의식 있음",
+            "answer": "의식 없음",
+            "pair": "의식 없음",
+            "options": [
+                  "의식 없음",
+                  "금식",
+                  "중단",
+                  "방치"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "식사",
+            "answer": "금식",
+            "pair": "금식",
+            "options": [
+                  "금식",
+                  "중단",
+                  "방치",
+                  "보행 불가"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "복용",
+            "answer": "중단",
+            "pair": "중단",
+            "options": [
+                  "중단",
+                  "방치",
+                  "보행 불가",
+                  "우측"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "치료",
+            "answer": "방치",
+            "pair": "방치",
+            "options": [
+                  "방치",
+                  "보행 불가",
+                  "우측",
+                  "하지"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "보행 가능",
+            "answer": "보행 불가",
+            "pair": "보행 불가",
+            "options": [
+                  "보행 불가",
+                  "우측",
+                  "하지",
+                  "발"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "좌측",
+            "answer": "우측",
+            "pair": "우측",
+            "options": [
+                  "우측",
+                  "하지",
+                  "발",
+                  "꼬리"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "상지",
+            "answer": "하지",
+            "pair": "하지",
+            "options": [
+                  "하지",
+                  "발",
+                  "꼬리",
+                  "팔다리"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "손",
+            "answer": "발",
+            "pair": "발",
+            "options": [
+                  "발",
+                  "꼬리",
+                  "팔다리",
+                  "심한 통증"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "머리",
+            "answer": "꼬리",
+            "pair": "꼬리",
+            "options": [
+                  "꼬리",
+                  "팔다리",
+                  "심한 통증",
+                  "나빠짐"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "몸통",
+            "answer": "팔다리",
+            "pair": "팔다리",
+            "options": [
+                  "팔다리",
+                  "심한 통증",
+                  "나빠짐",
+                  "불편함"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "가벼운 통증",
+            "answer": "심한 통증",
+            "pair": "심한 통증",
+            "options": [
+                  "심한 통증",
+                  "나빠짐",
+                  "불편함",
+                  "이상 보행"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "좋아짐",
+            "answer": "나빠짐",
+            "pair": "나빠짐",
+            "options": [
+                  "나빠짐",
+                  "불편함",
+                  "이상 보행",
+                  "의존"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "편안함",
+            "answer": "불편함",
+            "pair": "불편함",
+            "options": [
+                  "불편함",
+                  "이상 보행",
+                  "의존",
+                  "함께"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "정상 보행",
+            "answer": "이상 보행",
+            "pair": "이상 보행",
+            "options": [
+                  "이상 보행",
+                  "의존",
+                  "함께",
+                  "단체"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "독립",
+            "answer": "의존",
+            "pair": "의존",
+            "options": [
+                  "의존",
+                  "함께",
+                  "단체",
+                  "병원"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "혼자",
+            "answer": "함께",
+            "pair": "함께",
+            "options": [
+                  "함께",
+                  "단체",
+                  "병원",
+                  "밖"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "개인",
+            "answer": "단체",
+            "pair": "단체",
+            "options": [
+                  "단체",
+                  "병원",
+                  "밖",
+                  "창문"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "가정",
+            "answer": "병원",
+            "pair": "병원",
+            "options": [
+                  "병원",
+                  "밖",
+                  "창문",
+                  "여자"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "안",
+            "answer": "밖",
+            "pair": "밖",
+            "options": [
+                  "밖",
+                  "창문",
+                  "여자",
+                  "아이"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "문",
+            "answer": "창문",
+            "pair": "창문",
+            "options": [
+                  "창문",
+                  "여자",
+                  "아이",
+                  "늙다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "남자",
+            "answer": "여자",
+            "pair": "여자",
+            "options": [
+                  "여자",
+                  "아이",
+                  "늙다",
+                  "밤"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "어른",
+            "answer": "아이",
+            "pair": "아이",
+            "options": [
+                  "아이",
+                  "늙다",
+                  "밤",
+                  "저녁"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "젊다",
+            "answer": "늙다",
+            "pair": "늙다",
+            "options": [
+                  "늙다",
+                  "밤",
+                  "저녁",
+                  "오른손"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "새벽",
+            "answer": "밤",
+            "pair": "밤",
+            "options": [
+                  "밤",
+                  "저녁",
+                  "오른손",
+                  "오른발"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "점심",
+            "answer": "저녁",
+            "pair": "저녁",
+            "options": [
+                  "저녁",
+                  "오른손",
+                  "오른발",
+                  "발쪽"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "왼손",
+            "answer": "오른손",
+            "pair": "오른손",
+            "options": [
+                  "오른손",
+                  "오른발",
+                  "발쪽",
+                  "원위부"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "왼발",
+            "answer": "오른발",
+            "pair": "오른발",
+            "options": [
+                  "오른발",
+                  "발쪽",
+                  "원위부",
+                  "하방"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "머리쪽",
+            "answer": "발쪽",
+            "pair": "발쪽",
+            "options": [
+                  "발쪽",
+                  "원위부",
+                  "하방",
+                  "뒤쪽"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "근위부",
+            "answer": "원위부",
+            "pair": "원위부",
+            "options": [
+                  "원위부",
+                  "하방",
+                  "뒤쪽",
+                  "열림"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "상방",
+            "answer": "하방",
+            "pair": "하방",
+            "options": [
+                  "하방",
+                  "뒤쪽",
+                  "열림",
+                  "취침"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "앞쪽",
+            "answer": "뒤쪽",
+            "pair": "뒤쪽",
+            "options": [
+                  "뒤쪽",
+                  "열림",
+                  "취침",
+                  "끝내다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "닫힘",
+            "answer": "열림",
+            "pair": "열림",
+            "options": [
+                  "열림",
+                  "취침",
+                  "끝내다",
+                  "나가다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "기상",
+            "answer": "취침",
+            "pair": "취침",
+            "options": [
+                  "취침",
+                  "끝내다",
+                  "나가다",
+                  "무겁게"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "시작하다",
+            "answer": "끝내다",
+            "pair": "끝내다",
+            "options": [
+                  "끝내다",
+                  "나가다",
+                  "무겁게",
+                  "빠르게"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "들어오다",
+            "answer": "나가다",
+            "pair": "나가다",
+            "options": [
+                  "나가다",
+                  "무겁게",
+                  "빠르게",
+                  "거칠게"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "가볍게",
+            "answer": "무겁게",
+            "pair": "무겁게",
+            "options": [
+                  "무겁게",
+                  "빠르게",
+                  "거칠게",
+                  "부정확히"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "천천히",
+            "answer": "빠르게",
+            "pair": "빠르게",
+            "options": [
+                  "빠르게",
+                  "거칠게",
+                  "부정확히",
+                  "불규칙적"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "조심히",
+            "answer": "거칠게",
+            "pair": "거칠게",
+            "options": [
+                  "거칠게",
+                  "부정확히",
+                  "불규칙적",
+                  "부족하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "정확히",
+            "answer": "부정확히",
+            "pair": "부정확히",
+            "options": [
+                  "부정확히",
+                  "불규칙적",
+                  "부족하다",
+                  "모자라다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "규칙적",
+            "answer": "불규칙적",
+            "pair": "불규칙적",
+            "options": [
+                  "불규칙적",
+                  "부족하다",
+                  "모자라다",
+                  "부드러움"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "충분하다",
+            "answer": "부족하다",
+            "pair": "부족하다",
+            "options": [
+                  "부족하다",
+                  "모자라다",
+                  "부드러움",
+                  "울퉁불퉁하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "넉넉하다",
+            "answer": "모자라다",
+            "pair": "모자라다",
+            "options": [
+                  "모자라다",
+                  "부드러움",
+                  "울퉁불퉁하다",
+                  "거칠다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "단단함",
+            "answer": "부드러움",
+            "pair": "부드러움",
+            "options": [
+                  "부드러움",
+                  "울퉁불퉁하다",
+                  "거칠다",
+                  "소란스럽다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "평평하다",
+            "answer": "울퉁불퉁하다",
+            "pair": "울퉁불퉁하다",
+            "options": [
+                  "울퉁불퉁하다",
+                  "거칠다",
+                  "소란스럽다",
+                  "낯설다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "미끄럽다",
+            "answer": "거칠다",
+            "pair": "거칠다",
+            "options": [
+                  "거칠다",
+                  "소란스럽다",
+                  "낯설다",
+                  "차 있다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "차분하다",
+            "answer": "소란스럽다",
+            "pair": "소란스럽다",
+            "options": [
+                  "소란스럽다",
+                  "낯설다",
+                  "차 있다",
+                  "무덥다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "익숙하다",
+            "answer": "낯설다",
+            "pair": "낯설다",
+            "options": [
+                  "낯설다",
+                  "차 있다",
+                  "무덥다",
+                  "습하다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "비어 있다",
+            "answer": "차 있다",
+            "pair": "차 있다",
+            "options": [
+                  "차 있다",
+                  "무덥다",
+                  "습하다",
+                  "작다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "서늘하다",
+            "answer": "무덥다",
+            "pair": "무덥다",
+            "options": [
+                  "무덥다",
+                  "습하다",
+                  "작다",
+                  "낮다"
+            ]
+      },
+      {
+            "type": "antonym",
+            "word": "건조하다",
+            "answer": "습하다",
+            "pair": "습하다",
+            "options": [
+                  "습하다",
+                  "작다",
+                  "낮다",
+                  "짧다"
+            ]
+      }
+];
+
+    let materials = [];
+    let currentIndex = 0;
+    let answers = [];
+    let choiceLocked = false;
+    let retryCount = 0;
+
+    function unique(array) { return [...new Set(array)]; }
+    function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+    function typeLabel(type) { return type === "synonym" ? "유의어" : "반의어"; }
+    function typeClass(type) { return type === "synonym" ? "syn" : "ant"; }
+
+    function renderSubject() {
+      const box = document.getElementById("subjectBox");
+      if (!selectedSubject) { box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`; return; }
+      box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || ""} ${selectedSubject.memo ? " · " + selectedSubject.memo : ""}`;
+    }
+
+    function filteredDB() {
+      const mode = document.getElementById("relationMode").value;
+      if (mode === "synonym") return PAIR_DB.filter(item => item.type === "synonym");
+      if (mode === "antonym") return PAIR_DB.filter(item => item.type === "antonym");
+      return PAIR_DB;
+    }
+
+    function buildOptions(item) {
+      const choiceCount = Number(document.getElementById("choiceCount").value) === 4 ? 4 : 2;
+      let pool = [];
+      if (item.options && item.options.length) pool = item.options.filter(v => v !== item.answer);
+      const allAnswers = PAIR_DB.map(v => v.answer).filter(v => v !== item.answer && v !== item.word);
+      const allWords = PAIR_DB.map(v => v.word).filter(v => v !== item.answer && v !== item.word);
+      pool = unique([...pool, ...shuffle(allAnswers), ...shuffle(allWords)]);
+      return shuffle(unique([item.answer, ...pool]).slice(0, choiceCount));
+    }
+
+    function generateMaterials() {
+      const count = Number(document.getElementById("count").value);
+      const orderMode = document.getElementById("orderMode").value;
+      let source = filteredDB();
+      source = orderMode === "random" ? shuffle(source) : [...source];
+      materials = source.slice(0, Math.min(count, source.length)).map((item, idx) => ({...item, no: idx + 1, choices: buildOptions(item)}));
+      currentIndex = 0; answers = [];
+      renderPreview(); renderStats();
+    }
+
+    function renderPreview() {
+      document.getElementById("previewTitle").textContent = `생성 자료 ${materials.length}개`;
+      const list = document.getElementById("previewList");
+      list.innerHTML = materials.map((item, idx) => `<div class="item-card"><strong>${idx + 1}.</strong>${item.word} → ${item.answer}<span class="type-tag ${typeClass(item.type)}">${typeLabel(item.type)}</span></div>`).join("");
+    }
+
+    function renderStats() {
+      const source = filteredDB();
+      const syn = source.filter(v => v.type === "synonym").length;
+      const ant = source.filter(v => v.type === "antonym").length;
+      document.getElementById("statsBox").innerHTML = `<div class="stats-mini"><div><span>전체</span><b>${source.length}</b></div><div><span>유의어</span><b>${syn}</b></div><div><span>반의어</span><b>${ant}</b></div><div><span>선택 자료</span><b>${materials.length}</b></div><div><span>보기</span><b>${document.getElementById("choiceCount").value}개</b></div></div>`;
+    }
+
+    function startTraining() {
+      if (!materials.length) generateMaterials();
+      document.getElementById("setupView").classList.add("hidden");
+      document.getElementById("previewView").classList.add("hidden");
+      document.getElementById("statsView").classList.add("hidden");
+      document.getElementById("trainingView").classList.remove("hidden");
+      showItem();
+    }
+
+    function showItem() {
+      choiceLocked = false;
+      retryCount = 0;
+      const item = materials[currentIndex];
+      const responseMode = document.getElementById("responseMode").value;
+      document.getElementById("trainingTitle").textContent = `${currentIndex + 1} / ${materials.length}`;
+      document.getElementById("targetWord").textContent = item.word;
+      document.getElementById("hintLine").textContent = "";
+      document.getElementById("modeLabel").textContent = typeLabel(item.type);
+      document.getElementById("modeLabel").className = `mode-label ${typeClass(item.type)}`;
+      document.getElementById("progressBar").style.width = `${((currentIndex) / materials.length) * 100}%`;
+      document.getElementById("itemMemo").value = item.memo || "";
+      const feedbackBox = document.getElementById("feedbackBox");
+      if (feedbackBox) {
+        feedbackBox.style.display = "none";
+        feedbackBox.textContent = "";
+        feedbackBox.className = "";
+      }
+      const nextBtn = document.getElementById("nextBtn");
+      if (nextBtn) nextBtn.style.display = "none";
+      const oralCorrectBtn = document.getElementById("oralCorrectBtn");
+      const oralWrongBtn = document.getElementById("oralWrongBtn");
+      if (oralCorrectBtn) { oralCorrectBtn.disabled = false; oralCorrectBtn.classList.remove("correct-choice", "wrong-choice"); }
+      if (oralWrongBtn) { oralWrongBtn.disabled = false; oralWrongBtn.classList.remove("correct-choice", "wrong-choice"); }
+      if (responseMode === "oral") {
+        document.getElementById("answerOptions").classList.add("hidden");
+        document.getElementById("oralBox").classList.remove("hidden");
+      } else {
+        document.getElementById("answerOptions").classList.remove("hidden");
+        document.getElementById("oralBox").classList.add("hidden");
+        document.getElementById("answerOptions").innerHTML = item.choices.map(choice => `<button class="answer-btn" onclick="selectAnswer(this, '${choice.replace(/'/g,"\\'")}')">${choice}</button>`).join("");
+      }
+    }
+
+
+    function showFeedback(message, isCorrectStyle) {
+      const feedbackBox = document.getElementById("feedbackBox");
+      feedbackBox.style.display = "block";
+      feedbackBox.textContent = message;
+      feedbackBox.className = isCorrectStyle ? "correct" : "wrong";
+    }
+
+    function setAnswerButtonsDisabled(disabled) {
+      document.querySelectorAll(".answer-btn").forEach(btn => {
+        btn.disabled = disabled;
+      });
+    }
+
+    function markChoiceResult(selectedButton, selectedChoice) {
+      const item = materials[currentIndex];
+      document.querySelectorAll(".answer-btn").forEach(btn => {
+        if (btn.textContent === item.answer) btn.classList.add("correct-choice");
+        if (btn === selectedButton && selectedChoice !== item.answer) btn.classList.add("wrong-choice");
+      });
+    }
+
+    function setOralButtonsDisabled(disabled) {
+      const correctBtn = document.getElementById("oralCorrectBtn");
+      const wrongBtn = document.getElementById("oralWrongBtn");
+      if (correctBtn) correctBtn.disabled = disabled;
+      if (wrongBtn) wrongBtn.disabled = disabled;
+    }
+
+    function saveMemo() { if (materials[currentIndex]) materials[currentIndex].memo = document.getElementById("itemMemo").value.trim(); }
+
+    function selectAnswer(button, choice) {
+      if (choiceLocked) return;
+      saveMemo();
+      const item = materials[currentIndex];
+      const isCorrect = choice === item.answer;
+
+      if (isCorrect) {
+        choiceLocked = true;
+        setAnswerButtonsDisabled(true);
+        markChoiceResult(button, choice);
+        showFeedback("정답입니다.", true);
+        const countedCorrect = retryCount === 0;
+        answers.push({ word:item.word, type:item.type, answer:item.answer, response:choice, correct:countedCorrect, retry:retryCount, memo:item.memo || "" });
+        setTimeout(nextItem, 1200);
+        return;
+      }
+
+      retryCount += 1;
+
+      if (retryCount === 1) {
+        button.classList.add("wrong-choice");
+        showFeedback("다시 풀어보세요.", false);
+        setTimeout(() => button.classList.remove("wrong-choice"), 800);
+        return;
+      }
+
+      choiceLocked = true;
+      setAnswerButtonsDisabled(true);
+      markChoiceResult(button, choice);
+      showFeedback(`정답은 "${item.answer}"입니다. 다음 문제를 눌러주세요.`, false);
+      answers.push({ word:item.word, type:item.type, answer:item.answer, response:choice, correct:false, retry:retryCount, memo:item.memo || "" });
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function recordOralAnswer(result) {
+      if (choiceLocked) return;
+      saveMemo();
+      const item = materials[currentIndex];
+
+      if (result === "correct") {
+        choiceLocked = true;
+        setOralButtonsDisabled(true);
+        document.getElementById("oralCorrectBtn").classList.add("correct-choice");
+        showFeedback("정답입니다.", true);
+        const countedCorrect = retryCount === 0;
+        answers.push({ word:item.word, type:item.type, answer:item.answer, response:"", correct:countedCorrect, retry:retryCount, memo:item.memo || "" });
+        setTimeout(nextItem, 1200);
+        return;
+      }
+
+      retryCount += 1;
+
+      if (retryCount === 1) {
+        document.getElementById("oralWrongBtn").classList.add("wrong-choice");
+        showFeedback("다시 풀어보세요.", false);
+        setTimeout(() => document.getElementById("oralWrongBtn").classList.remove("wrong-choice"), 800);
+        return;
+      }
+
+      choiceLocked = true;
+      setOralButtonsDisabled(true);
+      document.getElementById("oralWrongBtn").classList.add("wrong-choice");
+      showFeedback(`정답은 "${item.answer}"입니다. 다음 문제를 눌러주세요.`, false);
+      answers.push({ word:item.word, type:item.type, answer:item.answer, response:"오답", correct:false, retry:retryCount, memo:item.memo || "" });
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function nextQuestionManual() {
+      if (!choiceLocked) return;
+      nextItem();
+    }
+
+    function nextItem() {
+      currentIndex++;
+      if (currentIndex >= materials.length) finishTraining(); else showItem();
+    }
+
+    function finishTraining() {
+      document.getElementById("progressBar").style.width = "100%";
+      document.getElementById("trainingView").classList.add("hidden");
+      document.getElementById("finishView").classList.remove("hidden");
+      const total = answers.length;
+      const correct = answers.filter(a => a.correct).length;
+      const wrong = total - correct;
+      const rate = total ? Math.round((correct / total) * 100) : 0;
+      const subjectName = selectedSubject ? selectedSubject.name : "대상자";
+      document.getElementById("finishText").textContent = `${subjectName}님의 유의어·반의어 훈련이 완료되었습니다.`;
+      document.getElementById("summaryGrid").innerHTML = `
+        <div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div>
+        <div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정답</span></div>
+        <div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>오답</span></div>
+        <div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+      const history = Store.load("speech_training_history", []);
+      history.push({ id: Date.now(), subjectId:selectedSubjectId, subjectName, training:"유의어·반의어 훈련", date:new Date().toISOString(), total, correct, wrong, rate, answers });
+      Store.save("speech_training_history", history);
+    }
+
+    renderSubject(); generateMaterials();
+  </script>
+</body>
+</html>

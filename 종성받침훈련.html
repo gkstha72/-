@@ -1,0 +1,380 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>종성 받침 보고 읽기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+    .app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+    .logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+    button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+    .primary { background:#246bfe; color:white; } .secondary { background:#eef3ff; color:#246bfe; } .gray { background:#edf1f6; color:#5d687b; }
+    .blue { background:#246bfe; color:white; } .red { background:#e54848; color:white; }
+    .panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+    .panel h2 { margin:0 0 16px; font-size:22px; }
+    .setup-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+    select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+    textarea { min-height:74px; resize:vertical; }
+    .subject-box, .help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+    .help-box { margin-top:16px; font-size:14px; }
+    .sound-guide { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+    .guide-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:14px; }
+    .guide-card b { color:#246bfe; display:block; margin-bottom:6px; }
+    .guide-card span { color:#64748b; font-size:13px; line-height:1.5; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .word-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .item-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:15px; padding:14px; font-size:18px; line-height:1.5; }
+    .item-card strong { color:#246bfe; margin-right:5px; }
+    .hidden { display:none !important; }
+    .progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+    .progress-bar { height:100%; width:0%; background:#246bfe; }
+    .question { color:#246bfe; font-size:26px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+    .training-box { background:#f8faff; border-radius:24px; padding:42px 24px; text-align:center; margin-bottom:18px; min-height:300px; display:grid; place-items:center; }
+    .training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:22px; }
+    .stimulus { font-size:88px; font-weight:900; margin-bottom:8px; word-break:keep-all; letter-spacing:-1px; }
+    .response-buttons { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .response-buttons button { min-height:68px; font-size:22px; }
+    .response-buttons button.correct-choice { background:#16a06f; color:white; }
+    .response-buttons button.wrong-choice { background:#e54848; color:white; }
+    .result-panel { background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); border-radius:24px; padding:16px; border:1px solid #edf2f7; box-shadow:0 10px 28px rgba(15,30,60,.05); }
+    .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+    .summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+    .summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+    .summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+    .summary-card span { color:#334155; font-size:15px; font-weight:800; }
+    .summary-card.total strong,.summary-card.rate strong { color:#246bfe; }
+    .summary-card.correct strong { color:#16a06f; }
+    .summary-card.wrong strong { color:#e54848; }
+    .summary-icon.total,.summary-icon.rate { background:#246bfe; }
+    .summary-icon.correct { background:#16a06f; }
+    .summary-icon.wrong { background:#e54848; }
+    @media (max-width:900px){ .setup-grid,.sound-guide{grid-template-columns:1fr;} .word-grid{grid-template-columns:repeat(2,1fr);} .summary-grid,.response-buttons{grid-template-columns:1fr;} .topbar{align-items:flex-start; flex-direction:column;} }
+    @media (max-width:560px){ .word-grid{grid-template-columns:1fr;} .stimulus{font-size:64px;} .question{font-size:22px;} }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><div class="logo">받</div><span>종성 받침 보고 읽기</span></div>
+      <button class="gray" onclick="location.href='main.html'">메인으로</button>
+    </header>
+
+    <section class="panel">
+      <h2>대상자</h2>
+      <div id="subjectBox" class="subject-box"></div>
+    </section>
+
+    <section id="setupView" class="panel">
+      <h2>훈련 설정</h2>
+      <div class="setup-grid">
+        <div>
+          <label for="finalValue">받침 소리</label>
+          <select id="finalValue" onchange="generateMaterials()">
+            <option value="all" selected>전체</option>
+            <option value="ㄱ">ㄱ 받침</option>
+            <option value="ㄴ">ㄴ 받침</option>
+            <option value="ㄷ">ㄷ 받침</option>
+            <option value="ㄹ">ㄹ 받침</option>
+            <option value="ㅁ">ㅁ 받침</option>
+            <option value="ㅂ">ㅂ 받침</option>
+            <option value="ㅇ">ㅇ 받침</option>
+          </select>
+        </div>
+        <div>
+          <label for="count">개수</label>
+          <select id="count" onchange="generateMaterials()">
+            <option value="10" selected>10개</option>
+            <option value="20">20개</option>
+            <option value="30">30개</option>
+            <option value="40">40개</option>
+            <option value="50">50개</option>
+          </select>
+        </div>
+        <div>
+          <label for="orderMode">제시 방식</label>
+          <select id="orderMode" onchange="generateMaterials()">
+            <option value="order" selected>순서대로</option>
+            <option value="random">무작위</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="help-box">
+받침이 포함된 1음절 단어를 보고 읽는 훈련입니다. 대표 받침 소리 7개(ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅇ)를 중심으로 구성하여 정확한 발음과 음운 인식 능력 향상에 도움을 줍니다.
+        <div class="sound-guide">
+          <div class="guide-card"><b>양순음: ㅁ, ㅂ</b><span>입술을 다물었다가 조절하며 끝소리를 분명하게 냅니다.<br />예: 밤, 곰, 앞, 집, 밥</span></div>
+          <div class="guide-card"><b>비음·유음: ㄴ, ㅇ, ㄹ</b><span>코로 공기를 내보내거나, 혀끝을 윗잇몸에 대고 소리를 흘려보냅니다.<br />예: 손, 콩, 강, 길, 달</span></div>
+          <div class="guide-card"><b>파열음: ㄱ, ㄷ</b><span>혀가 입안을 막아 끝소리를 짧고 분명하게 마무리합니다.<br />예: 목, 책, 부엌, 밭, 옷, 낮</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="generateMaterials()">자료 생성</button>
+        <button class="secondary" onclick="startTraining()">훈련 시작</button>
+      </div>
+    </section>
+
+    <section id="previewView" class="panel">
+      <h2 id="previewTitle">생성 자료</h2>
+      <div id="previewList" class="word-grid"></div>
+    </section>
+
+    <section id="trainingView" class="panel hidden">
+      <div id="question" class="question">단어를 보고 또박또박 읽어보세요.</div>
+      <div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+      <div class="training-box"><div>
+        <div id="trainingTitle" class="training-title">1번 문항</div>
+        <div id="stimulus" class="stimulus">목</div>
+      </div></div>
+      <div class="response-buttons">
+        <button id="correctBtn" class="blue" onclick="recordReading('correct')">정답</button>
+        <button id="wrongBtn" class="red" onclick="recordReading('wrong')">오답</button>
+      </div>
+      <div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div>
+      <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
+      <div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+    </section>
+
+    <section id="finishView" class="panel hidden">
+      <h2>훈련 결과</h2>
+      <p id="finishText"></p>
+      <div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div>
+      <div class="actions">
+        <button class="primary" onclick="location.href='main.html'">메인으로</button>
+        <button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const Store = {
+      load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } },
+      save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+    };
+
+    const subjects = Store.load("speech_subjects", []);
+    const selectedSubjectId = Store.load("speech_selected_subject", null);
+    const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+
+    const FINAL_WORD_DB = {
+      "ㄱ": ["목", "책", "국", "밖", "떡", "약", "벽", "속", "턱", "복", "북", "박", "색", "석", "식", "싹", "쪽", "축", "혹", "욕", "독", "덕", "녹", "곡", "막", "먹", "묵", "백", "역", "폭", "각", "객", "극", "득", "륙", "맥", "삭", "쑥", "악", "액", "억", "옥", "욱", "익", "적", "족", "죽", "흙", "닭", "몫"],
+      "ㄴ": ["손", "문", "돈", "산", "눈", "논", "신", "선", "안", "온", "운", "은", "인", "간", "건", "군", "권", "근", "난", "넌", "만", "면", "반", "본", "분", "팬", "편", "핀", "진", "천", "관", "균", "끈", "단", "민", "번", "빈", "순", "연", "원", "윤", "잔", "전", "존", "준", "찬", "촌", "한", "훈", "혼"],
+      "ㄷ": ["옷", "낮", "낫", "낯", "밭", "꽃", "끝", "빛", "숯", "젖", "맛", "멋", "못", "빗", "벗", "솥", "셋", "넷", "곧", "듣", "묻", "닫", "걷", "잇", "웃", "쫓", "팥", "잣", "탓", "듯", "갓", "겉", "깃", "덫", "돛", "뭇", "밑", "붓", "샅", "숱", "얕", "엿", "옻", "윷", "젓", "짓", "찻", "헛", "홑", "빚"],
+      "ㄹ": ["달", "물", "길", "별", "발", "말", "칼", "솔", "돌", "불", "꿀", "풀", "실", "줄", "술", "쌀", "팔", "벌", "털", "열", "알", "울", "일", "골", "굴", "살", "설", "밀", "철", "홀", "귤", "널", "늘", "둘", "딸", "롤", "몰", "볼", "빌", "뿔", "셀", "쓸", "월", "절", "질", "칠", "콜", "필", "펄", "힐"],
+      "ㅁ": ["밤", "곰", "잠", "김", "감", "금", "꿈", "몸", "맘", "섬", "숨", "힘", "봄", "댐", "점", "침", "춤", "남", "땀", "품", "틈", "흠", "샘", "솜", "검", "짐", "팀", "햄", "홈", "뿜", "겸", "껌", "놈", "님", "담", "덤", "돔", "됨", "람", "림", "맴", "범", "빔", "쌈", "염", "잼", "참", "폼", "암", "음"],
+      "ㅂ": ["밥", "집", "앞", "입", "잎", "값", "삽", "컵", "탑", "숲", "곱", "줍", "업", "겹", "옆", "협", "법", "답", "밉", "쉽", "높", "좁", "깊", "눕", "잡", "접", "합", "팝", "홉", "캡", "갑", "겁", "굽", "급", "깁", "납", "넙", "덥", "돕", "맙", "맵", "섭", "습", "십", "압", "옵", "잽", "첩", "톱", "랩"],
+      "ㅇ": ["공", "빵", "병", "강", "방", "창", "종", "왕", "형", "콩", "땅", "장", "양", "상", "봉", "송", "정", "등", "멍", "펑", "흥", "쌍", "둥", "망", "영", "링", "팡", "꽝", "뱅", "씽", "경", "광", "궁", "꽁", "낭", "냥", "댕", "동", "랑", "명", "생", "성", "승", "앙", "용", "중", "풍", "항", "홍", "통"]
+    };
+
+    const FINAL_LABELS = {
+      "ㄱ":"ㄱ 받침",
+      "ㄴ":"ㄴ 받침",
+      "ㄷ":"ㄷ 받침",
+      "ㄹ":"ㄹ 받침",
+      "ㅁ":"ㅁ 받침",
+      "ㅂ":"ㅂ 받침",
+      "ㅇ":"ㅇ 받침"
+    };
+
+    let materials = [];
+    let currentIndex = 0;
+    let answers = [];
+    let choiceLocked = false;
+    let retryCount = 0;
+
+    function unique(array) { return [...new Set(array)]; }
+    function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+
+    function renderSubject() {
+      const box = document.getElementById("subjectBox");
+      if (!selectedSubject) {
+        box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+        return;
+      }
+      box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`;
+    }
+
+    function getSettings() {
+      return {
+        finalValue: document.getElementById("finalValue").value,
+        count: Number(document.getElementById("count").value) || 30,
+        orderMode: document.getElementById("orderMode").value
+      };
+    }
+
+    function getWordsBySetting(settings) {
+      if (settings.finalValue === "all") {
+        return Object.keys(FINAL_WORD_DB).flatMap(final => unique(FINAL_WORD_DB[final]).map(word => ({ word, final })));
+      }
+      return unique(FINAL_WORD_DB[settings.finalValue]).map(word => ({ word, final: settings.finalValue }));
+    }
+
+    function buildMaterials() {
+      const settings = getSettings();
+      const source = settings.orderMode === "random" ? shuffle(getWordsBySetting(settings)) : getWordsBySetting(settings);
+      return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
+        stimulus: item.word,
+        final: item.final,
+        finalLabel: FINAL_LABELS[item.final],
+        question: `${FINAL_LABELS[item.final]} 단어를 보고 또박또박 읽어보세요.`,
+        answer: item.word
+      }));
+    }
+
+    function generateMaterials() { materials = buildMaterials(); renderPreview(); }
+
+    function renderPreview() {
+      const settings = getSettings();
+      const previewTitle = document.getElementById("previewTitle");
+      const previewList = document.getElementById("previewList");
+      const label = settings.finalValue === "all" ? "전체 받침" : FINAL_LABELS[settings.finalValue];
+      previewTitle.textContent = `${label} · 1음절`;
+      if (materials.length === 0) { previewList.innerHTML = `<div class="item-card">해당 조건의 단어가 없습니다.</div>`; return; }
+      previewList.innerHTML = materials.map((item, index) => `<div class="item-card"><strong>${index + 1}.</strong>${item.stimulus} <span style="color:#64748b;font-size:13px;">${item.finalLabel}</span></div>`).join("");
+    }
+
+    function startTraining() {
+      if (!selectedSubject) { alert("대상자를 먼저 등록하거나 선택해주세요."); location.href = "main.html"; return; }
+      if (materials.length === 0) generateMaterials();
+      if (materials.length === 0) return;
+      currentIndex = 0; answers = []; choiceLocked = false; retryCount = 0;
+      document.getElementById("setupView").classList.add("hidden");
+      document.getElementById("previewView").classList.add("hidden");
+      document.getElementById("trainingView").classList.remove("hidden");
+      document.getElementById("finishView").classList.add("hidden");
+      renderTrainingItem();
+    }
+
+    function renderTrainingItem() {
+      const item = materials[currentIndex];
+      document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
+      document.getElementById("trainingTitle").textContent = `${currentIndex + 1} / ${materials.length}`;
+      document.getElementById("stimulus").textContent = item.stimulus;
+      document.getElementById("question").textContent = item.question;
+      document.getElementById("itemMemo").value = "";
+
+      choiceLocked = false;
+      retryCount = 0;
+
+      const feedbackBox = document.getElementById("feedbackBox");
+      if (feedbackBox) {
+        feedbackBox.style.display = "none";
+        feedbackBox.textContent = "";
+      }
+
+      const nextBtn = document.getElementById("nextBtn");
+      if (nextBtn) nextBtn.style.display = "none";
+
+      const correctBtn = document.getElementById("correctBtn");
+      const wrongBtn = document.getElementById("wrongBtn");
+      if (correctBtn) {
+        correctBtn.disabled = false;
+        correctBtn.classList.remove("correct-choice", "wrong-choice");
+      }
+      if (wrongBtn) {
+        wrongBtn.disabled = false;
+        wrongBtn.classList.remove("correct-choice", "wrong-choice");
+      }
+    }
+
+    function showFeedback(message, isCorrectStyle) {
+      const feedbackBox = document.getElementById("feedbackBox");
+      feedbackBox.style.display = "block";
+      feedbackBox.textContent = message;
+      feedbackBox.style.background = isCorrectStyle ? "#e8fff4" : "#fff1f1";
+      feedbackBox.style.color = isCorrectStyle ? "#16a06f" : "#e54848";
+      feedbackBox.style.border = isCorrectStyle ? "1px solid #a7f3d0" : "1px solid #fecaca";
+    }
+
+    function setResponseButtonsDisabled(disabled) {
+      document.getElementById("correctBtn").disabled = disabled;
+      document.getElementById("wrongBtn").disabled = disabled;
+    }
+
+    function recordReading(type) {
+      if (choiceLocked) return;
+
+      if (type === "correct") {
+        choiceLocked = true;
+        setResponseButtonsDisabled(true);
+        document.getElementById("correctBtn").classList.add("correct-choice");
+
+        const countedCorrect = retryCount === 0;
+        showFeedback("정답입니다.", true);
+
+        setTimeout(() => recordAnswer(countedCorrect ? "correct" : "wrong", retryCount), 1200);
+        return;
+      }
+
+      retryCount += 1;
+
+      if (retryCount === 1) {
+        document.getElementById("wrongBtn").classList.add("wrong-choice");
+        showFeedback("다시 읽어보세요.", false);
+
+        setTimeout(() => {
+          document.getElementById("wrongBtn").classList.remove("wrong-choice");
+        }, 800);
+        return;
+      }
+
+      choiceLocked = true;
+      setResponseButtonsDisabled(true);
+      document.getElementById("wrongBtn").classList.add("wrong-choice");
+      showFeedback("정답을 알려준 뒤 다음 문제를 눌러주세요.", false);
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function nextQuestionManual() {
+      if (!choiceLocked) return;
+      recordAnswer("wrong", retryCount);
+    }
+
+    function recordAnswer(type, retry) {
+      const item = materials[currentIndex];
+      const memo = document.getElementById("itemMemo").value.trim();
+      answers.push({ stimulus:item.stimulus, final:item.final, finalLabel:item.finalLabel, answer:item.answer, response:type, retry: retry || 0, memo, recordedAt:new Date().toISOString() });
+      currentIndex += 1;
+      if (currentIndex >= materials.length) finishTraining(); else renderTrainingItem();
+    }
+
+    function finishTraining() {
+      const settings = getSettings();
+      const total = answers.length;
+      const correct = answers.filter(item => item.response === "correct").length;
+      const wrong = answers.filter(item => item.response === "wrong").length;
+      const accuracy = total ? Math.round((correct / total) * 100) : 0;
+      const result = {
+        id:`FC${Date.now()}`,
+        subjectId:selectedSubject.id,
+        subjectName:selectedSubject.name,
+        subjectNumber:selectedSubject.number,
+        program:"종성 받침 보고 읽기",
+        targetType:"final",
+        targetTypeName:"종성 받침",
+        targetValue:settings.finalValue,
+        level:"word",
+        syllableLength:"1",
+        total, correct, wrong, accuracy, answers,
+        createdAt:new Date().toISOString(),
+        displayDate:new Date().toLocaleString()
+      };
+      const results = Store.load("speech_articulation_results", []);
+      results.unshift(result); Store.save("speech_articulation_results", results);
+      document.getElementById("trainingView").classList.add("hidden");
+      document.getElementById("finishView").classList.remove("hidden");
+      const label = settings.finalValue === "all" ? "전체 받침" : FINAL_LABELS[settings.finalValue];
+      document.getElementById("finishText").textContent = `${selectedSubject.name} 대상자의 ${label} 보고 읽기 훈련 결과입니다.`;
+      document.getElementById("summaryGrid").innerHTML = `<div class="summary-card total"><div class="summary-icon total">▣</div><span>전체 문항</span><strong>${total}</strong></div><div class="summary-card correct"><div class="summary-icon correct">✓</div><span>정답</span><strong>${correct}</strong></div><div class="summary-card wrong"><div class="summary-icon wrong">×</div><span>오답</span><strong>${wrong}</strong></div><div class="summary-card rate"><div class="summary-icon rate">%</div><span>정답률</span><strong>${accuracy}%</strong></div>`;
+    }
+
+    renderSubject();
+    generateMaterials();
+  </script>
+</body>
+</html>

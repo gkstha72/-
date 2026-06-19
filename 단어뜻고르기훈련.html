@@ -1,0 +1,1942 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>단어 뜻 고르기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+    .app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+    .logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+    button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+    .primary { background:#246bfe; color:white; } .secondary { background:#eef3ff; color:#246bfe; } .gray { background:#edf1f6; color:#5d687b; }
+    .blue { background:#246bfe; color:white; } .red { background:#e54848; color:white; }
+    .panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+    .panel h2 { margin:0 0 16px; font-size:22px; }
+    .setup-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+    label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+    select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+    textarea { min-height:74px; resize:vertical; }
+    .subject-box, .help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+    .help-box { margin-top:16px; font-size:14px; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .word-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .item-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:15px; padding:14px; font-size:15px; line-height:1.5; }
+    .item-card strong { color:#246bfe; margin-right:5px; }
+    .tag { display:inline-block; margin-left:6px; padding:3px 8px; border-radius:999px; background:#eef3ff; color:#246bfe; font-size:12px; font-weight:900; }
+    .hidden { display:none !important; }
+    .progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+    .progress-bar { height:100%; width:0%; background:#246bfe; }
+    .question { color:#246bfe; font-size:25px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+    .training-box { background:#f8faff; border-radius:24px; padding:38px 24px; text-align:center; margin-bottom:18px; min-height:280px; display:grid; place-items:center; }
+    .training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:22px; }
+    .description { font-size:36px; font-weight:900; line-height:1.45; word-break:keep-all; }
+    .answer-options { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:12px; }
+    .answer-btn { background:#eef3ff; color:#246bfe; border:1px solid #dbe7ff; border-radius:16px; min-height:68px; padding:15px 12px; font-size:22px; font-weight:900; }
+    .answer-btn:hover { background:#dfeaff; }
+    .answer-btn.correct-choice { background:#16a06f; color:white; border-color:#16a06f; }
+    .answer-btn.wrong-choice { background:#e54848; color:white; border-color:#e54848; }
+    .stats-mini { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; font-size:13px; }
+    .stats-mini div { background:#f8faff; border:1px solid #e2e8f0; border-radius:12px; padding:8px 10px; display:flex; justify-content:space-between; gap:6px; }
+    .stats-mini b { color:#246bfe; }
+    .result-panel { background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); border-radius:24px; padding:16px; border:1px solid #edf2f7; box-shadow:0 10px 28px rgba(15,30,60,.05); }
+    .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+    .summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+    .summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+    .summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+    .summary-card span { color:#334155; font-size:15px; font-weight:800; }
+    .summary-card.total strong,.summary-card.rate strong { color:#246bfe; } .summary-card.correct strong { color:#16a06f; } .summary-card.wrong strong { color:#e54848; }
+    .summary-icon.total,.summary-icon.rate { background:#246bfe; } .summary-icon.correct { background:#16a06f; } .summary-icon.wrong { background:#e54848; }
+    @media (max-width:900px){ .setup-grid{grid-template-columns:1fr 1fr;} .word-grid{grid-template-columns:repeat(2,1fr);} .stats-mini{grid-template-columns:repeat(2,1fr);} .topbar{align-items:flex-start; flex-direction:column;} }
+    @media (max-width:560px){ .setup-grid,.word-grid,.answer-options,.summary-grid{grid-template-columns:1fr;} .description{font-size:26px;} .question{font-size:21px;} }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar"><div class="brand"><div class="logo">단</div><span>단어 뜻 고르기 훈련</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+    <section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+    <section id="setupView" class="panel"><h2>훈련 설정</h2>
+      <div class="setup-grid">
+        <div><label for="categoryValue">범주</label><select id="categoryValue" onchange="generateMaterials()"><option value="all" selected>전체</option></select></div>
+        <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="40">40개</option><option value="50">50개</option></select></div>
+        <div><label for="choiceCount">보기 개수</label><select id="choiceCount" onchange="generateMaterials()"><option value="2" selected>2개 보기</option><option value="4">4개 보기</option></select></div>
+        <div><label for="difficultyMode">난이도</label><select id="difficultyMode" onchange="generateMaterials()"><option value="different" selected>범주 다르게</option><option value="same2">정답 포함 2개 동일범주</option><option value="allSame">보기 전체 동일범주</option></select></div>
+        <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
+      </div>
+      <div class="help-box">제시된 설명을 읽고 알맞은 단어를 고르는 의미 이해 훈련입니다. 범주별 30문항씩 구성했으며, 보기 개수와 오답 보기의 범주 유사도를 조절할 수 있습니다. 난이도는 정답을 포함해 같은 범주 보기가 몇 개 들어갈지 기준으로 적용됩니다.</div>
+      <div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
+    </section>
+    <section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
+    <section id="statsView" class="panel"><h2>범주별 문항 수</h2><div id="statsBox"></div></section>
+    <section id="trainingView" class="panel hidden"><div id="question" class="question">설명에 맞는 단어를 고르세요.</div><div class="progress-line"><div id="progressBar" class="progress-bar"></div></div><div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="description" class="description"></div></div></div><div id="answerOptions" class="answer-options"></div><div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div><div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div><div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div></section>
+    <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
+  </main>
+  <script>
+    const Store = { load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }, save(key, value) { localStorage.setItem(key, JSON.stringify(value)); } };
+    const subjects = Store.load("speech_subjects", []);
+    const selectedSubjectId = Store.load("speech_selected_subject", null);
+    const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+    const DESCRIPTION_DB = [
+      {
+            "category": "생활용품",
+            "answer": "의자",
+            "description": "앉을 때 사용하는 가구입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "책상",
+            "description": "책을 읽거나 글씨를 쓸 때 사용하는 가구입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "침대",
+            "description": "누워서 잠을 자거나 쉴 때 사용하는 가구입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "베개",
+            "description": "잠을 잘 때 머리를 받치는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "이불",
+            "description": "잠을 잘 때 몸을 덮는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "수건",
+            "description": "씻은 뒤 물기를 닦을 때 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "비누",
+            "description": "손이나 몸을 씻을 때 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "칫솔",
+            "description": "이를 닦을 때 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "치약",
+            "description": "칫솔에 묻혀 이를 닦을 때 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "휴지",
+            "description": "코를 풀거나 닦을 때 사용하는 얇은 종이입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "우산",
+            "description": "비가 올 때 몸이 젖지 않도록 쓰는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "거울",
+            "description": "내 얼굴이나 모습을 비춰 보는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "시계",
+            "description": "시간을 확인할 때 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "달력",
+            "description": "날짜와 요일을 확인할 때 보는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "열쇠",
+            "description": "문이나 자물쇠를 열 때 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "지갑",
+            "description": "돈이나 카드를 넣어 가지고 다니는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "가방",
+            "description": "물건을 넣어 들고 다니는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "컵",
+            "description": "물을 마실 때 사용하는 그릇입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "접시",
+            "description": "음식을 담을 때 사용하는 납작한 그릇입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "그릇",
+            "description": "밥이나 국을 담을 때 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "숟가락",
+            "description": "밥이나 국을 떠먹을 때 사용하는 도구입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "젓가락",
+            "description": "음식을 집어 먹을 때 사용하는 긴 도구입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "포크",
+            "description": "음식을 찍어 먹을 때 사용하는 도구입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "냄비",
+            "description": "국이나 찌개를 끓일 때 사용하는 조리도구입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "프라이팬",
+            "description": "음식을 굽거나 볶을 때 사용하는 조리도구입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "도마",
+            "description": "칼질을 할 때 밑에 놓고 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "칼",
+            "description": "음식 재료를 자를 때 사용하는 도구입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "빗",
+            "description": "머리카락을 정리할 때 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "옷걸이",
+            "description": "옷을 걸어 보관할 때 사용하는 물건입니다."
+      },
+      {
+            "category": "생활용품",
+            "answer": "휴지통",
+            "description": "쓰레기를 버릴 때 사용하는 통입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "연필",
+            "description": "글씨를 쓰거나 그림을 그릴 때 사용하는 학용품입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "지우개",
+            "description": "연필로 쓴 글씨를 지울 때 사용하는 학용품입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "공책",
+            "description": "글씨를 쓰거나 공부 내용을 적는 종이 묶음입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "책",
+            "description": "글이나 그림이 들어 있어 읽는 물건입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "가위",
+            "description": "종이나 물건을 자를 때 사용하는 도구입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "풀",
+            "description": "종이를 붙일 때 사용하는 학용품입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "색연필",
+            "description": "여러 색으로 그림을 칠할 때 사용하는 학용품입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "크레용",
+            "description": "그림을 색칠할 때 사용하는 막대 모양 학용품입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "사인펜",
+            "description": "진한 색으로 글씨나 그림을 그리는 펜입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "볼펜",
+            "description": "잉크로 글씨를 쓰는 필기구입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "샤프",
+            "description": "심을 넣어 사용하는 연필 모양 필기구입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "자",
+            "description": "길이를 재거나 직선을 그을 때 사용하는 물건입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "필통",
+            "description": "연필과 지우개 같은 필기구를 넣는 물건입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "책가방",
+            "description": "책과 공책을 넣어 학교에 메고 가는 가방입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "칠판",
+            "description": "교실 앞에서 글씨를 쓰며 설명할 때 사용하는 판입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "분필",
+            "description": "칠판에 글씨를 쓸 때 사용하는 막대입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "화이트보드",
+            "description": "보드마카로 글씨를 쓰는 하얀 판입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "보드마카",
+            "description": "화이트보드에 글씨를 쓰는 펜입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "종이",
+            "description": "글씨를 쓰거나 그림을 그리는 얇은 물건입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "색종이",
+            "description": "여러 색으로 된 접기용 종이입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "도화지",
+            "description": "그림을 그릴 때 사용하는 두꺼운 종이입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "스케치북",
+            "description": "그림을 그릴 수 있도록 종이를 묶은 물건입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "물감",
+            "description": "붓으로 그림에 색을 칠할 때 사용하는 재료입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "붓",
+            "description": "물감이나 먹을 묻혀 그림이나 글씨를 쓰는 도구입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "팔레트",
+            "description": "물감을 짜거나 섞을 때 사용하는 판입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "테이프",
+            "description": "종이나 물건을 붙일 때 사용하는 물건입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "클립",
+            "description": "종이를 여러 장 함께 고정할 때 사용하는 물건입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "파일",
+            "description": "종이나 서류를 정리해 넣는 물건입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "계산기",
+            "description": "숫자를 계산할 때 사용하는 기계입니다."
+      },
+      {
+            "category": "학용품",
+            "answer": "교과서",
+            "description": "학교에서 공부할 때 사용하는 책입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "바지",
+            "description": "다리에 입는 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "치마",
+            "description": "허리 아래로 입는 옷으로 다리가 하나로 이어져 있습니다."
+      },
+      {
+            "category": "의복",
+            "answer": "양말",
+            "description": "발에 신어 신발 안에 착용하는 물건입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "모자",
+            "description": "머리에 쓰는 물건입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "장갑",
+            "description": "손을 따뜻하게 하거나 보호하기 위해 끼는 물건입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "셔츠",
+            "description": "윗몸에 입는 단정한 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "외투",
+            "description": "추울 때 겉에 걸쳐 입는 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "코트",
+            "description": "겨울에 입는 긴 겉옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "점퍼",
+            "description": "가볍게 겉에 입는 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "티셔츠",
+            "description": "목 부분이 둥글고 편하게 입는 윗옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "내복",
+            "description": "추울 때 옷 안에 입는 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "속옷",
+            "description": "겉옷 안에 입는 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "조끼",
+            "description": "팔 부분이 없는 윗옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "가디건",
+            "description": "단추가 있고 겉에 걸쳐 입는 니트 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "스웨터",
+            "description": "털실로 짠 따뜻한 윗옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "원피스",
+            "description": "상의와 치마가 하나로 이어진 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "정장",
+            "description": "격식 있는 자리에서 입는 단정한 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "한복",
+            "description": "우리나라 전통 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "교복",
+            "description": "학생들이 학교에서 입는 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "운동복",
+            "description": "운동할 때 입는 편한 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "잠옷",
+            "description": "잠을 잘 때 입는 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "우비",
+            "description": "비를 맞지 않기 위해 입는 옷입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "목도리",
+            "description": "목에 두르는 따뜻한 물건입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "스카프",
+            "description": "목에 두르거나 장식으로 사용하는 천입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "넥타이",
+            "description": "셔츠 목에 매는 긴 장식입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "벨트",
+            "description": "바지가 흘러내리지 않게 허리에 매는 물건입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "운동화",
+            "description": "운동하거나 걸을 때 신는 편한 신발입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "구두",
+            "description": "격식 있는 자리에서 신는 신발입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "슬리퍼",
+            "description": "실내나 가까운 곳에서 편하게 신는 신발입니다."
+      },
+      {
+            "category": "의복",
+            "answer": "장화",
+            "description": "비 오는 날이나 물이 있는 곳에서 신는 긴 신발입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "밥",
+            "description": "쌀을 익혀서 먹는 주식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "국",
+            "description": "물에 재료를 넣고 끓여 먹는 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "빵",
+            "description": "밀가루 반죽을 구워 만든 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "라면",
+            "description": "면과 수프를 넣고 끓여 먹는 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "김치",
+            "description": "배추나 무를 양념해 발효시킨 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "만두",
+            "description": "얇은 피 안에 고기나 채소를 넣어 만든 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "떡",
+            "description": "쌀가루나 찹쌀로 만든 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "국수",
+            "description": "긴 면을 삶아 국물이나 양념과 먹는 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "죽",
+            "description": "쌀을 물에 오래 끓여 부드럽게 만든 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "고기",
+            "description": "소, 돼지, 닭 같은 동물의 살로 만든 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "생선",
+            "description": "물속에 사는 동물을 먹을 수 있게 조리한 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "계란",
+            "description": "닭이 낳는 알로 만든 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "두부",
+            "description": "콩으로 만든 하얗고 부드러운 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "불고기",
+            "description": "양념한 고기를 구워 먹는 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "비빔밥",
+            "description": "밥에 여러 나물과 고추장을 넣어 비벼 먹는 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "김밥",
+            "description": "밥과 재료를 김으로 말아 만든 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "냉면",
+            "description": "차가운 국물이나 양념에 먹는 면 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "칼국수",
+            "description": "넓은 면을 국물에 끓여 먹는 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "찌개",
+            "description": "여러 재료를 넣고 자작하게 끓인 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "삼계탕",
+            "description": "닭 안에 찹쌀 등을 넣고 끓인 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "설렁탕",
+            "description": "소뼈를 오래 끓여 만든 국물 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "떡볶이",
+            "description": "떡을 매운 양념에 볶거나 끓인 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "튀김",
+            "description": "재료에 반죽을 묻혀 기름에 익힌 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "잡채",
+            "description": "당면과 채소를 볶아 만든 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "피자",
+            "description": "둥근 반죽 위에 치즈와 토핑을 올려 구운 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "치킨",
+            "description": "닭고기를 튀기거나 구운 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "햄버거",
+            "description": "빵 사이에 고기와 채소를 넣어 먹는 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "샌드위치",
+            "description": "빵 사이에 여러 재료를 넣어 먹는 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "카레",
+            "description": "노란 소스에 고기와 채소를 넣어 밥과 먹는 음식입니다."
+      },
+      {
+            "category": "음식",
+            "answer": "짜장면",
+            "description": "검은 춘장 소스를 면에 비벼 먹는 음식입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "자동차",
+            "description": "도로 위를 달리며 사람을 태우는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "버스",
+            "description": "여러 사람이 함께 타고 정해진 길을 다니는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "택시",
+            "description": "돈을 내고 원하는 곳까지 타고 가는 자동차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "기차",
+            "description": "철길 위를 달리며 많은 사람을 태우는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "비행기",
+            "description": "하늘을 날아 먼 곳까지 가는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "자전거",
+            "description": "페달을 밟아 두 바퀴로 움직이는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "오토바이",
+            "description": "엔진으로 움직이는 두 바퀴 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "지하철",
+            "description": "도시의 철길을 따라 다니는 전철입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "배",
+            "description": "물 위를 다니며 사람이나 물건을 싣는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "트럭",
+            "description": "짐을 많이 싣고 나르는 자동차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "구급차",
+            "description": "아픈 사람을 병원으로 빠르게 옮기는 차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "소방차",
+            "description": "불을 끄러 갈 때 사용하는 큰 차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "경찰차",
+            "description": "경찰관이 순찰하거나 출동할 때 타는 차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "승용차",
+            "description": "가족이나 개인이 타는 일반 자동차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "화물차",
+            "description": "물건이나 짐을 싣고 나르는 차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "유모차",
+            "description": "아기를 태우고 밀고 다니는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "휠체어",
+            "description": "걷기 어려운 사람이 앉아서 이동하는 의자형 도구입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "보행기",
+            "description": "걷는 것을 도와주는 보조기구입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "스쿠터",
+            "description": "작고 가볍게 타고 다니는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "전동차",
+            "description": "전기로 움직이는 작은 이동 수단입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "마차",
+            "description": "말이 끄는 수레입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "요트",
+            "description": "바다나 강에서 타는 작은 배입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "잠수함",
+            "description": "물속으로 들어가 다닐 수 있는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "헬리콥터",
+            "description": "날개를 돌려 하늘을 나는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "열차",
+            "description": "여러 칸이 연결되어 철길 위를 달리는 탈것입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "캠핑카",
+            "description": "안에서 자거나 생활할 수 있는 자동차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "트랙터",
+            "description": "농사일에 사용하는 큰 차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "지게차",
+            "description": "무거운 짐을 들어 옮기는 차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "굴착기",
+            "description": "땅을 파는 데 사용하는 큰 기계차입니다."
+      },
+      {
+            "category": "탈것",
+            "answer": "킥보드",
+            "description": "발로 밀거나 전기로 움직이는 작은 탈것입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "강아지",
+            "description": "멍멍 짖고 사람과 함께 사는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "고양이",
+            "description": "야옹 하고 울며 사람과 함께 사는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "토끼",
+            "description": "귀가 길고 깡충깡충 뛰는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "호랑이",
+            "description": "줄무늬가 있고 어흥 하고 우는 큰 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "사자",
+            "description": "갈기가 있고 동물의 왕이라고 불리는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "코끼리",
+            "description": "몸이 크고 긴 코를 가진 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "기린",
+            "description": "목이 아주 길고 키가 큰 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "원숭이",
+            "description": "나무를 잘 타고 바나나를 좋아하는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "말",
+            "description": "사람이 타거나 빠르게 달리는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "소",
+            "description": "음매 하고 울며 우유를 주는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "돼지",
+            "description": "꿀꿀 하고 울며 코가 납작한 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "양",
+            "description": "털이 많고 메에 하고 우는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "염소",
+            "description": "뿔이 있고 산길을 잘 오르는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "닭",
+            "description": "알을 낳고 꼬끼오 하고 우는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "오리",
+            "description": "꽥꽥 울고 물에서 헤엄치는 새입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "거위",
+            "description": "목이 길고 물에서 헤엄치는 새입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "참새",
+            "description": "작고 흔히 볼 수 있는 새입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "비둘기",
+            "description": "도시에서 자주 볼 수 있는 새입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "까치",
+            "description": "검은색과 흰색 깃털이 있는 새입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "독수리",
+            "description": "하늘을 높이 날며 사냥하는 큰 새입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "펭귄",
+            "description": "날지는 못하지만 헤엄을 잘 치는 새입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "고래",
+            "description": "바다에 사는 아주 큰 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "상어",
+            "description": "바다에 사는 이빨이 날카로운 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "돌고래",
+            "description": "영리하고 물속에서 빠르게 헤엄치는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "거북이",
+            "description": "딱딱한 등껍질을 가진 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "개구리",
+            "description": "물가에 살며 개굴개굴 우는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "뱀",
+            "description": "다리가 없고 몸이 긴 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "악어",
+            "description": "입이 크고 물가에 사는 동물입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "나비",
+            "description": "날개가 예쁘고 꽃 주변을 나는 곤충입니다."
+      },
+      {
+            "category": "동물",
+            "answer": "개미",
+            "description": "작고 여러 마리가 줄지어 다니는 곤충입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "학교",
+            "description": "학생들이 공부하러 가는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "병원",
+            "description": "아픈 사람이 진료와 치료를 받는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "약국",
+            "description": "약을 사거나 조제받는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "마트",
+            "description": "음식이나 생활용품을 사는 큰 가게입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "공원",
+            "description": "산책하거나 놀 수 있는 넓은 장소입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "은행",
+            "description": "돈을 맡기거나 찾을 수 있는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "식당",
+            "description": "돈을 내고 음식을 먹는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "카페",
+            "description": "커피나 음료를 마시며 쉬는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "시장",
+            "description": "여러 가게에서 물건을 사고파는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "우체국",
+            "description": "편지나 택배를 보내는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "도서관",
+            "description": "책을 빌리거나 조용히 읽는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "놀이터",
+            "description": "아이들이 놀이기구를 타며 노는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "교회",
+            "description": "기독교 예배를 드리는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "성당",
+            "description": "천주교 미사를 드리는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "절",
+            "description": "불교에서 예불을 드리는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "집",
+            "description": "가족이 살고 쉬는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "방",
+            "description": "집 안에서 잠을 자거나 생활하는 공간입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "거실",
+            "description": "가족이 함께 앉아 쉬는 공간입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "주방",
+            "description": "음식을 만들고 준비하는 공간입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "화장실",
+            "description": "소변이나 대변을 보는 공간입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "현관",
+            "description": "집 안으로 들어가고 나오는 입구입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "복도",
+            "description": "방과 방 사이를 지나가는 길입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "계단",
+            "description": "위아래 층으로 오르내리는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "정류장",
+            "description": "버스를 기다리고 타는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "주차장",
+            "description": "자동차를 세워 두는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "기차역",
+            "description": "기차를 타고 내리는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "공항",
+            "description": "비행기를 타고 내리는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "경찰서",
+            "description": "경찰관이 일하는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "소방서",
+            "description": "소방관이 출동을 준비하는 곳입니다."
+      },
+      {
+            "category": "장소",
+            "answer": "미용실",
+            "description": "머리를 자르거나 꾸미는 곳입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "머리",
+            "description": "생각을 하고 얼굴 위쪽에 있는 신체 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "얼굴",
+            "description": "눈, 코, 입이 있는 머리 앞부분입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "눈",
+            "description": "사물을 볼 때 사용하는 신체 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "코",
+            "description": "냄새를 맡고 숨을 쉬는 신체 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "입",
+            "description": "말을 하거나 음식을 먹을 때 사용하는 신체 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "귀",
+            "description": "소리를 들을 때 사용하는 신체 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "목",
+            "description": "머리와 몸통을 이어 주는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "어깨",
+            "description": "팔과 몸통이 이어지는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "가슴",
+            "description": "몸 앞쪽 위에 있는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "배",
+            "description": "몸 앞쪽 가운데에 있는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "등",
+            "description": "몸 뒤쪽의 넓은 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "허리",
+            "description": "몸의 가운데 부분으로 굽히고 펼 때 사용합니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "엉덩이",
+            "description": "앉을 때 바닥에 닿는 몸의 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "팔",
+            "description": "어깨에서 손까지 이어지는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "손",
+            "description": "물건을 잡거나 만질 때 사용하는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "손가락",
+            "description": "손끝에 여러 개로 나뉘어 있는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "손목",
+            "description": "손과 팔이 이어지는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "팔꿈치",
+            "description": "팔을 굽히고 펼 때 움직이는 관절입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "다리",
+            "description": "서거나 걸을 때 사용하는 신체 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "무릎",
+            "description": "다리 가운데에서 굽혔다 펼 수 있는 관절입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "발",
+            "description": "걷거나 뛸 때 바닥에 닿는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "발목",
+            "description": "발과 다리가 이어지는 관절입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "발가락",
+            "description": "발끝에 여러 개로 나뉘어 있는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "이마",
+            "description": "눈썹 위쪽의 넓은 얼굴 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "눈썹",
+            "description": "눈 위에 난 털입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "볼",
+            "description": "얼굴 양쪽의 말랑한 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "턱",
+            "description": "입 아래쪽에 있는 얼굴 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "혀",
+            "description": "입안에서 맛을 느끼고 말을 도와주는 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "치아",
+            "description": "음식을 씹을 때 사용하는 단단한 부위입니다."
+      },
+      {
+            "category": "신체부위",
+            "answer": "피부",
+            "description": "몸을 덮고 있는 바깥 부분입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "의사",
+            "description": "아픈 사람을 진료하고 치료하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "간호사",
+            "description": "병원에서 환자를 돌보고 치료를 돕는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "약사",
+            "description": "약국에서 약을 조제하고 설명해 주는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "치료사",
+            "description": "환자의 기능 회복을 돕는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "교사",
+            "description": "학교에서 학생들을 가르치는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "경찰관",
+            "description": "사람들을 보호하고 나쁜 일을 막는 일을 합니다."
+      },
+      {
+            "category": "직업",
+            "answer": "소방관",
+            "description": "불을 끄고 위험한 사람을 구조하는 일을 합니다."
+      },
+      {
+            "category": "직업",
+            "answer": "군인",
+            "description": "나라를 지키는 일을 하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "요리사",
+            "description": "음식을 만드는 일을 하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "운전기사",
+            "description": "차를 운전하여 사람이나 물건을 이동시킵니다."
+      },
+      {
+            "category": "직업",
+            "answer": "미용사",
+            "description": "머리를 자르거나 예쁘게 꾸며 주는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "이발사",
+            "description": "머리카락을 깎고 다듬는 일을 하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "가수",
+            "description": "노래를 부르는 일을 하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "배우",
+            "description": "영화나 드라마에서 연기하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "화가",
+            "description": "그림을 그리는 일을 하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "작가",
+            "description": "글을 쓰는 일을 하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "기자",
+            "description": "소식을 취재하여 기사로 전하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "아나운서",
+            "description": "뉴스나 방송 내용을 말로 전달하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "농부",
+            "description": "논이나 밭에서 곡식과 채소를 기르는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "어부",
+            "description": "바다나 강에서 물고기를 잡는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "목수",
+            "description": "나무로 집이나 가구를 만드는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "정비사",
+            "description": "고장 난 차나 기계를 고치는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "배달원",
+            "description": "물건이나 음식을 목적지까지 가져다주는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "판매원",
+            "description": "가게에서 물건을 파는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "은행원",
+            "description": "은행에서 돈 관련 업무를 하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "공무원",
+            "description": "공공기관에서 일하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "회사원",
+            "description": "회사에서 일하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "변호사",
+            "description": "법률 문제를 도와주는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "경비원",
+            "description": "건물이나 사람을 지키는 일을 하는 사람입니다."
+      },
+      {
+            "category": "직업",
+            "answer": "청소원",
+            "description": "공간을 깨끗하게 청소하는 일을 하는 사람입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "냉장고",
+            "description": "음식을 차갑게 보관하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "세탁기",
+            "description": "옷을 물과 세제로 빨아 주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "청소기",
+            "description": "먼지와 쓰레기를 빨아들이는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "선풍기",
+            "description": "바람을 만들어 시원하게 해 주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "에어컨",
+            "description": "방 안을 시원하게 하거나 따뜻하게 하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "텔레비전",
+            "description": "화면으로 뉴스나 드라마를 볼 수 있는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "전자레인지",
+            "description": "음식을 빠르게 데울 때 사용하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "밥솥",
+            "description": "밥을 지을 때 사용하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "가습기",
+            "description": "공기 중에 습기를 더해 주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "공기청정기",
+            "description": "공기를 깨끗하게 해 주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "정수기",
+            "description": "물을 깨끗하게 걸러 마시게 해 주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "다리미",
+            "description": "옷의 주름을 펴는 데 사용하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "드라이어",
+            "description": "머리카락을 말릴 때 사용하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "믹서기",
+            "description": "음식 재료를 갈거나 섞는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "토스터",
+            "description": "빵을 구울 때 사용하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "전기포트",
+            "description": "물을 빠르게 끓이는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "오븐",
+            "description": "음식을 굽거나 익히는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "식기세척기",
+            "description": "그릇을 자동으로 씻어 주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "건조기",
+            "description": "젖은 옷을 말려 주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "비데",
+            "description": "화장실에서 물로 씻을 수 있게 해 주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "히터",
+            "description": "공간을 따뜻하게 해 주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "라디오",
+            "description": "소리로 방송을 들을 수 있는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "스피커",
+            "description": "음악이나 소리를 크게 들려주는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "컴퓨터",
+            "description": "문서 작성이나 인터넷을 할 때 사용하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "노트북",
+            "description": "들고 다닐 수 있는 컴퓨터입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "프린터",
+            "description": "문서나 그림을 종이에 출력하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "전화기",
+            "description": "멀리 있는 사람과 통화할 때 사용하는 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "휴대폰",
+            "description": "전화를 하거나 문자를 보내는 작은 기계입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "충전기",
+            "description": "휴대폰이나 기계에 전기를 채우는 물건입니다."
+      },
+      {
+            "category": "가전제품",
+            "answer": "리모컨",
+            "description": "멀리서 기계를 조작하는 물건입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "휠체어",
+            "description": "걷기 어려운 사람이 앉아서 이동할 때 사용합니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "보행기",
+            "description": "걷는 것을 도와주는 보조기구입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "지팡이",
+            "description": "걷기 힘들 때 몸을 지지하며 걷도록 돕습니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "침대",
+            "description": "병원이나 집에서 누워 쉴 때 사용하는 가구입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "베개",
+            "description": "누울 때 머리를 받치는 물건입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "식판",
+            "description": "병원에서 음식을 담아 제공할 때 사용하는 판입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "물컵",
+            "description": "물을 마실 때 사용하는 컵입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "체온계",
+            "description": "몸의 온도를 잴 때 사용하는 기구입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "혈압계",
+            "description": "혈압을 잴 때 사용하는 기구입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "혈당기",
+            "description": "혈당을 확인할 때 사용하는 기구입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "주사기",
+            "description": "약을 몸에 넣을 때 사용하는 의료 도구입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "링거대",
+            "description": "수액 주머니를 걸어 두는 받침대입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "마스크",
+            "description": "입과 코를 가려 감염을 예방하는 물건입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "소독제",
+            "description": "상처나 손을 깨끗하게 소독할 때 사용합니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "보호대",
+            "description": "다친 부위를 지지하고 보호하는 물건입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "보조기",
+            "description": "몸의 움직임이나 자세를 도와주는 기구입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "약봉지",
+            "description": "약을 담아 주는 봉지입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "알약",
+            "description": "작은 알 모양으로 삼켜 먹는 약입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "가루약",
+            "description": "가루 형태로 된 약입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "연고",
+            "description": "피부에 바르는 약입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "파스",
+            "description": "아픈 부위에 붙이는 약입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "진통제",
+            "description": "통증을 줄이기 위해 먹는 약입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "소염제",
+            "description": "염증을 줄이는 데 사용하는 약입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "항생제",
+            "description": "세균 감염 치료에 사용하는 약입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "수면제",
+            "description": "잠을 잘 수 있도록 돕는 약입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "진단서",
+            "description": "진단 내용을 적은 병원 서류입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "처방전",
+            "description": "약을 받기 위해 의사가 써 주는 서류입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "영수증",
+            "description": "돈을 낸 내용을 확인하는 종이입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "대기실",
+            "description": "진료 순서를 기다리는 공간입니다."
+      },
+      {
+            "category": "병원관련",
+            "answer": "치료실",
+            "description": "치료를 받는 공간입니다."
+      }
+];
+    let materials = []; let currentIndex = 0; let answers = []; let choiceLocked = false; let retryCount = 0;
+    function unique(array) { return [...new Set(array)]; }
+    function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+    function getCategories() { return unique(DESCRIPTION_DB.map(item => item.category)); }
+    function renderSubject() { const box = document.getElementById("subjectBox"); if (!selectedSubject) { box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`; return; } box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`; }
+    function renderCategoryOptions() { const select = document.getElementById("categoryValue"); select.innerHTML = `<option value="all" selected>전체</option>` + getCategories().map(category => `<option value="${category}">${category}</option>`).join(""); }
+    function renderStats() { const box = document.getElementById("statsBox"); const counts = getCategories().map(category => ({ category, total: DESCRIPTION_DB.filter(item => item.category === category).length })); box.innerHTML = `<div class="stats-mini">${counts.map(item => `<div><span>${item.category}</span><b>${item.total}개</b></div>`).join("")}</div>`; }
+    function getSettings() {
+      let choiceCount = Number(document.getElementById("choiceCount").value) || 2;
+      if (choiceCount !== 2 && choiceCount !== 4) choiceCount = 2;
+      let difficultyMode = document.getElementById("difficultyMode").value;
+      if (difficultyMode === "same3") difficultyMode = "allSame";
+      return {
+        categoryValue: document.getElementById("categoryValue").value,
+        count: Number(document.getElementById("count").value) || 10,
+        choiceCount: choiceCount,
+        difficultyMode: difficultyMode,
+        orderMode: document.getElementById("orderMode").value
+      };
+    }
+    function getItemsBySetting(settings) { const list = settings.categoryValue === "all" ? DESCRIPTION_DB : DESCRIPTION_DB.filter(item => item.category === settings.categoryValue); return settings.orderMode === "random" ? shuffle(list) : [...list]; }
+    function pickUnique(pool, count, excludeWords) {
+      const exclude = new Set(excludeWords || []);
+      const picked = [];
+      for (const item of shuffle(pool)) {
+        if (!exclude.has(item.answer) && !picked.includes(item.answer)) {
+          picked.push(item.answer);
+          exclude.add(item.answer);
+        }
+        if (picked.length >= count) break;
+      }
+      return picked;
+    }
+
+    function pickDifferentCategoryChoices(item, count, excludeWords) {
+      const exclude = new Set(excludeWords || []);
+      const picked = [];
+      const otherCategories = shuffle(getCategories().filter(category => category !== item.category));
+
+      // 먼저 서로 다른 범주에서 1개씩 뽑아, '범주 다르게' 난이도가 더 명확하게 보이도록 함
+      otherCategories.forEach(category => {
+        if (picked.length >= count) return;
+        const pool = DESCRIPTION_DB.filter(x => x.category === category && !exclude.has(x.answer));
+        const one = pickUnique(pool, 1, [...exclude]);
+        if (one.length) {
+          picked.push(one[0]);
+          exclude.add(one[0]);
+        }
+      });
+
+      // 범주 수가 부족하거나 중복 단어 때문에 모자라면 다른 범주 전체에서 보충
+      if (picked.length < count) {
+        const diffPool = DESCRIPTION_DB.filter(x => x.category !== item.category && !exclude.has(x.answer));
+        picked.push(...pickUnique(diffPool, count - picked.length, [...exclude, ...picked]));
+      }
+      return picked.slice(0, count);
+    }
+
+    function getDifficultySameNeeded(choiceCount, difficultyMode) {
+      // sameNeeded는 '정답 외에 같은 범주에서 뽑을 오답 수'입니다.
+      // 예: 정답 포함 2개 동일범주 = 정답 1개 + 같은 범주 오답 1개
+      if (difficultyMode === "same2") return Math.min(1, choiceCount - 1);
+      if (difficultyMode === "allSame") return choiceCount - 1;
+      return 0;
+    }
+
+    function makeChoices(item, choiceCount, difficultyMode) {
+      const samePool = DESCRIPTION_DB.filter(x => x.category === item.category && x.answer !== item.answer);
+      const sameNeeded = getDifficultySameNeeded(choiceCount, difficultyMode);
+      const same = pickUnique(samePool, sameNeeded, [item.answer]);
+      const diffNeeded = choiceCount - 1 - same.length;
+      const diff = pickDifferentCategoryChoices(item, diffNeeded, [item.answer, ...same]);
+      let choices = [item.answer, ...same, ...diff];
+
+      // 예외 상황에서 보기 수가 부족하지 않도록 안전 보충
+      if (choices.length < choiceCount) {
+        const fallback = pickUnique(DESCRIPTION_DB, choiceCount - choices.length, choices);
+        choices = [...choices, ...fallback];
+      }
+      return shuffle(choices).slice(0, choiceCount);
+    }
+    function buildMaterials() { const settings = getSettings(); const source = getItemsBySetting(settings); return source.slice(0, Math.min(settings.count, source.length)).map(item => ({ ...item, choices: makeChoices(item, settings.choiceCount, settings.difficultyMode), question:"설명에 맞는 단어를 고르세요.", answer:item.answer })); }
+    function generateMaterials() { materials = buildMaterials(); renderPreview(); }
+    function renderPreview() {
+      const settings = getSettings();
+      const label = settings.categoryValue === "all" ? "전체 범주" : settings.categoryValue;
+      const difficultyLabel = document.getElementById("difficultyMode").selectedOptions[0].textContent;
+      document.getElementById("previewTitle").textContent = `${label} · ${settings.choiceCount}개 보기 · ${difficultyLabel} · ${materials.length}개`;
+      const previewList = document.getElementById("previewList");
+      if (materials.length === 0) { previewList.innerHTML = `<div class="item-card">해당 조건의 문항이 없습니다.</div>`; return; }
+      previewList.innerHTML = materials.map((item, index) => `<div class="item-card"><strong>${index + 1}.</strong>${item.description}<br /><span class="tag">${item.category}</span> 정답: ${item.answer}<br /><small>보기: ${item.choices.join(" / ")}</small></div>`).join("");
+    }
+    function startTraining() { if (!selectedSubject) { alert("대상자를 먼저 등록하거나 선택해주세요."); location.href = "main.html"; return; } if (materials.length === 0) generateMaterials(); if (materials.length === 0) return; currentIndex = 0; answers = []; document.getElementById("setupView").classList.add("hidden"); document.getElementById("previewView").classList.add("hidden"); document.getElementById("statsView").classList.add("hidden"); document.getElementById("trainingView").classList.remove("hidden"); document.getElementById("finishView").classList.add("hidden"); renderTrainingItem(); }
+    function renderTrainingItem() {
+      const item = materials[currentIndex];
+      choiceLocked = false;
+      retryCount = 0;
+      document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
+      document.getElementById("trainingTitle").textContent = `${currentIndex + 1} / ${materials.length}`;
+      document.getElementById("description").textContent = item.description;
+      document.getElementById("question").textContent = item.question;
+      document.getElementById("itemMemo").value = "";
+
+      const feedbackBox = document.getElementById("feedbackBox");
+      if (feedbackBox) {
+        feedbackBox.style.display = "none";
+        feedbackBox.textContent = "";
+      }
+      const nextBtn = document.getElementById("nextBtn");
+      if (nextBtn) nextBtn.style.display = "none";
+
+      renderAnswerChoices();
+    }
+
+    function showFeedback(message, isCorrectStyle) {
+      const feedbackBox = document.getElementById("feedbackBox");
+      if (!feedbackBox) return;
+      feedbackBox.style.display = "block";
+      feedbackBox.textContent = message;
+      feedbackBox.style.background = isCorrectStyle ? "#e8fff4" : "#fff1f1";
+      feedbackBox.style.color = isCorrectStyle ? "#16a06f" : "#e54848";
+      feedbackBox.style.border = isCorrectStyle ? "1px solid #a7f3d0" : "1px solid #fecaca";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+    function renderAnswerChoices() {
+      const item = materials[currentIndex];
+      const box = document.getElementById("answerOptions");
+      box.innerHTML = item.choices.map(choice => {
+        const safe = escapeHtml(choice);
+        return `<button class="answer-btn" data-choice="${safe}" onclick="selectAnswer(this, this.dataset.choice)">${safe}</button>`;
+      }).join("");
+    }
+    function markChoices(selectedButton, selectedAnswer) {
+      const item = materials[currentIndex];
+      document.querySelectorAll(".answer-btn").forEach(button => {
+        if (button.textContent === item.answer) button.classList.add("correct-choice");
+        if (button === selectedButton && selectedAnswer !== item.answer) button.classList.add("wrong-choice");
+      });
+    }
+
+    function selectAnswer(button, selectedAnswer) {
+      if (choiceLocked) return;
+
+      const item = materials[currentIndex];
+      const isCorrect = selectedAnswer === item.answer;
+
+      if (isCorrect) {
+        choiceLocked = true;
+        markChoices(button, selectedAnswer);
+
+        const countedCorrect = retryCount === 0;
+        showFeedback(countedCorrect ? "정답입니다." : "정답입니다.", countedCorrect);
+
+        setTimeout(() => recordAnswer(countedCorrect ? "correct" : "wrong", selectedAnswer, retryCount), 1200);
+        return;
+      }
+
+      retryCount += 1;
+
+      if (retryCount === 1) {
+        button.classList.add("wrong-choice");
+        showFeedback("다시 풀어보세요.", false);
+        setTimeout(() => {
+          button.classList.remove("wrong-choice");
+        }, 800);
+        return;
+      }
+
+      choiceLocked = true;
+      markChoices(button, selectedAnswer);
+      showFeedback("정답을 확인한 뒤 다음 문제를 눌러주세요.", false);
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function nextQuestionManual() {
+      if (!choiceLocked) return;
+      recordAnswer("wrong", "오답", retryCount);
+    }
+    function recordAnswer(type, selectedAnswer, retry) {
+      const item = materials[currentIndex];
+      const memo = document.getElementById("itemMemo").value.trim();
+      answers.push({
+        description:item.description,
+        stimulus:item.description,
+        category:item.category,
+        selectedAnswer:selectedAnswer,
+        answer:item.answer,
+        choices:item.choices,
+        response:type,
+        retry: retry || 0,
+        memo:memo,
+        recordedAt:new Date().toISOString()
+      });
+      currentIndex += 1;
+      if (currentIndex >= materials.length) finishTraining();
+      else renderTrainingItem();
+    }
+    function finishTraining() { const settings = getSettings(); const total = answers.length; const correct = answers.filter(item => item.response === "correct").length; const wrong = answers.filter(item => item.response === "wrong").length; const accuracy = total ? Math.round((correct / total) * 100) : 0; const label = settings.categoryValue === "all" ? "전체 범주" : settings.categoryValue; const result = { id:`DW${Date.now()}`, subjectId:selectedSubject.id, subjectName:selectedSubject.name, subjectNumber:selectedSubject.number, program:"단어 뜻 고르기 훈련", targetType:"description-word", targetTypeName:"설명-단어 연결", targetValue:settings.categoryValue, level:"word", choiceCount:settings.choiceCount, difficultyMode:settings.difficultyMode, total, correct, wrong, accuracy, answers, createdAt:new Date().toISOString(), displayDate:new Date().toLocaleString() }; const results = Store.load("speech_articulation_results", []); results.unshift(result); Store.save("speech_articulation_results", results); document.getElementById("trainingView").classList.add("hidden"); document.getElementById("finishView").classList.remove("hidden"); document.getElementById("finishText").textContent = `${selectedSubject.name} 대상자의 ${label} 단어 뜻 고르기 훈련 결과입니다.`; document.getElementById("summaryGrid").innerHTML = `<div class="summary-card total"><div class="summary-icon total">▣</div><span>전체 문항</span><strong>${total}</strong></div><div class="summary-card correct"><div class="summary-icon correct">✓</div><span>정답</span><strong>${correct}</strong></div><div class="summary-card wrong"><div class="summary-icon wrong">×</div><span>오답</span><strong>${wrong}</strong></div><div class="summary-card rate"><div class="summary-icon rate">%</div><span>정답률</span><strong>${accuracy}%</strong></div>`; }
+    renderSubject(); renderCategoryOptions(); renderStats(); generateMaterials();
+  </script>
+</body>
+</html>

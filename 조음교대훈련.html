@@ -1,0 +1,1071 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>조음교대 훈련</title>
+  <style>
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+    .app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+    .logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+    button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+    .primary { background:#246bfe; color:white; }
+    .secondary { background:#eef3ff; color:#246bfe; }
+    .gray { background:#edf1f6; color:#5d687b; }
+    .blue { background:#246bfe; color:white; }
+    .red { background:#e54848; color:white; }
+    .panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+    .panel h2 { margin:0 0 16px; font-size:22px; }
+    .setup-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+    select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+    textarea { min-height:74px; resize:vertical; }
+    .subject-box,.help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+    .help-box { margin-top:16px; font-size:14px; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .word-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .item-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:16px; padding:14px; font-size:15px; line-height:1.45; }
+    .item-card strong { color:#246bfe; margin-right:5px; }
+    .tag { display:inline-block; margin-left:6px; padding:3px 8px; border-radius:999px; background:#eef3ff; color:#246bfe; font-size:12px; font-weight:900; }
+    .hidden { display:none !important; }
+    .progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+    .progress-bar { height:100%; width:0%; background:#246bfe; }
+    .question { color:#246bfe; font-size:26px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+    .training-box { background:#f8faff; border-radius:24px; padding:42px 24px; text-align:center; margin-bottom:18px; min-height:340px; display:grid; place-items:center; }
+    .training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:18px; }
+    .target { font-size:74px; font-weight:900; line-height:1.25; word-break:keep-all; letter-spacing:-1px; }
+    .target.sentence { font-size:42px; line-height:1.45; max-width:900px; margin:0 auto; }
+    .guide { display:none !important; }
+    
+    .rating-box { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .rating-box button { min-height:72px; font-size:24px; }
+    .feedback { display:none; margin-top:12px; padding:16px; border-radius:16px; font-size:24px; font-weight:900; text-align:center; }
+    .feedback.correct { background:#e8fff4; color:#16a06f; border:1px solid #a7f3d0; }
+    .feedback.wrong { background:#fff1f1; color:#e54848; border:1px solid #fecaca; }
+    .summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:14px; }
+    .summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+    .summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+    .summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+    .summary-card span { color:#334155; font-size:15px; font-weight:800; }
+    .summary-card.total strong,.summary-card.rate strong { color:#246bfe; }
+    .summary-card.correct strong { color:#16a06f; }
+    .summary-card.wrong strong { color:#e54848; }
+    .summary-icon.total,.summary-icon.rate { background:#246bfe; }
+    .summary-icon.correct { background:#16a06f; }
+    .summary-icon.wrong { background:#e54848; }
+    @media (max-width:900px){ .setup-grid{grid-template-columns:1fr 1fr;} .word-grid{grid-template-columns:repeat(2,1fr);} .summary-grid{grid-template-columns:repeat(2,1fr);} .topbar{align-items:flex-start; flex-direction:column;} }
+    @media (max-width:560px){ .setup-grid,.word-grid,.rating-box,.summary-grid{grid-template-columns:1fr;} .target{font-size:52px;} .target.sentence{font-size:30px;} .question{font-size:22px;} }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><div class="logo">조</div><span>조음교대 훈련</span></div>
+      <button class="gray" onclick="location.href='main.html'">메인으로</button>
+    </header>
+
+    <section class="panel">
+      <h2>대상자</h2>
+      <div id="subjectBox" class="subject-box"></div>
+    </section>
+
+    <section id="setupView" class="panel">
+      <h2>훈련 설정</h2>
+      <div class="setup-grid">
+        <div>
+          <label for="trainingType">훈련 유형</label>
+          <select id="trainingType" onchange="generateMaterials(); renderStats();">
+            <option value="all" selected>전체 혼합</option>
+            <option value="AMR">동일 음절 AMR</option>
+            <option value="SMR">연속 음절 SMR</option>
+            <option value="문장">문장 반복</option>
+          </select>
+        </div>
+        <div>
+          <label for="count">개수</label>
+          <select id="count" onchange="generateMaterials()">
+            <option value="10" selected>10개</option>
+            <option value="20">20개</option>
+            <option value="all">전체</option>
+          </select>
+        </div>
+        <div>
+          <label for="orderMode">제시 방식</label>
+          <select id="orderMode" onchange="generateMaterials()">
+            <option value="random" selected>무작위</option>
+            <option value="order">순서대로</option>
+          </select>
+        </div>
+      </div>
+      <div class="help-box">
+        조음기관의 빠르고 정확한 움직임을 연습하는 훈련입니다. 동일 음절 반복(AMR), 연속 음절 반복(SMR), 문장 반복 훈련을 선택할 수 있습니다.
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="generateMaterials()">자료 생성</button>
+        <button class="secondary" onclick="startTraining()">훈련 시작</button>
+      </div>
+    </section>
+
+    <section id="previewView" class="panel">
+      <h2 id="previewTitle">생성 자료</h2>
+      <div id="previewList" class="word-grid"></div>
+    </section>
+
+    <section id="statsView" class="panel">
+      <h2>유형별 문항 수</h2>
+      <div id="statsBox"></div>
+    </section>
+
+    <section id="trainingView" class="panel hidden">
+      <div id="question" class="question">제시된 음절 또는 문장을 또박또박 반복해보세요.</div>
+      <div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+      <div class="training-box">
+        <div>
+          <div id="trainingTitle" class="training-title">1번 문항</div>
+          <div id="targetText" class="target"></div>
+          <div id="guideText" class="guide"></div>
+        </div>
+      </div>
+
+      <div class="rating-box">
+        <button id="correctBtn" class="blue" onclick="recordAnswer('correct')">정확</button>
+        <button id="wrongBtn" class="red" onclick="recordAnswer('wrong')">부정확</button>
+      </div>
+      <div id="feedbackBox" class="feedback"></div>
+      <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 항목</button></div>
+      
+    </section>
+
+    <section id="finishView" class="panel hidden">
+      <h2>훈련 결과</h2>
+      <p id="finishText"></p>
+      <div class="summary-grid" id="summaryGrid"></div>
+      <div class="actions">
+        <button class="primary" onclick="location.href='main.html'">메인으로</button>
+        <button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const TRAINING_NAME = "조음교대 훈련";
+    const Store = {
+      load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } },
+      save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+    };
+    const subjects = Store.load("speech_subjects", []);
+    const selectedSubjectId = Store.load("speech_selected_subject", null);
+    const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+    const ITEM_DB = [
+      {
+            "type": "AMR",
+            "target": "퍼 퍼 퍼 퍼 퍼",
+            "label": "입술 소리",
+            "guide": "입술을 정확히 모았다가 터뜨리듯이 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "터 터 터 터 터",
+            "label": "혀끝 소리",
+            "guide": "혀끝을 윗잇몸 쪽에 정확히 대고 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "커 커 커 커 커",
+            "label": "혀뿌리 소리",
+            "guide": "혀뿌리 쪽을 사용해 목 뒤쪽에서 정확히 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "파 파 파 파 파",
+            "label": "입술-공기 조절",
+            "guide": "입술을 빠르게 열고 닫으며 또박또박 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "타 타 타 타 타",
+            "label": "혀끝-공기 조절",
+            "guide": "혀끝 위치가 흐트러지지 않게 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "카 카 카 카 카",
+            "label": "혀뿌리-공기 조절",
+            "guide": "뒤쪽 소리가 약해지지 않도록 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "바 바 바 바 바",
+            "label": "입술 유성음",
+            "guide": "목소리를 유지하며 입술 소리를 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "다 다 다 다 다",
+            "label": "혀끝 유성음",
+            "guide": "혀끝을 정확히 대고 일정하게 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "가 가 가 가 가",
+            "label": "혀뿌리 유성음",
+            "guide": "뒤쪽 조음 위치를 유지하며 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "마 마 마 마 마",
+            "label": "비음-입술",
+            "guide": "입술을 닫고 코 울림을 유지합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "나 나 나 나 나",
+            "label": "비음-혀끝",
+            "guide": "혀끝 위치와 코 울림을 유지합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "라 라 라 라 라",
+            "label": "혀끝 빠른 움직임",
+            "guide": "혀끝을 부드럽게 움직이며 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "러 러 러 러 러",
+            "label": "혀 움직임",
+            "guide": "혀끝 움직임이 흐트러지지 않게 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "사 사 사 사 사",
+            "label": "마찰음",
+            "guide": "공기가 새는 소리를 일정하게 유지합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "자 자 자 자 자",
+            "label": "파찰음",
+            "guide": "혀끝과 공기 흐름을 조절하며 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "차 차 차 차 차",
+            "label": "거센 파찰음",
+            "guide": "공기 흐름을 분명하게 내며 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "하 하 하 하 하",
+            "label": "성문음",
+            "guide": "숨소리와 목소리가 일정하게 나오도록 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "아 아 아 아 아",
+            "label": "모음 반복",
+            "guide": "입을 충분히 벌리고 일정하게 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "이 이 이 이 이",
+            "label": "전설 모음",
+            "guide": "입꼬리와 혀 위치를 유지하며 반복합니다."
+      },
+      {
+            "type": "AMR",
+            "target": "우 우 우 우 우",
+            "label": "원순 모음",
+            "guide": "입술을 둥글게 모아 반복합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "퍼 터 커",
+            "label": "입술-혀끝-혀뿌리",
+            "guide": "입술, 혀끝, 혀뿌리 위치를 차례대로 빠르게 이동합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "파 타 카",
+            "label": "무성 파열음 연속",
+            "guide": "각 음절이 뭉개지지 않도록 또박또박 이어 말합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "바 다 가",
+            "label": "유성 파열음 연속",
+            "guide": "목소리를 유지하며 세 위치를 차례로 이동합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "바 자 가",
+            "label": "턱·입술·혀 연계",
+            "guide": "입술과 혀 위치를 바꾸며 부드럽게 연결합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "라 사 자",
+            "label": "혀끝 빠른 이동",
+            "guide": "혀끝 위치와 공기 흐름을 조절하며 반복합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "마 나 라",
+            "label": "비음-혀끝 연결",
+            "guide": "코 울림과 혀 움직임을 자연스럽게 연결합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "아 이 우",
+            "label": "모음 전환",
+            "guide": "입 모양을 크게 바꾸며 정확히 반복합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "이 아 우",
+            "label": "모음 교대",
+            "guide": "입술과 혀 위치 변화를 분명히 합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "사 자 차",
+            "label": "마찰-파찰 전환",
+            "guide": "공기 흐름이 끊기지 않도록 연결합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "다 라 나",
+            "label": "혀끝 위치 전환",
+            "guide": "혀끝 움직임을 부드럽게 조절합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "퍼 터 커 퍼 터 커",
+            "label": "연속 반복",
+            "guide": "세 음절 묶음을 일정한 리듬으로 반복합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "파 타 카 파 타 카",
+            "label": "빠른 연속 반복",
+            "guide": "속도가 빨라져도 음절 순서가 바뀌지 않게 합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "바 다 가 바 다 가",
+            "label": "유성음 연속 반복",
+            "guide": "목소리를 유지하며 부드럽게 이어 말합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "바 자 가 바 자 가",
+            "label": "턱·입술·혀 연속",
+            "guide": "각 음절을 분리해서 또박또박 반복합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "라 사 자 라 사 자",
+            "label": "혀끝 연속 반복",
+            "guide": "혀끝 움직임과 공기 흐름을 일정하게 유지합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "마 나 라 마 나 라",
+            "label": "비음-혀끝 연속",
+            "guide": "코 울림과 혀끝 움직임을 자연스럽게 연결합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "아 이 우 아 이 우",
+            "label": "모음 빠른 전환",
+            "guide": "입 모양 변화가 작아지지 않게 합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "카 타 파 카 타 파",
+            "label": "역순 조음 이동",
+            "guide": "뒤쪽에서 앞쪽으로 조음 위치를 이동합니다."
+      },
+      {
+            "type": "SMR",
+            "target": "가 다 바 가 다 바",
+            "label": "역순 유성음 이동",
+            "guide": "목소리를 유지하며 위치를 바꿉니다."
+      },
+      {
+            "type": "SMR",
+            "target": "차 자 사 차 자 사",
+            "label": "파찰-마찰 역순",
+            "guide": "소리가 섞이지 않도록 천천히 시작합니다."
+      },
+      {
+            "type": "문장",
+            "target": "바나나를 바르게 바라봅니다.",
+            "label": "ㅂ 반복",
+            "guide": "입술소리를 정확히 내며 천천히 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "파란 풍선을 빠르게 불었습니다.",
+            "label": "ㅍ 반복",
+            "guide": "입술과 공기 흐름을 조절합니다."
+      },
+      {
+            "type": "문장",
+            "target": "토끼가 털모자를 털었습니다.",
+            "label": "ㅌ 반복",
+            "guide": "혀끝소리를 또박또박 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "커다란 컵을 깨끗하게 씻습니다.",
+            "label": "ㅋ 반복",
+            "guide": "뒤쪽 소리가 흐려지지 않게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "다람쥐가 다리 위를 달립니다.",
+            "label": "ㄷ 반복",
+            "guide": "혀끝소리를 분명하게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "고양이가 계단을 걸어갑니다.",
+            "label": "ㄱ 반복",
+            "guide": "뒤쪽 조음 위치를 정확히 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "라디오를 들으며 라면을 먹었습니다.",
+            "label": "ㄹ 반복",
+            "guide": "혀끝 움직임을 부드럽게 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "사슴 세 마리가 산속을 살금살금 걸었습니다.",
+            "label": "ㅅ 반복",
+            "guide": "마찰음이 새지 않도록 일정하게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "자전거를 자주 조심해서 탑니다.",
+            "label": "ㅈ 반복",
+            "guide": "파찰음이 흐려지지 않도록 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "차가운 차를 천천히 마십니다.",
+            "label": "ㅊ 반복",
+            "guide": "거센소리를 분명하게 냅니다."
+      },
+      {
+            "type": "문장",
+            "target": "마른 나무 밑에 나비가 날아갑니다.",
+            "label": "ㅁ·ㄴ 반복",
+            "guide": "비음이 분명하게 들리도록 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "하얀 하늘 아래 하마가 하품합니다.",
+            "label": "ㅎ 반복",
+            "guide": "숨소리와 목소리를 안정적으로 냅니다."
+      },
+      {
+            "type": "문장",
+            "target": "간장 공장 공장장은 강 공장장이고 된장 공장 공장장은 공 공장장이다.",
+            "label": "텅 트위스터",
+            "guide": "처음에는 천천히, 이후 속도를 높여 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "경찰청 철창살은 외철창살이고 검찰청 철창살은 쌍철창살이다.",
+            "label": "텅 트위스터",
+            "guide": "음절이 뭉개지지 않도록 정확히 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "내가 그린 기린 그림은 긴 기린 그림이고 네가 그린 기린 그림은 안 긴 기린 그림이다.",
+            "label": "텅 트위스터",
+            "guide": "ㄱ, ㄴ, ㄹ 소리를 구분하며 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "저기 저 뜀틀이 내가 뛸 뜀틀인가 내가 안 뛸 뜀틀인가.",
+            "label": "텅 트위스터",
+            "guide": "ㄸ과 ㄷ 소리가 섞이지 않게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "작은 장작 장수가 장작장을 지나갑니다.",
+            "label": "ㅈ 반복",
+            "guide": "입 모양과 혀끝 위치를 정확히 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "철수 책상 위 초록 책은 철수 책입니다.",
+            "label": "ㅊ 반복",
+            "guide": "거센소리와 받침을 분명히 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "빨간 바구니에 파란 바나나를 담았습니다.",
+            "label": "ㅂ·ㅍ 반복",
+            "guide": "입술소리를 구분해서 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "꼬마가 까만 컵에 커피를 따릅니다.",
+            "label": "ㄲ·ㅋ 반복",
+            "guide": "된소리와 거센소리를 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "부드러운 분홍 붓으로 바탕을 바릅니다.",
+            "label": "ㅂ 반복",
+            "guide": "입술을 정확히 닫았다 열며 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "빵집 봉투에 바삭한 빵을 담았습니다.",
+            "label": "ㅂ 반복",
+            "guide": "받침과 첫소리를 분명하게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "봄비가 보슬보슬 부드럽게 내립니다.",
+            "label": "ㅂ 반복",
+            "guide": "입술소리가 약해지지 않게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "푸른 포도밭 포도는 포근한 바람을 맞습니다.",
+            "label": "ㅍ 반복",
+            "guide": "거센 입술소리와 보통소리를 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "피아노 앞에 파란 파일을 펼쳤습니다.",
+            "label": "ㅍ 반복",
+            "guide": "입술과 공기 흐름을 일정하게 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "토마토 통조림을 탁자 위에 털어 놓았습니다.",
+            "label": "ㅌ 반복",
+            "guide": "혀끝을 정확히 대며 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "튼튼한 턱받이를 토끼에게 턱 걸었습니다.",
+            "label": "ㅌ 반복",
+            "guide": "ㅌ 소리가 약해지지 않게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "달달한 도넛을 동생에게 두 개 주었습니다.",
+            "label": "ㄷ 반복",
+            "guide": "혀끝 유성음을 일정하게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "두꺼운 담요를 덮고 동그랗게 누웠습니다.",
+            "label": "ㄷ 반복",
+            "guide": "ㄷ과 ㄸ이 섞이지 않게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "따뜻한 뜰에 딸기가 똑똑 떨어졌습니다.",
+            "label": "ㄸ 반복",
+            "guide": "된소리를 분명히 내며 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "까만 까치가 큰 감나무 끝에 앉았습니다.",
+            "label": "ㄲ·ㅋ 반복",
+            "guide": "뒤쪽 조음 위치를 정확히 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "고기 굽는 가게 앞에 강아지가 기다립니다.",
+            "label": "ㄱ 반복",
+            "guide": "ㄱ 소리가 흐려지지 않도록 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "기차가 긴 굴을 지나 강가로 갑니다.",
+            "label": "ㄱ 반복",
+            "guide": "연속되는 ㄱ 소리를 분명하게 냅니다."
+      },
+      {
+            "type": "문장",
+            "target": "카메라 케이스를 커다란 캐리어에 넣었습니다.",
+            "label": "ㅋ 반복",
+            "guide": "ㅋ 소리의 공기 흐름을 분명히 합니다."
+      },
+      {
+            "type": "문장",
+            "target": "나무 너머 노란 나비가 날아갑니다.",
+            "label": "ㄴ 반복",
+            "guide": "혀끝과 코 울림을 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "누나는 낮잠 전에 냉면을 나누어 먹었습니다.",
+            "label": "ㄴ 반복",
+            "guide": "ㄴ 받침과 첫소리를 분명히 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "마미가 마른 마루를 말끔하게 닦았습니다.",
+            "label": "ㅁ 반복",
+            "guide": "입술을 닫고 코 울림을 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "멍멍이 목에 무늬 목걸이를 매었습니다.",
+            "label": "ㅁ 반복",
+            "guide": "ㅁ과 ㄴ의 비음을 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "라면을 끓이며 라디오 노래를 따라 불렀습니다.",
+            "label": "ㄹ 반복",
+            "guide": "혀끝 움직임을 부드럽게 합니다."
+      },
+      {
+            "type": "문장",
+            "target": "노란 리본을 라일락 가지에 둘렀습니다.",
+            "label": "ㄹ 반복",
+            "guide": "ㄹ 소리가 빠지지 않도록 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "사과 상자 속 사탕을 서랍에 숨겼습니다.",
+            "label": "ㅅ 반복",
+            "guide": "공기가 새는 소리를 일정하게 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "새 신발을 신고 시장을 서성였습니다.",
+            "label": "ㅅ 반복",
+            "guide": "ㅅ 소리가 ㅆ처럼 강해지지 않게 합니다."
+      },
+      {
+            "type": "문장",
+            "target": "쌀쌀한 새벽에 쑥쑥 자란 쑥을 씻었습니다.",
+            "label": "ㅆ 반복",
+            "guide": "된 마찰음을 분명하게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "자주색 자전거가 작은 정류장에 정차했습니다.",
+            "label": "ㅈ 반복",
+            "guide": "혀끝과 입 모양을 안정적으로 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "장난감 자동차를 조심조심 정리했습니다.",
+            "label": "ㅈ 반복",
+            "guide": "파찰음이 흐려지지 않게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "찢어진 종이를 조각조각 주머니에 넣었습니다.",
+            "label": "ㅈ·ㅉ 반복",
+            "guide": "된소리와 예사소리를 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "초록 초가집 처마에 참새가 앉았습니다.",
+            "label": "ㅊ 반복",
+            "guide": "거센 파찰음을 분명하게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "차창 밖 초승달이 천천히 떠올랐습니다.",
+            "label": "ㅊ 반복",
+            "guide": "ㅊ 소리와 ㅈ 소리를 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "하얀 호수 위에 하늘빛 햇살이 흔들립니다.",
+            "label": "ㅎ 반복",
+            "guide": "숨소리와 모음을 자연스럽게 연결합니다."
+      },
+      {
+            "type": "문장",
+            "target": "형은 하얀 휴지를 한 장씩 접었습니다.",
+            "label": "ㅎ 반복",
+            "guide": "ㅎ이 약해지거나 빠지지 않게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "아이가 아이스크림을 아껴 먹었습니다.",
+            "label": "모음 반복",
+            "guide": "모음 시작을 분명하게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "우유를 우산 아래에서 우물우물 마셨습니다.",
+            "label": "우 반복",
+            "guide": "입술을 둥글게 모아 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "이모가 이불 위에 인형을 올렸습니다.",
+            "label": "이 반복",
+            "guide": "입꼬리와 혀 위치를 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "오리가 오래된 오두막 옆을 오갑니다.",
+            "label": "오 반복",
+            "guide": "입술 모양을 일정하게 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "아기 오리가 우산 아래 이리저리 움직입니다.",
+            "label": "모음 전환",
+            "guide": "아, 오, 우, 이 모음을 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "파타카 파타카 빠르게 따라 말합니다.",
+            "label": "SMR 문장",
+            "guide": "파-타-카 순서를 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "퍼터커 퍼터커 천천히 또박또박 말합니다.",
+            "label": "SMR 문장",
+            "guide": "입술-혀끝-혀뿌리 순서를 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "바다가 바다가 바다가 보입니다.",
+            "label": "바다 반복",
+            "guide": "유성음 반복의 리듬을 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "다라나 다라나 다라나를 따라 합니다.",
+            "label": "혀끝 전환",
+            "guide": "혀끝 위치 전환을 부드럽게 합니다."
+      },
+      {
+            "type": "문장",
+            "target": "라사자 라사자 라사자를 반복합니다.",
+            "label": "혀끝-마찰-파찰",
+            "guide": "소리가 섞이지 않게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "마나라 마나라 마나라를 천천히 말합니다.",
+            "label": "비음-유음 전환",
+            "guide": "코 울림과 혀끝 움직임을 연결합니다."
+      },
+      {
+            "type": "문장",
+            "target": "가다가 다가가고 다가가다 가다 섭니다.",
+            "label": "ㄱ·ㄷ 교대",
+            "guide": "뒤쪽과 앞쪽 조음 위치를 바꿉니다."
+      },
+      {
+            "type": "문장",
+            "target": "바다가 가까워 바람이 부드럽게 불었습니다.",
+            "label": "ㅂ·ㄱ 교대",
+            "guide": "입술과 뒤쪽 조음을 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "차차 찾아 차분히 처리합니다.",
+            "label": "ㅊ·ㅈ 교대",
+            "guide": "거센 파찰음과 예사소리를 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "사자 사진 속 사슴이 살짝 서 있습니다.",
+            "label": "ㅅ·ㅈ 교대",
+            "guide": "마찰음과 파찰음을 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "라라라 노래를 부르며 라면을 끓였습니다.",
+            "label": "ㄹ 반복",
+            "guide": "혀끝 반복을 유지하며 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "러시아 라디오를 라라라 따라 불렀습니다.",
+            "label": "ㄹ·러 반복",
+            "guide": "혀끝 움직임을 일정하게 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "기린 그림 그린 그 사람은 기린을 그렸습니다.",
+            "label": "ㄱ·ㄹ 반복",
+            "guide": "ㄱ과 ㄹ 소리를 분명히 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "꼬인 끈을 끊고 큰 끈을 꺼냈습니다.",
+            "label": "ㄲ·ㅋ 반복",
+            "guide": "된소리와 거센소리를 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "똑딱똑딱 작은 시계가 또렷하게 움직입니다.",
+            "label": "ㄸ·ㄷ 반복",
+            "guide": "된소리와 예사소리를 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "빼곡한 빵 봉투를 빠르게 풀었습니다.",
+            "label": "ㅃ·ㅂ·ㅍ 반복",
+            "guide": "입술소리 강도를 조절합니다."
+      },
+      {
+            "type": "문장",
+            "target": "쪼그만 쪽지를 조심히 접었습니다.",
+            "label": "ㅉ·ㅈ 반복",
+            "guide": "된 파찰음과 예사 파찰음을 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "쌍둥이가 쑥쑥 자라서 씩씩하게 섰습니다.",
+            "label": "ㅆ·ㅅ 반복",
+            "guide": "된 마찰음과 예사 마찰음을 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "한양 양장점 옆 한영 양장점.",
+            "label": "텅 트위스터",
+            "guide": "양장점 구문을 또박또박 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "저 분은 백 법학박사이고 이 분은 박 법학박사이다.",
+            "label": "텅 트위스터",
+            "guide": "ㅂ과 ㅂㅎ 연결이 뭉개지지 않게 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "신진 샹송 가수의 신춘 샹송 쇼.",
+            "label": "텅 트위스터",
+            "guide": "ㅅ, ㅈ, ㅊ 소리를 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "상표 붙인 큰 깡통은 깐 깡통인가 안 깐 깡통인가.",
+            "label": "텅 트위스터",
+            "guide": "ㄲ과 ㅋ, ㄴ 받침을 정확히 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "서울특별시 특허허가과 허가과장 허 과장.",
+            "label": "텅 트위스터",
+            "guide": "ㅎ과 ㄱ 연결을 또박또박 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "중앙청 창살은 쌍창살이고 시청 창살은 외창살이다.",
+            "label": "텅 트위스터",
+            "guide": "ㅊ, ㅆ, ㅅ을 구분해 읽습니다."
+      },
+      {
+            "type": "문장",
+            "target": "앞집 팥죽은 붉은 팥 풋팥죽이고 뒷집 콩죽은 검은 콩 깨죽이다.",
+            "label": "텅 트위스터",
+            "guide": "ㅍ, ㅂ, ㄱ 소리를 분명히 합니다."
+      },
+      {
+            "type": "문장",
+            "target": "작은 토끼 토끼통 옆 큰 토끼 토끼통.",
+            "label": "텅 트위스터",
+            "guide": "ㅌ과 ㄲ 소리를 구분합니다."
+      },
+      {
+            "type": "문장",
+            "target": "철수는 철창살 사이로 찰칵찰칵 사진을 찍었습니다.",
+            "label": "ㅊ 반복",
+            "guide": "긴 문장에서도 ㅊ 소리를 유지합니다."
+      },
+      {
+            "type": "문장",
+            "target": "강가의 갈대가 가을바람에 가볍게 흔들렸습니다.",
+            "label": "ㄱ 반복",
+            "guide": "ㄱ과 ㄹ 연결을 부드럽게 합니다."
+      }
+];
+
+    let materials = [];
+    let currentIndex = 0;
+    let answers = [];
+    let choiceLocked = false;
+    let retryCount = 0;
+
+    function unique(array) { return [...new Set(array)]; }
+    function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+
+    function renderSubject() {
+      const box = document.getElementById("subjectBox");
+      if (!selectedSubject) {
+        box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+        return;
+      }
+      box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || ""} ${selectedSubject.memo ? " · " + selectedSubject.memo : ""}`;
+    }
+
+    function filteredDB() {
+      const type = document.getElementById("trainingType").value;
+      return ITEM_DB.filter(item => type === "all" || item.type === type);
+    }
+
+    function generateMaterials() {
+      const countValue = document.getElementById("count").value;
+      const orderMode = document.getElementById("orderMode").value;
+      let source = filteredDB();
+      source = orderMode === "random" ? shuffle(source) : [...source];
+      const limit = countValue === "all" ? source.length : Number(countValue);
+      materials = source.slice(0, Math.min(limit, source.length)).map((item, idx) => ({...item, no:idx+1, memo:""}));
+      currentIndex = 0;
+      answers = [];
+      renderPreview();
+      renderStats();
+    }
+
+    function renderPreview() {
+      document.getElementById("previewTitle").textContent = `생성 자료 ${materials.length}개`;
+      const list = document.getElementById("previewList");
+      if (!materials.length) {
+        list.innerHTML = `<div class="item-card">조건에 맞는 자료가 없습니다.</div>`;
+        return;
+      }
+      list.innerHTML = materials.map((item, idx) => `<div class="item-card"><strong>${idx+1}.</strong>${item.target}<br><span class="tag">${item.type}</span></div>`).join("");
+    }
+
+    function renderStats() {
+      const source = filteredDB();
+      const amr = source.filter(v => v.type === "AMR").length;
+      const smr = source.filter(v => v.type === "SMR").length;
+      const sent = source.filter(v => v.type === "문장").length;
+      document.getElementById("statsBox").innerHTML = `<div class="word-grid"><div class="item-card"><strong>전체</strong>${source.length}</div><div class="item-card"><strong>AMR</strong>${amr}</div><div class="item-card"><strong>SMR</strong>${smr}</div><div class="item-card"><strong>문장</strong>${sent}</div></div>`;
+    }
+
+    function startTraining() {
+      if (!materials.length) generateMaterials();
+      if (!materials.length) return;
+      document.getElementById("setupView").classList.add("hidden");
+      document.getElementById("previewView").classList.add("hidden");
+      document.getElementById("statsView").classList.add("hidden");
+      document.getElementById("trainingView").classList.remove("hidden");
+      document.getElementById("finishView").classList.add("hidden");
+      currentIndex = 0;
+      answers = [];
+      showItem();
+    }
+
+
+    function showItem() {
+      choiceLocked = false;
+      retryCount = 0;
+      const item = materials[currentIndex];
+      document.getElementById("trainingTitle").textContent = `${currentIndex + 1} / ${materials.length}`;
+      const target = document.getElementById("targetText");
+      target.textContent = item.target;
+      target.className = item.type === "문장" ? "target sentence" : "target";
+      
+      document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
+      document.getElementById("itemMemo").value = item.memo || "";
+      document.getElementById("feedbackBox").style.display = "none";
+      document.getElementById("feedbackBox").textContent = "";
+      document.getElementById("feedbackBox").className = "feedback";
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("correctBtn").disabled = false;
+      document.getElementById("wrongBtn").disabled = false;
+    }
+
+    function saveMemo() {
+      if (materials[currentIndex]) materials[currentIndex].memo = document.getElementById("itemMemo").value.trim();
+    }
+
+    function showFeedback(message, isCorrectStyle) {
+      const feedbackBox = document.getElementById("feedbackBox");
+      feedbackBox.style.display = "block";
+      feedbackBox.textContent = message;
+      feedbackBox.className = "feedback " + (isCorrectStyle ? "correct" : "wrong");
+    }
+
+    function setRatingDisabled(disabled) {
+      document.getElementById("correctBtn").disabled = disabled;
+      document.getElementById("wrongBtn").disabled = disabled;
+    }
+
+    function recordAnswer(result) {
+      if (choiceLocked) return;
+      
+      const item = materials[currentIndex];
+
+      if (result === "correct") {
+          choiceLocked = true;
+        setRatingDisabled(true);
+        showFeedback("정확합니다.", true);
+        const countedCorrect = retryCount === 0;
+        answers.push({ target:item.target, type:item.type, label:item.label, response:"정확", correct:countedCorrect, retry:retryCount, memo:item.memo || "" });
+        setTimeout(nextItem, 1200);
+        return;
+      }
+
+      retryCount += 1;
+
+      if (retryCount === 1) {
+        showFeedback("천천히 다시 해보세요.", false);
+        return;
+      }
+
+      choiceLocked = true;
+      setRatingDisabled(true);
+      showFeedback(`모델을 들려준 뒤 다음 항목으로 진행하세요. 목표: "${item.target}"`, false);
+      answers.push({ target:item.target, type:item.type, label:item.label, response:"부정확", correct:false, retry:retryCount, memo:item.memo || "" });
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function nextQuestionManual() {
+      if (!choiceLocked) return;
+      nextItem();
+    }
+
+    function nextItem() {
+      currentIndex++;
+      if (currentIndex >= materials.length) finishTraining();
+      else showItem();
+    }
+
+    function finishTraining() {
+      document.getElementById("progressBar").style.width = "100%";
+      document.getElementById("trainingView").classList.add("hidden");
+      document.getElementById("finishView").classList.remove("hidden");
+      const total = answers.length;
+      const correct = answers.filter(a => a.correct).length;
+      const wrong = total - correct;
+      const rate = total ? Math.round((correct / total) * 100) : 0;
+      const subjectName = selectedSubject ? selectedSubject.name : "대상자";
+      document.getElementById("finishText").textContent = `${subjectName}님의 ${TRAINING_NAME} 결과입니다.`;
+      document.getElementById("summaryGrid").innerHTML = `
+        <div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 항목</span></div>
+        <div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정확</span></div>
+        <div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>부정확</span></div>
+        <div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정확률</span></div>`;
+      const history = Store.load("speech_training_history", []);
+      history.push({ id:Date.now(), subjectId:selectedSubjectId, subjectName, training:TRAINING_NAME, date:new Date().toISOString(), total, correct, wrong, rate, answers });
+      Store.save("speech_training_history", history);
+    }
+
+    renderSubject();
+    generateMaterials();
+    renderStats();
+  </script>
+</body>
+</html>

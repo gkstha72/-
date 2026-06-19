@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>단어 듣고 받아쓰기 훈련</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif;background:#f4f6fa;color:#162033}
+.app{max-width:1120px;margin:0 auto;padding:24px 22px 48px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:900}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#315cff,#37c4ff);color:white;display:grid;place-items:center;font-weight:900}
+button{border:none;border-radius:14px;padding:12px 17px;font-size:15px;font-weight:900;cursor:pointer}
+.primary{background:#246bfe;color:white}
+.secondary{background:#eef3ff;color:#246bfe}
+.gray{background:#edf1f6;color:#5d687b}
+.blue{background:#246bfe;color:white}
+.red{background:#e54848;color:white}
+.panel{background:white;border:1px solid #e2e8f0;border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(15,30,60,.06);margin-bottom:20px}
+.panel h2{margin:0 0 16px;font-size:22px}
+.setup-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+label{display:block;font-size:13px;font-weight:900;color:#475569;margin-bottom:7px}
+select,textarea{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;font-size:14px;outline:none;background:white}
+textarea{min-height:74px;resize:vertical}
+.subject-box,.help-box{background:#f8faff;border:1px solid #e2e8f0;border-radius:18px;padding:16px;margin-bottom:16px;color:#475569;line-height:1.6}
+.help-box{margin-top:16px;font-size:14px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.word-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.item-card{background:#f8faff;border:1px solid #e2e8f0;border-radius:16px;padding:14px;font-size:15px;font-weight:900;color:#334155}
+.item-card strong{color:#246bfe;margin-right:5px}
+.tag{display:inline-block;margin-left:6px;padding:3px 8px;border-radius:999px;background:#eef3ff;color:#246bfe;font-size:12px;font-weight:900}
+.hidden{display:none!important}
+.progress-line{height:10px;background:#edf1f7;border-radius:999px;overflow:hidden;margin-bottom:18px}
+.progress-bar{height:100%;width:0%;background:#246bfe}
+.question{color:#246bfe;font-size:26px;line-height:1.5;font-weight:900;text-align:center;margin-bottom:16px}
+.training-box{background:#f8faff;border-radius:24px;padding:30px 24px;text-align:center;margin-bottom:18px;min-height:560px;display:grid;place-items:center}
+.training-title{font-size:22px;font-weight:900;color:#246bfe;margin-bottom:14px}
+.listen-card{width:140px;height:140px;border:none;background:transparent;box-shadow:none;display:grid;place-items:center;margin:0 auto 10px;padding:0;transition:transform .15s ease}
+.listen-card:hover{transform:scale(1.06)}
+.listen-card svg{width:112px;height:112px;display:block}
+.play-info{font-size:18px;font-weight:900;color:#475569;margin-bottom:18px}
+.canvas-wrap{width:100%;max-width:980px;margin:0 auto;background:white;border:2px solid #dbe7ff;border-radius:24px;box-shadow:0 8px 22px rgba(15,30,60,.06);overflow:hidden;position:relative}
+.writing-canvas{width:100%;height:320px;display:block;touch-action:none;background:
+  linear-gradient(to right, rgba(36,107,254,.08) 1px, transparent 1px),
+  linear-gradient(to bottom, rgba(36,107,254,.08) 1px, transparent 1px);
+  background-size:40px 40px;}
+.canvas-label{position:absolute;top:12px;left:16px;color:#94a3b8;font-size:15px;font-weight:900;pointer-events:none}
+.button-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+.button-row button{min-height:68px;font-size:22px}
+.feedback{display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center}
+.feedback.correct{background:#e8fff4;color:#16a06f;border:1px solid #a7f3d0}
+.feedback.wrong{background:#fff1f1;color:#e54848;border:1px solid #fecaca}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.summary-card{background:white;border:1px solid #edf2f7;border-radius:20px;padding:22px 16px;text-align:center;box-shadow:0 8px 22px rgba(15,30,60,.06)}
+.summary-icon{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;margin:0 auto 10px;color:white;font-size:22px;font-weight:900}
+.summary-card strong{display:block;font-size:30px;line-height:1;margin-bottom:8px;font-weight:900}
+.summary-card span{color:#334155;font-size:15px;font-weight:800}
+.summary-card.total strong,.summary-card.rate strong{color:#246bfe}
+.summary-card.correct strong{color:#16a06f}
+.summary-card.wrong strong{color:#e54848}
+.summary-icon.total,.summary-icon.rate{background:#246bfe}
+.summary-icon.correct{background:#16a06f}
+.summary-icon.wrong{background:#e54848}
+@media(max-width:900px){.setup-grid{grid-template-columns:1fr 1fr}.word-grid{grid-template-columns:repeat(2,1fr)}.summary-grid{grid-template-columns:repeat(2,1fr)}.topbar{align-items:flex-start;flex-direction:column}}
+@media(max-width:560px){.setup-grid,.word-grid,.button-row,.summary-grid{grid-template-columns:1fr}.question{font-size:22px}.writing-canvas{height:280px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar"><div class="brand"><div class="logo">받</div><span>단어 듣고 받아쓰기 훈련</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+
+<section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+
+<section id="setupView" class="panel">
+<h2>훈련 설정</h2>
+<div class="setup-grid">
+  <div><label for="categoryValue">범주</label><select id="categoryValue" onchange="generateMaterials();renderStats();"></select></div>
+  <div><label for="syllableLength">글자 수</label><select id="syllableLength" onchange="generateMaterials()"><option value="all" selected>전체</option><option value="1">1글자</option><option value="2">2글자</option><option value="3">3글자</option><option value="4">4글자 이상</option></select></div>
+  <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="50">50개</option><option value="all">전체</option></select></div>
+  <div><label for="playLimit">재생 횟수</label><select id="playLimit" onchange="generateMaterials()"><option value="1">1회</option><option value="2" selected>2회</option><option value="0">무제한</option></select></div>
+  <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
+</div>
+<div class="help-box">단어 음성을 듣고 아래 쓰기판에 손가락, 터치펜, 마우스로 받아쓰는 훈련입니다. 자동 채점은 하지 않고 치료사가 정답/오답을 기록합니다. 1회 오답 시 다시 써보고, 2회 오답 시 정답을 보여준 뒤 다음 문제로 넘어갑니다.</div>
+<div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
+</section>
+
+<section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
+<section id="statsView" class="panel"><h2>범주별 자료 수</h2><div id="statsBox"></div></section>
+
+<section id="trainingView" class="panel hidden">
+<div id="question" class="question">소리를 듣고 아래에 받아써보세요.</div>
+<div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+<div class="training-box">
+  <div style="width:100%;">
+    <div id="trainingTitle" class="training-title">1번 문항</div>
+    <button class="listen-card" onclick="playCurrentAudio()" title="단어 듣기" aria-label="단어 듣기">
+      <svg viewBox="0 0 120 120" role="img" aria-hidden="true">
+        <path d="M18 51c0-5 4-9 9-9h16l25-22c5-4 12-1 12 6v68c0 7-8 10-12 6L43 78H27c-5 0-9-4-9-9V51z" fill="#246bfe"/>
+        <path d="M90 42c8 10 8 26 0 36" fill="none" stroke="#246bfe" stroke-width="8" stroke-linecap="round"/>
+        <path d="M101 30c15 18 15 42 0 60" fill="none" stroke="#93b4ff" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div id="playInfo" class="play-info">스피커를 눌러 재생하세요.</div>
+    <audio id="audioPlayer"></audio>
+    <div class="canvas-wrap">
+      <div class="canvas-label">받아쓰기 영역</div>
+      <canvas id="writingCanvas" class="writing-canvas"></canvas>
+    </div>
+  </div>
+</div>
+<div class="button-row">
+  <button class="secondary" onclick="clearCanvas()">다시쓰기</button>
+  <button id="correctBtn" class="blue" onclick="recordAnswer('correct')">정답</button>
+  <button id="wrongBtn" class="red" onclick="recordAnswer('wrong')">오답</button>
+</div>
+<div id="feedbackBox" class="feedback"></div>
+<div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
+<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+</section>
+
+<section id="finishView" class="panel hidden">
+<h2>훈련 결과</h2><p id="finishText"></p><div class="summary-grid" id="summaryGrid"></div>
+<div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+</section>
+</main>
+
+<script>
+const TRAINING_NAME="단어 듣고 받아쓰기 훈련";
+const Store={load(key,fallback){try{const value=localStorage.getItem(key);return value?JSON.parse(value):fallback}catch{return fallback}},save(key,value){localStorage.setItem(key,JSON.stringify(value))}};
+const subjects=Store.load("speech_subjects",[]);
+const selectedSubjectId=Store.load("speech_selected_subject",null);
+const selectedSubject=subjects.find(subject=>subject.id===selectedSubjectId)||null;
+const AUDIO_DB=[{"word": "감", "file": "audio/001_감.mp3", "category": "과일"}, {"word": "귤", "file": "audio/002_귤.mp3", "category": "과일"}, {"word": "딸기", "file": "audio/003_딸기.mp3", "category": "과일"}, {"word": "레몬", "file": "audio/004_레몬.mp3", "category": "과일"}, {"word": "망고", "file": "audio/005_망고.mp3", "category": "과일"}, {"word": "멜론", "file": "audio/006_멜론.mp3", "category": "과일"}, {"word": "바나나", "file": "audio/007_바나나.mp3", "category": "과일"}, {"word": "배", "file": "audio/008_배.mp3", "category": "과일"}, {"word": "복숭아", "file": "audio/009_복숭아.mp3", "category": "과일"}, {"word": "블루베리", "file": "audio/010_블루베리.mp3", "category": "과일"}, {"word": "사과", "file": "audio/011_사과.mp3", "category": "과일"}, {"word": "살구", "file": "audio/012_살구.mp3", "category": "과일"}, {"word": "샤인머스캣", "file": "audio/013_샤인머스캣.mp3", "category": "과일"}, {"word": "석류", "file": "audio/014_석류.mp3", "category": "과일"}, {"word": "수박", "file": "audio/015_수박.mp3", "category": "과일"}, {"word": "앵두", "file": "audio/016_앵두.mp3", "category": "과일"}, {"word": "오렌지", "file": "audio/017_오렌지.mp3", "category": "과일"}, {"word": "용과", "file": "audio/018_용과.mp3", "category": "과일"}, {"word": "자두", "file": "audio/019_자두.mp3", "category": "과일"}, {"word": "자몽", "file": "audio/020_자몽.mp3", "category": "과일"}, {"word": "참외", "file": "audio/021_참외.mp3", "category": "과일"}, {"word": "체리", "file": "audio/022_체리.mp3", "category": "과일"}, {"word": "키위", "file": "audio/023_키위.mp3", "category": "과일"}, {"word": "파인애플", "file": "audio/024_파인애플.mp3", "category": "과일"}, {"word": "포도", "file": "audio/025_포도.mp3", "category": "과일"}, {"word": "강아지", "file": "audio/026_강아지.mp3", "category": "동물"}, {"word": "거북이", "file": "audio/027_거북이.mp3", "category": "동물"}, {"word": "고슴도치", "file": "audio/028_고슴도치.mp3", "category": "동물"}, {"word": "고양이", "file": "audio/029_고양이.mp3", "category": "동물"}, {"word": "곰", "file": "audio/030_곰.mp3", "category": "동물"}, {"word": "기린", "file": "audio/031_기린.mp3", "category": "동물"}, {"word": "낙타", "file": "audio/032_낙타.mp3", "category": "동물"}, {"word": "너구리", "file": "audio/033_너구리.mp3", "category": "동물"}, {"word": "늑대", "file": "audio/034_늑대.mp3", "category": "동물"}, {"word": "다람쥐", "file": "audio/035_다람쥐.mp3", "category": "동물"}, {"word": "닭", "file": "audio/036_닭.mp3", "category": "동물"}, {"word": "돌고래", "file": "audio/037_돌고래.mp3", "category": "동물"}, {"word": "돼지", "file": "audio/038_돼지.mp3", "category": "동물"}, {"word": "말", "file": "audio/039_말.mp3", "category": "동물"}, {"word": "뱀", "file": "audio/040_뱀.mp3", "category": "동물"}, {"word": "병아리", "file": "audio/041_병아리.mp3", "category": "동물"}, {"word": "부엉이", "file": "audio/042_부엉이.mp3", "category": "동물"}, {"word": "북극곰", "file": "audio/043_북극곰.mp3", "category": "동물"}, {"word": "사슴", "file": "audio/044_사슴.mp3", "category": "동물"}, {"word": "사자", "file": "audio/045_사자.mp3", "category": "동물"}, {"word": "상어", "file": "audio/046_상어.mp3", "category": "동물"}, {"word": "소", "file": "audio/047_소.mp3", "category": "동물"}, {"word": "수달", "file": "audio/048_수달.mp3", "category": "동물"}, {"word": "악어", "file": "audio/049_악어.mp3", "category": "동물"}, {"word": "양", "file": "audio/050_양.mp3", "category": "동물"}, {"word": "얼룩말", "file": "audio/051_얼룩말.mp3", "category": "동물"}, {"word": "여우", "file": "audio/052_여우.mp3", "category": "동물"}, {"word": "염소", "file": "audio/053_염소.mp3", "category": "동물"}, {"word": "원숭이", "file": "audio/054_원숭이.mp3", "category": "동물"}, {"word": "쥐", "file": "audio/055_쥐.mp3", "category": "동물"}, {"word": "캥거루", "file": "audio/056_캥거루.mp3", "category": "동물"}, {"word": "코끼리", "file": "audio/057_코끼리.mp3", "category": "동물"}, {"word": "코뿔소", "file": "audio/058_코뿔소.mp3", "category": "동물"}, {"word": "코알라", "file": "audio/059_코알라.mp3", "category": "동물"}, {"word": "토끼", "file": "audio/060_토끼.mp3", "category": "동물"}, {"word": "판다", "file": "audio/061_판다.mp3", "category": "동물"}, {"word": "펭귄", "file": "audio/062_펭귄.mp3", "category": "동물"}, {"word": "표범", "file": "audio/063_표범.mp3", "category": "동물"}, {"word": "하마", "file": "audio/064_하마.mp3", "category": "동물"}, {"word": "호랑이", "file": "audio/065_호랑이.mp3", "category": "동물"}, {"word": "가지", "file": "audio/066_가지.mp3", "category": "채소"}, {"word": "감자", "file": "audio/067_감자.mp3", "category": "채소"}, {"word": "고구마", "file": "audio/068_고구마.mp3", "category": "채소"}, {"word": "고추", "file": "audio/069_고추.mp3", "category": "채소"}, {"word": "단호박", "file": "audio/070_단호박.mp3", "category": "채소"}, {"word": "당근", "file": "audio/071_당근.mp3", "category": "채소"}, {"word": "대파", "file": "audio/072_대파.mp3", "category": "채소"}, {"word": "마늘", "file": "audio/073_마늘.mp3", "category": "채소"}, {"word": "무", "file": "audio/074_무.mp3", "category": "채소"}, {"word": "배추", "file": "audio/075_배추.mp3", "category": "채소"}, {"word": "브로콜리", "file": "audio/076_브로콜리.mp3", "category": "채소"}, {"word": "상추", "file": "audio/077_상추.mp3", "category": "채소"}, {"word": "시금치", "file": "audio/078_시금치.mp3", "category": "채소"}, {"word": "양파", "file": "audio/079_양파.mp3", "category": "채소"}, {"word": "오이", "file": "audio/080_오이.mp3", "category": "채소"}, {"word": "옥수수", "file": "audio/081_옥수수.mp3", "category": "채소"}, {"word": "토마토", "file": "audio/082_토마토.mp3", "category": "채소"}, {"word": "파프리카", "file": "audio/083_파프리카.mp3", "category": "채소"}, {"word": "경찰차", "file": "audio/084_경찰차.mp3", "category": "탈것"}, {"word": "구급차", "file": "audio/085_구급차.mp3", "category": "탈것"}, {"word": "기차", "file": "audio/086_기차.mp3", "category": "탈것"}, {"word": "버스", "file": "audio/088_버스.mp3", "category": "탈것"}, {"word": "비행기", "file": "audio/089_비행기.mp3", "category": "탈것"}, {"word": "소방차", "file": "audio/090_소방차.mp3", "category": "탈것"}, {"word": "열기구", "file": "audio/091_열기구.mp3", "category": "탈것"}, {"word": "오토바이", "file": "audio/092_오토바이.mp3", "category": "탈것"}, {"word": "요트", "file": "audio/093_요트.mp3", "category": "탈것"}, {"word": "자동차", "file": "audio/094_자동차.mp3", "category": "탈것"}, {"word": "자전거", "file": "audio/095_자전거.mp3", "category": "탈것"}, {"word": "킥보드", "file": "audio/096_킥보드.mp3", "category": "탈것"}, {"word": "택시", "file": "audio/097_택시.mp3", "category": "탈것"}, {"word": "포크레인", "file": "audio/098_포크레인.mp3", "category": "탈것"}, {"word": "헬리콥터", "file": "audio/099_헬리콥터.mp3", "category": "탈것"}, {"word": "가습기", "file": "audio/100_가습기.mp3", "category": "가전가구"}, {"word": "공기청정기", "file": "audio/101_공기청정기.mp3", "category": "가전가구"}, {"word": "밥솥", "file": "audio/102_밥솥.mp3", "category": "가전가구"}, {"word": "선풍기", "file": "audio/103_선풍기.mp3", "category": "가전가구"}, {"word": "세탁기", "file": "audio/104_세탁기.mp3", "category": "가전가구"}, {"word": "소파", "file": "audio/105_소파.mp3", "category": "가전가구"}, {"word": "식탁", "file": "audio/106_식탁.mp3", "category": "가전가구"}, {"word": "신발장", "file": "audio/107_신발장.mp3", "category": "가전가구"}, {"word": "에어컨", "file": "audio/108_에어컨.mp3", "category": "가전가구"}, {"word": "옷장", "file": "audio/109_옷장.mp3", "category": "가전가구"}, {"word": "전자레인지", "file": "audio/110_전자레인지.mp3", "category": "가전가구"}, {"word": "정수기", "file": "audio/111_정수기.mp3", "category": "가전가구"}, {"word": "냉장고", "file": "audio/112_냉장고.mp3", "category": "가전가구"}, {"word": "책상", "file": "audio/113_책상.mp3", "category": "가전가구"}, {"word": "책장", "file": "audio/114_책장.mp3", "category": "가전가구"}, {"word": "청소기", "file": "audio/115_청소기.mp3", "category": "가전가구"}, {"word": "침대", "file": "audio/116_침대.mp3", "category": "가전가구"}, {"word": "컴퓨터", "file": "audio/117_컴퓨터.mp3", "category": "가전가구"}, {"word": "텔레비전", "file": "audio/118_텔레비전.mp3", "category": "가전가구"}, {"word": "화장대", "file": "audio/119_화장대.mp3", "category": "가전가구"}, {"word": "갈비찜", "file": "audio/120_갈비찜.mp3", "category": "음식"}, {"word": "계란말이", "file": "audio/121_계란말이.mp3", "category": "음식"}, {"word": "계란후라이", "file": "audio/122_계란후라이.mp3", "category": "음식"}, {"word": "김", "file": "audio/123_김.mp3", "category": "음식"}, {"word": "김밥", "file": "audio/124_김밥.mp3", "category": "음식"}, {"word": "김치", "file": "audio/125_김치.mp3", "category": "음식"}, {"word": "김치찌개", "file": "audio/126_김치찌개.mp3", "category": "음식"}, {"word": "냉면", "file": "audio/127_냉면.mp3", "category": "음식"}, {"word": "도넛", "file": "audio/128_도넛.mp3", "category": "음식"}, {"word": "된장찌개", "file": "audio/129_된장찌개.mp3", "category": "음식"}, {"word": "떡", "file": "audio/130_떡.mp3", "category": "음식"}, {"word": "떡볶이", "file": "audio/131_떡볶이.mp3", "category": "음식"}, {"word": "라면", "file": "audio/132_라면.mp3", "category": "음식"}, {"word": "만두", "file": "audio/133_만두.mp3", "category": "음식"}, {"word": "밥", "file": "audio/134_밥.mp3", "category": "음식"}, {"word": "볶음밥", "file": "audio/135_볶음밥.mp3", "category": "음식"}, {"word": "부침개", "file": "audio/136_부침개.mp3", "category": "음식"}, {"word": "비빔밥", "file": "audio/137_비빔밥.mp3", "category": "음식"}, {"word": "빵", "file": "audio/138_빵.mp3", "category": "음식"}, {"word": "삼겹살", "file": "audio/139_삼겹살.mp3", "category": "음식"}, {"word": "삼계탕", "file": "audio/140_삼계탕.mp3", "category": "음식"}, {"word": "샌드위치", "file": "audio/141_샌드위치.mp3", "category": "음식"}, {"word": "생선구이", "file": "audio/142_생선구이.mp3", "category": "음식"}, {"word": "스파게티", "file": "audio/143_스파게티.mp3", "category": "음식"}, {"word": "우유", "file": "audio/144_우유.mp3", "category": "음식"}, {"word": "주스", "file": "audio/145_주스.mp3", "category": "음식"}, {"word": "죽", "file": "audio/146_죽.mp3", "category": "음식"}, {"word": "짜장면", "file": "audio/147_짜장면.mp3", "category": "음식"}, {"word": "짬뽕", "file": "audio/148_짬뽕.mp3", "category": "음식"}, {"word": "초밥", "file": "audio/149_초밥.mp3", "category": "음식"}, {"word": "커피", "file": "audio/150_커피.mp3", "category": "음식"}, {"word": "케이크", "file": "audio/151_케이크.mp3", "category": "음식"}, {"word": "튀김", "file": "audio/152_튀김.mp3", "category": "음식"}, {"word": "피자", "file": "audio/153_피자.mp3", "category": "음식"}, {"word": "핫도그", "file": "audio/154_핫도그.mp3", "category": "음식"}, {"word": "햄버거", "file": "audio/155_햄버거.mp3", "category": "음식"}, {"word": "회", "file": "audio/156_회.mp3", "category": "음식"}, {"word": "구두", "file": "audio/157_구두.mp3", "category": "의류"}, {"word": "넥타이", "file": "audio/158_넥타이.mp3", "category": "의류"}, {"word": "러닝", "file": "audio/159_러닝.mp3", "category": "의류"}, {"word": "모자", "file": "audio/160_모자.mp3", "category": "의류"}, {"word": "목도리", "file": "audio/161_목도리.mp3", "category": "의류"}, {"word": "바지", "file": "audio/162_바지.mp3", "category": "의류"}, {"word": "반바지", "file": "audio/163_반바지.mp3", "category": "의류"}, {"word": "벨트", "file": "audio/164_벨트.mp3", "category": "의류"}, {"word": "선글라스", "file": "audio/165_선글라스.mp3", "category": "의류"}, {"word": "셔츠", "file": "audio/166_셔츠.mp3", "category": "의류"}, {"word": "슬리퍼", "file": "audio/167_슬리퍼.mp3", "category": "의류"}, {"word": "안경", "file": "audio/168_안경.mp3", "category": "의류"}, {"word": "양말", "file": "audio/169_양말.mp3", "category": "의류"}, {"word": "우비", "file": "audio/170_우비.mp3", "category": "의류"}, {"word": "운동화", "file": "audio/171_운동화.mp3", "category": "의류"}, {"word": "원피스", "file": "audio/172_원피스.mp3", "category": "의류"}, {"word": "잠옷", "file": "audio/173_잠옷.mp3", "category": "의류"}, {"word": "장갑", "file": "audio/174_장갑.mp3", "category": "의류"}, {"word": "장화", "file": "audio/175_장화.mp3", "category": "의류"}, {"word": "조끼", "file": "audio/176_조끼.mp3", "category": "의류"}, {"word": "치마", "file": "audio/177_치마.mp3", "category": "의류"}, {"word": "티셔츠", "file": "audio/178_티셔츠.mp3", "category": "의류"}, {"word": "패딩", "file": "audio/179_패딩.mp3", "category": "의류"}, {"word": "한복", "file": "audio/180_한복.mp3", "category": "의류"}, {"word": "후드티", "file": "audio/181_후드티.mp3", "category": "의류"}, {"word": "가방", "file": "audio/182_가방.mp3", "category": "생활용품"}, {"word": "가위", "file": "audio/183_가위.mp3", "category": "생활용품"}, {"word": "거울", "file": "audio/184_거울.mp3", "category": "생활용품"}, {"word": "건전지", "file": "audio/185_건전지.mp3", "category": "생활용품"}, {"word": "계산기", "file": "audio/186_계산기.mp3", "category": "생활용품"}, {"word": "고무장갑", "file": "audio/187_고무장갑.mp3", "category": "생활용품"}, {"word": "그릇", "file": "audio/188_그릇.mp3", "category": "생활용품"}, {"word": "나이프", "file": "audio/189_나이프.mp3", "category": "생활용품"}, {"word": "냄비", "file": "audio/190_냄비.mp3", "category": "생활용품"}, {"word": "다리미", "file": "audio/191_다리미.mp3", "category": "생활용품"}, {"word": "달력", "file": "audio/192_달력.mp3", "category": "생활용품"}, {"word": "도마", "file": "audio/193_도마.mp3", "category": "생활용품"}, {"word": "드라이버", "file": "audio/194_드라이버.mp3", "category": "생활용품"}, {"word": "리모컨", "file": "audio/195_리모컨.mp3", "category": "생활용품"}, {"word": "린스", "file": "audio/196_린스.mp3", "category": "생활용품"}, {"word": "망치", "file": "audio/197_망치.mp3", "category": "생활용품"}, {"word": "면도기", "file": "audio/198_면도기.mp3", "category": "생활용품"}, {"word": "볼펜", "file": "audio/199_볼펜.mp3", "category": "생활용품"}, {"word": "부채", "file": "audio/200_부채.mp3", "category": "생활용품"}, {"word": "비누", "file": "audio/201_비누.mp3", "category": "생활용품"}, {"word": "빗", "file": "audio/202_빗.mp3", "category": "생활용품"}, {"word": "샴푸", "file": "audio/203_샴푸.mp3", "category": "생활용품"}, {"word": "손톱깎이", "file": "audio/204_손톱깎이.mp3", "category": "생활용품"}, {"word": "수건", "file": "audio/205_수건.mp3", "category": "생활용품"}, {"word": "수세미", "file": "audio/206_수세미.mp3", "category": "생활용품"}, {"word": "수첩", "file": "audio/207_수첩.mp3", "category": "생활용품"}, {"word": "숟가락", "file": "audio/208_숟가락.mp3", "category": "생활용품"}, {"word": "시계", "file": "audio/209_시계.mp3", "category": "생활용품"}, {"word": "액자", "file": "audio/211_액자.mp3", "category": "생활용품"}, {"word": "연필", "file": "audio/212_연필.mp3", "category": "생활용품"}, {"word": "열쇠", "file": "audio/213_열쇠.mp3", "category": "생활용품"}, {"word": "옷걸이", "file": "audio/214_옷걸이.mp3", "category": "생활용품"}, {"word": "우산", "file": "audio/215_우산.mp3", "category": "생활용품"}, {"word": "접시", "file": "audio/216_접시.mp3", "category": "생활용품"}, {"word": "젓가락", "file": "audio/217_젓가락.mp3", "category": "생활용품"}, {"word": "주방세제", "file": "audio/218_주방세제.mp3", "category": "생활용품"}, {"word": "주전자", "file": "audio/219_주전자.mp3", "category": "생활용품"}, {"word": "지갑", "file": "audio/220_지갑.mp3", "category": "생활용품"}, {"word": "지우개", "file": "audio/221_지우개.mp3", "category": "생활용품"}, {"word": "집게", "file": "audio/222_집게.mp3", "category": "생활용품"}, {"word": "충전기", "file": "audio/223_충전기.mp3", "category": "생활용품"}, {"word": "치약", "file": "audio/224_치약.mp3", "category": "생활용품"}, {"word": "칫솔", "file": "audio/225_칫솔.mp3", "category": "생활용품"}, {"word": "칼", "file": "audio/226_칼.mp3", "category": "생활용품"}, {"word": "컵", "file": "audio/227_컵.mp3", "category": "생활용품"}, {"word": "티슈", "file": "audio/228_티슈.mp3", "category": "생활용품"}, {"word": "포크", "file": "audio/229_포크.mp3", "category": "생활용품"}, {"word": "프라이팬", "file": "audio/230_프라이팬.mp3", "category": "생활용품"}, {"word": "휴대전화", "file": "audio/231_휴대전화.mp3", "category": "생활용품"}, {"word": "휴지", "file": "audio/232_휴지.mp3", "category": "생활용품"}, {"word": "휴지통", "file": "audio/233_휴지통.mp3", "category": "생활용품"}, {"word": "가족", "file": "audio/234_가족.mp3", "category": "기타"}, {"word": "감기", "file": "audio/236_감기.mp3", "category": "기타"}, {"word": "개구리", "file": "audio/238_개구리.mp3", "category": "기타"}, {"word": "건물", "file": "audio/240_건물.mp3", "category": "기타"}, {"word": "걸레", "file": "audio/241_걸레.mp3", "category": "기타"}, {"word": "검정", "file": "audio/242_검정.mp3", "category": "기타"}, {"word": "겨울", "file": "audio/243_겨울.mp3", "category": "기타"}, {"word": "계란", "file": "audio/244_계란.mp3", "category": "기타"}, {"word": "고기", "file": "audio/245_고기.mp3", "category": "기타"}, {"word": "고래", "file": "audio/246_고래.mp3", "category": "기타"}, {"word": "공원", "file": "audio/249_공원.mp3", "category": "기타"}, {"word": "과자", "file": "audio/250_과자.mp3", "category": "기타"}, {"word": "광장", "file": "audio/251_광장.mp3", "category": "기타"}, {"word": "구름", "file": "audio/253_구름.mp3", "category": "기타"}, {"word": "국수", "file": "audio/254_국수.mp3", "category": "기타"}, {"word": "그림", "file": "audio/256_그림.mp3", "category": "기타"}, {"word": "깃발", "file": "audio/261_깃발.mp3", "category": "기타"}, {"word": "가게", "file": "audio/262_가게.mp3", "category": "기타"}, {"word": "가로등", "file": "audio/263_가로등.mp3", "category": "기타"}, {"word": "간식", "file": "audio/264_간식.mp3", "category": "기타"}, {"word": "갈비", "file": "audio/265_갈비.mp3", "category": "기타"}, {"word": "거리", "file": "audio/266_거리.mp3", "category": "기타"}, {"word": "경찰", "file": "audio/267_경찰.mp3", "category": "기타"}, {"word": "계단", "file": "audio/268_계단.mp3", "category": "기타"}, {"word": "고무줄", "file": "audio/269_고무줄.mp3", "category": "기타"}, {"word": "공책", "file": "audio/270_공책.mp3", "category": "기타"}, {"word": "교실", "file": "audio/271_교실.mp3", "category": "기타"}, {"word": "기름", "file": "audio/273_기름.mp3", "category": "기타"}, {"word": "기저귀", "file": "audio/274_기저귀.mp3", "category": "기타"}, {"word": "까치", "file": "audio/275_까치.mp3", "category": "기타"}, {"word": "까마귀", "file": "audio/276_까마귀.mp3", "category": "기타"}, {"word": "깍두기", "file": "audio/277_깍두기.mp3", "category": "기타"}, {"word": "깡통", "file": "audio/278_깡통.mp3", "category": "기타"}, {"word": "깨소금", "file": "audio/279_깨소금.mp3", "category": "기타"}, {"word": "꼬리", "file": "audio/280_꼬리.mp3", "category": "기타"}, {"word": "꼬마", "file": "audio/281_꼬마.mp3", "category": "기타"}, {"word": "꼬치", "file": "audio/282_꼬치.mp3", "category": "기타"}, {"word": "꼬막", "file": "audio/283_꼬막.mp3", "category": "기타"}, {"word": "꼭지", "file": "audio/284_꼭지.mp3", "category": "기타"}, {"word": "꽃병", "file": "audio/285_꽃병.mp3", "category": "기타"}, {"word": "꽃잎", "file": "audio/286_꽃잎.mp3", "category": "기타"}, {"word": "꽃집", "file": "audio/287_꽃집.mp3", "category": "기타"}, {"word": "꽁치", "file": "audio/288_꽁치.mp3", "category": "기타"}, {"word": "꽈배기", "file": "audio/289_꽈배기.mp3", "category": "기타"}, {"word": "꽹과리", "file": "audio/290_꽹과리.mp3", "category": "기타"}, {"word": "꿀", "file": "audio/291_꿀.mp3", "category": "기타"}, {"word": "꿀벌", "file": "audio/292_꿀벌.mp3", "category": "기타"}, {"word": "꿀떡", "file": "audio/293_꿀떡.mp3", "category": "기타"}, {"word": "꿈나라", "file": "audio/294_꿈나라.mp3", "category": "기타"}, {"word": "끄덕임", "file": "audio/295_끄덕임.mp3", "category": "기타"}, {"word": "끈기", "file": "audio/296_끈기.mp3", "category": "기타"}, {"word": "끼니", "file": "audio/297_끼니.mp3", "category": "기타"}, {"word": "깃털", "file": "audio/298_깃털.mp3", "category": "기타"}, {"word": "까만색", "file": "audio/299_까만색.mp3", "category": "기타"}, {"word": "깜빡이", "file": "audio/300_깜빡이.mp3", "category": "기타"}, {"word": "깜짝", "file": "audio/301_깜짝.mp3", "category": "기타"}, {"word": "깡패", "file": "audio/302_깡패.mp3", "category": "기타"}, {"word": "꼬깔콘", "file": "audio/303_꼬깔콘.mp3", "category": "기타"}, {"word": "꼬부기", "file": "audio/304_꼬부기.mp3", "category": "기타"}, {"word": "꼬챙이", "file": "audio/305_꼬챙이.mp3", "category": "기타"}, {"word": "꼭두각시", "file": "audio/306_꼭두각시.mp3", "category": "기타"}, {"word": "꼼수", "file": "audio/307_꼼수.mp3", "category": "기타"}, {"word": "꼼장어", "file": "audio/308_꼼장어.mp3", "category": "기타"}, {"word": "꽁무니", "file": "audio/309_꽁무니.mp3", "category": "기타"}, {"word": "꾀꼬리", "file": "audio/310_꾀꼬리.mp3", "category": "기타"}, {"word": "꾸러미", "file": "audio/311_꾸러미.mp3", "category": "기타"}, {"word": "꾸중", "file": "audio/312_꾸중.mp3", "category": "기타"}, {"word": "끼움", "file": "audio/313_끼움.mp3", "category": "기타"}, {"word": "나무", "file": "audio/314_나무.mp3", "category": "기타"}, {"word": "나비", "file": "audio/315_나비.mp3", "category": "기타"}, {"word": "나라", "file": "audio/316_나라.mp3", "category": "기타"}, {"word": "나팔", "file": "audio/317_나팔.mp3", "category": "기타"}, {"word": "낙지", "file": "audio/319_낙지.mp3", "category": "기타"}, {"word": "난로", "file": "audio/320_난로.mp3", "category": "기타"}, {"word": "날개", "file": "audio/321_날개.mp3", "category": "기타"}, {"word": "날씨", "file": "audio/322_날씨.mp3", "category": "기타"}, {"word": "남자", "file": "audio/323_남자.mp3", "category": "기타"}, {"word": "네모", "file": "audio/327_네모.mp3", "category": "기타"}, {"word": "노래", "file": "audio/329_노래.mp3", "category": "기타"}, {"word": "노란색", "file": "audio/330_노란색.mp3", "category": "기타"}, {"word": "노인", "file": "audio/331_노인.mp3", "category": "기타"}, {"word": "노트", "file": "audio/332_노트.mp3", "category": "기타"}, {"word": "녹차", "file": "audio/333_녹차.mp3", "category": "기타"}, {"word": "놀이터", "file": "audio/334_놀이터.mp3", "category": "기타"}, {"word": "농구", "file": "audio/335_농구.mp3", "category": "기타"}, {"word": "누나", "file": "audio/336_누나.mp3", "category": "기타"}, {"word": "눈물", "file": "audio/337_눈물.mp3", "category": "기타"}, {"word": "뉴스", "file": "audio/338_뉴스.mp3", "category": "기타"}, {"word": "느낌", "file": "audio/339_느낌.mp3", "category": "기타"}, {"word": "니트", "file": "audio/341_니트.mp3", "category": "기타"}, {"word": "나사", "file": "audio/342_나사.mp3", "category": "기타"}, {"word": "나침반", "file": "audio/343_나침반.mp3", "category": "기타"}, {"word": "낚시", "file": "audio/344_낚시.mp3", "category": "기타"}, {"word": "낙엽", "file": "audio/345_낙엽.mp3", "category": "기타"}, {"word": "난초", "file": "audio/346_난초.mp3", "category": "기타"}, {"word": "날짜", "file": "audio/347_날짜.mp3", "category": "기타"}, {"word": "남산", "file": "audio/348_남산.mp3", "category": "기타"}, {"word": "넓이", "file": "audio/350_넓이.mp3", "category": "기타"}, {"word": "노을", "file": "audio/351_노을.mp3", "category": "기타"}, {"word": "노트북", "file": "audio/352_노트북.mp3", "category": "기타"}, {"word": "농부", "file": "audio/353_농부.mp3", "category": "기타"}, {"word": "누룽지", "file": "audio/354_누룽지.mp3", "category": "기타"}, {"word": "눈사람", "file": "audio/355_눈사람.mp3", "category": "기타"}, {"word": "눈썹", "file": "audio/356_눈썹.mp3", "category": "기타"}, {"word": "늦잠", "file": "audio/357_늦잠.mp3", "category": "기타"}, {"word": "니켈", "file": "audio/358_니켈.mp3", "category": "기타"}, {"word": "나물", "file": "audio/359_나물.mp3", "category": "기타"}, {"word": "냅킨", "file": "audio/360_냅킨.mp3", "category": "기타"}, {"word": "다리", "file": "audio/361_다리.mp3", "category": "기타"}, {"word": "단추", "file": "audio/363_단추.mp3", "category": "기타"}, {"word": "달걀", "file": "audio/364_달걀.mp3", "category": "기타"}, {"word": "담요", "file": "audio/366_담요.mp3", "category": "기타"}, {"word": "대문", "file": "audio/368_대문.mp3", "category": "기타"}, {"word": "대추", "file": "audio/369_대추.mp3", "category": "기타"}, {"word": "도서관", "file": "audio/371_도서관.mp3", "category": "기타"}, {"word": "도장", "file": "audio/372_도장.mp3", "category": "기타"}, {"word": "도토리", "file": "audio/373_도토리.mp3", "category": "기타"}, {"word": "도로", "file": "audio/374_도로.mp3", "category": "기타"}, {"word": "독수리", "file": "audio/375_독수리.mp3", "category": "기타"}, {"word": "동물", "file": "audio/376_동물.mp3", "category": "기타"}, {"word": "동생", "file": "audio/377_동생.mp3", "category": "기타"}, {"word": "두부", "file": "audio/379_두부.mp3", "category": "기타"}, {"word": "두유", "file": "audio/380_두유.mp3", "category": "기타"}, {"word": "둥지", "file": "audio/381_둥지.mp3", "category": "기타"}, {"word": "뒤꿈치", "file": "audio/382_뒤꿈치.mp3", "category": "기타"}, {"word": "드럼", "file": "audio/383_드럼.mp3", "category": "기타"}, {"word": "등산", "file": "audio/384_등산.mp3", "category": "기타"}, {"word": "디귿", "file": "audio/385_디귿.mp3", "category": "기타"}, {"word": "딱지", "file": "audio/387_딱지.mp3", "category": "기타"}, {"word": "땅콩", "file": "audio/388_땅콩.mp3", "category": "기타"}, {"word": "다락방", "file": "audio/389_다락방.mp3", "category": "기타"}, {"word": "다육이", "file": "audio/390_다육이.mp3", "category": "기타"}, {"word": "단감", "file": "audio/391_단감.mp3", "category": "기타"}, {"word": "달팽이", "file": "audio/392_달팽이.mp3", "category": "기타"}, {"word": "대나무", "file": "audio/394_대나무.mp3", "category": "기타"}, {"word": "도깨비", "file": "audio/395_도깨비.mp3", "category": "기타"}, {"word": "도시락", "file": "audio/397_도시락.mp3", "category": "기타"}, {"word": "도자기", "file": "audio/398_도자기.mp3", "category": "기타"}, {"word": "돈가스", "file": "audio/399_돈가스.mp3", "category": "기타"}, {"word": "동굴", "file": "audio/401_동굴.mp3", "category": "기타"}, {"word": "두꺼비", "file": "audio/402_두꺼비.mp3", "category": "기타"}, {"word": "두통", "file": "audio/403_두통.mp3", "category": "기타"}, {"word": "둥근달", "file": "audio/404_둥근달.mp3", "category": "기타"}, {"word": "드라이기", "file": "audio/405_드라이기.mp3", "category": "기타"}, {"word": "디저트", "file": "audio/406_디저트.mp3", "category": "기타"}, {"word": "디지털", "file": "audio/407_디지털.mp3", "category": "기타"}, {"word": "따개", "file": "audio/408_따개.mp3", "category": "기타"}, {"word": "따귀", "file": "audio/409_따귀.mp3", "category": "기타"}, {"word": "따님", "file": "audio/410_따님.mp3", "category": "기타"}, {"word": "따라기", "file": "audio/411_따라기.mp3", "category": "기타"}, {"word": "따뜻", "file": "audio/412_따뜻.mp3", "category": "기타"}, {"word": "딸기잼", "file": "audio/414_딸기잼.mp3", "category": "기타"}, {"word": "때수건", "file": "audio/416_때수건.mp3", "category": "기타"}, {"word": "떡국", "file": "audio/417_떡국.mp3", "category": "기타"}];
+
+let materials=[],currentIndex=0,answers=[],choiceLocked=false,retryCount=0,playCount=0;
+let canvas,ctx,isDrawing=false,lastX=0,lastY=0;
+
+function unique(array){return[...new Set(array)]}
+function shuffle(array){const copy=[...array];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
+function syllableCount(word){return [...word].filter(ch=>ch>="가"&&ch<="힣").length}
+
+function renderSubject(){
+  const box=document.getElementById("subjectBox");
+  if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;return}
+  box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`;
+}
+
+function renderCategoryOptions(){
+  const cats=unique(AUDIO_DB.map(item=>item.category)).filter(Boolean);
+  const order=["전체","과일","동물","채소","탈것","가전가구","음식","의류","생활용품","기타"];
+  const available=order.filter(cat=>cat==="전체"||cats.includes(cat));
+  document.getElementById("categoryValue").innerHTML=available.map(cat=>`<option value="${cat}">${cat}</option>`).join("");
+}
+
+function filteredDB(){
+  const cat=document.getElementById("categoryValue").value;
+  const len=document.getElementById("syllableLength").value;
+  return AUDIO_DB.filter(item=>{
+    const catOK=cat==="전체"||item.category===cat;
+    const n=syllableCount(item.word);
+    const lenOK=len==="all" ? true : len==="4" ? n>=4 : n===Number(len);
+    return catOK&&lenOK;
+  });
+}
+
+function generateMaterials(){
+  const countValue=document.getElementById("count").value;
+  const orderMode=document.getElementById("orderMode").value;
+  let source=filteredDB();
+  source=orderMode==="random"?shuffle(source):[...source];
+  const limit=countValue==="all"?source.length:Number(countValue);
+  materials=source.slice(0,Math.min(limit,source.length)).map((item,idx)=>({...item,no:idx+1,memo:""}));
+  currentIndex=0;answers=[];renderPreview();
+}
+
+function renderPreview(){
+  document.getElementById("previewTitle").textContent=`생성 자료 ${materials.length}개`;
+  const list=document.getElementById("previewList");
+  if(!materials.length){list.innerHTML=`<div class="item-card">조건에 맞는 자료가 없습니다.</div>`;return}
+  list.innerHTML=materials.map((item,idx)=>`<div class="item-card"><strong>${idx+1}.</strong>${item.word}<span class="tag">${item.category}</span><span class="tag">${syllableCount(item.word)}글자</span></div>`).join("");
+}
+
+function renderStats(){
+  const cats=unique(AUDIO_DB.map(item=>item.category));
+  const rows=cats.map(cat=>`<div class="item-card"><strong>${cat}</strong>${AUDIO_DB.filter(v=>v.category===cat).length}개</div>`).join("");
+  document.getElementById("statsBox").innerHTML=`<div class="word-grid">${rows}</div>`;
+}
+
+function startTraining(){
+  if(!materials.length)generateMaterials();
+  if(!materials.length)return;
+  document.getElementById("setupView").classList.add("hidden");
+  document.getElementById("previewView").classList.add("hidden");
+  document.getElementById("statsView").classList.add("hidden");
+  document.getElementById("trainingView").classList.remove("hidden");
+  document.getElementById("finishView").classList.add("hidden");
+  currentIndex=0;answers=[];showItem();
+  setTimeout(resizeCanvas,80);
+}
+
+function showItem(){
+  choiceLocked=false;retryCount=0;playCount=0;
+  const item=materials[currentIndex];
+  document.getElementById("trainingTitle").textContent=`${currentIndex+1} / ${materials.length}`;
+  document.getElementById("audioPlayer").src=item.file;
+  document.getElementById("progressBar").style.width=`${(currentIndex/materials.length)*100}%`;
+  document.getElementById("itemMemo").value=item.memo||"";
+  document.getElementById("feedbackBox").style.display="none";
+  document.getElementById("feedbackBox").textContent="";
+  document.getElementById("feedbackBox").className="feedback";
+  document.getElementById("nextBtn").style.display="none";
+  document.getElementById("correctBtn").disabled=false;
+  document.getElementById("wrongBtn").disabled=false;
+  clearCanvas();
+  updatePlayInfo();
+}
+
+function updatePlayInfo(){
+  const limit=Number(document.getElementById("playLimit").value);
+  const info=document.getElementById("playInfo");
+  if(limit===0)info.textContent=`무제한 재생 · 현재 ${playCount}회`;
+  else info.textContent=`재생 ${playCount} / ${limit}회`;
+}
+
+function playCurrentAudio(){
+  if(!materials[currentIndex])return;
+  const limit=Number(document.getElementById("playLimit").value);
+  if(limit!==0&&playCount>=limit){showFeedback("재생 횟수를 모두 사용했습니다.",false);return}
+  const player=document.getElementById("audioPlayer");
+  player.currentTime=0;player.play();playCount+=1;updatePlayInfo();
+}
+
+function initCanvas(){
+  canvas=document.getElementById("writingCanvas");
+  ctx=canvas.getContext("2d");
+  resizeCanvas();
+  window.addEventListener("resize",resizeCanvas);
+  canvas.addEventListener("pointerdown",startDraw);
+  canvas.addEventListener("pointermove",draw);
+  canvas.addEventListener("pointerup",endDraw);
+  canvas.addEventListener("pointercancel",endDraw);
+  canvas.addEventListener("pointerleave",endDraw);
+}
+
+function resizeCanvas(){
+  if(!canvas)return;
+  const rect=canvas.getBoundingClientRect();
+  canvas.width=Math.max(1,Math.floor(rect.width*window.devicePixelRatio));
+  canvas.height=Math.max(1,Math.floor(rect.height*window.devicePixelRatio));
+  ctx.setTransform(window.devicePixelRatio,0,0,window.devicePixelRatio,0,0);
+  ctx.lineCap="round";
+  ctx.lineJoin="round";
+  ctx.strokeStyle="#162033";
+  ctx.lineWidth=7;
+}
+
+function getPos(e){
+  const rect=canvas.getBoundingClientRect();
+  return {x:e.clientX-rect.left,y:e.clientY-rect.top};
+}
+
+function startDraw(e){
+  if(choiceLocked)return;
+  e.preventDefault();
+  isDrawing=true;
+  const p=getPos(e);lastX=p.x;lastY=p.y;
+  canvas.setPointerCapture(e.pointerId);
+}
+
+function draw(e){
+  if(!isDrawing||choiceLocked)return;
+  e.preventDefault();
+  const p=getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(lastX,lastY);
+  ctx.lineTo(p.x,p.y);
+  ctx.stroke();
+  lastX=p.x;lastY=p.y;
+}
+
+function endDraw(){isDrawing=false}
+
+function clearCanvas(){
+  if(!ctx||!canvas)return;
+  const rect=canvas.getBoundingClientRect();
+  ctx.clearRect(0,0,rect.width,rect.height);
+}
+
+function saveMemo(){if(materials[currentIndex])materials[currentIndex].memo=document.getElementById("itemMemo").value.trim()}
+
+function showFeedback(message,isCorrectStyle){
+  const box=document.getElementById("feedbackBox");
+  box.style.display="block";box.textContent=message;box.className="feedback "+(isCorrectStyle?"correct":"wrong");
+}
+
+function setRatingDisabled(disabled){
+  document.getElementById("correctBtn").disabled=disabled;
+  document.getElementById("wrongBtn").disabled=disabled;
+}
+
+function recordAnswer(result){
+  if(choiceLocked)return;
+  saveMemo();
+  const item=materials[currentIndex];
+
+  if(result==="correct"){
+    choiceLocked=true;
+    setRatingDisabled(true);
+    showFeedback("정답입니다.",true);
+    const countedCorrect=retryCount===0;
+    answers.push({word:item.word,category:item.category,response:"정답",correct:countedCorrect,retry:retryCount,playCount,memo:item.memo||""});
+    setTimeout(nextItem,1200);
+    return;
+  }
+
+  retryCount+=1;
+  if(retryCount===1){
+    showFeedback("다시 써보세요.",false);
+    clearCanvas();
+    return;
+  }
+
+  choiceLocked=true;
+  setRatingDisabled(true);
+  showFeedback(`정답은 "${item.word}"입니다. 다음 문제를 눌러주세요.`,false);
+  answers.push({word:item.word,category:item.category,response:"오답",correct:false,retry:retryCount,playCount,memo:item.memo||""});
+  document.getElementById("nextBtn").style.display="inline-block";
+}
+
+function nextQuestionManual(){if(!choiceLocked)return;nextItem()}
+
+function nextItem(){
+  currentIndex++;
+  if(currentIndex>=materials.length)finishTraining();else showItem();
+}
+
+function finishTraining(){
+  document.getElementById("progressBar").style.width="100%";
+  document.getElementById("trainingView").classList.add("hidden");
+  document.getElementById("finishView").classList.remove("hidden");
+  const total=answers.length;
+  const correct=answers.filter(a=>a.correct).length;
+  const wrong=total-correct;
+  const rate=total?Math.round((correct/total)*100):0;
+  const subjectName=selectedSubject?selectedSubject.name:"대상자";
+  document.getElementById("finishText").textContent=`${subjectName}님의 ${TRAINING_NAME} 결과입니다.`;
+  document.getElementById("summaryGrid").innerHTML=`<div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div><div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정답</span></div><div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>오답</span></div><div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+  const history=Store.load("speech_training_history",[]);
+  history.push({id:Date.now(),subjectId:selectedSubjectId,subjectName,training:TRAINING_NAME,date:new Date().toISOString(),total,correct,wrong,rate,answers});
+  Store.save("speech_training_history",history);
+}
+
+renderSubject();renderCategoryOptions();generateMaterials();renderStats();
+window.addEventListener("load",initCanvas);
+</script>
+</body>
+</html>

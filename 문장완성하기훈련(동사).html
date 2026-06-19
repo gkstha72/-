@@ -1,0 +1,3376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>문장완성하기훈련(동사)</title>
+<style>
+* { box-sizing:border-box; }
+body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+.app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+.brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+.logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+.primary { background:#246bfe; color:white; }
+.secondary { background:#eef3ff; color:#246bfe; }
+.gray { background:#edf1f6; color:#5d687b; }
+.panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+.panel h2 { margin:0 0 16px; font-size:22px; }
+.setup-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+textarea { min-height:74px; resize:vertical; }
+.subject-box,.help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+.help-box { margin-top:16px; font-size:14px; }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+.word-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.item-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:15px; padding:14px; font-size:15px; line-height:1.5; }
+.item-card strong { color:#246bfe; margin-right:5px; }
+.hidden { display:none !important; }
+.progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+.progress-bar { height:100%; width:0%; background:#246bfe; }
+.question { color:#246bfe; font-size:25px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+.training-box { background:#f8faff; border-radius:24px; padding:38px 24px; text-align:center; margin-bottom:18px; min-height:300px; display:grid; place-items:center; }
+.training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:22px; }
+.sentence { font-size:38px; font-weight:900; line-height:1.45; word-break:keep-all; }
+.blank { display:inline-block; min-width:140px; padding:0 10px 4px; color:#246bfe; border-bottom:5px solid #246bfe; }
+.answer-options { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:12px; }
+.answer-btn { background:#eef3ff; color:#246bfe; border:1px solid #dbe7ff; border-radius:16px; min-height:68px; padding:15px 12px; font-size:22px; font-weight:900; }
+.answer-btn:hover { background:#dfeaff; }
+.answer-btn.correct-choice { background:#16a06f; color:white; border-color:#16a06f; }
+.answer-btn.wrong-choice { background:#e54848; color:white; border-color:#e54848; }
+.feedback { display:none; margin-top:12px; padding:16px; border-radius:16px; font-size:24px; font-weight:900; text-align:center; }
+.stats-mini { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; font-size:13px; }
+.stats-mini div { background:#f8faff; border:1px solid #e2e8f0; border-radius:12px; padding:8px 10px; display:flex; justify-content:space-between; gap:6px; }
+.stats-mini b { color:#246bfe; }
+.result-panel { background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); border-radius:24px; padding:16px; border:1px solid #edf2f7; box-shadow:0 10px 28px rgba(15,30,60,.05); }
+.summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+.summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+.summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+.summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+.summary-card span { color:#334155; font-size:15px; font-weight:800; }
+.summary-card.correct strong { color:#16a06f; }
+.summary-card.wrong strong { color:#e54848; }
+.summary-card.total strong,.summary-card.rate strong { color:#246bfe; }
+.summary-icon.correct { background:#16a06f; }
+.summary-icon.wrong { background:#e54848; }
+.summary-icon.total,.summary-icon.rate { background:#246bfe; }
+.summary-icon.total,.summary-icon.rate{background:#246bfe}
+@media (max-width:900px){ .setup-grid{grid-template-columns:1fr 1fr;} .word-grid{grid-template-columns:repeat(2,1fr);} .stats-mini{grid-template-columns:1fr;} .summary-grid{grid-template-columns:repeat(2,1fr);} .topbar{align-items:flex-start; flex-direction:column;} }
+@media (max-width:560px){ .setup-grid,.word-grid,.answer-options,.summary-grid{grid-template-columns:1fr;} .description{font-size:26px;} .question{font-size:21px;} }
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar"><div class="brand"><div class="logo">동</div><span>문장완성하기훈련 (동사)</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+
+<section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+
+<section id="setupView" class="panel">
+<h2>훈련 설정</h2>
+<div class="setup-grid">
+<div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="40">40개</option><option value="50">50개</option><option value="100">100개</option></select></div>
+<div><label for="choiceCount">보기 개수</label><select id="choiceCount" onchange="generateMaterials()"><option value="2" selected>2개 보기</option><option value="4">4개 보기</option></select></div>
+<div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
+</div>
+<div class="help-box">동사 전용 문장 완성 훈련입니다. 빈칸에 알맞은 동사를 고르는 활동으로, 일상생활·이동·학습·의사소통·놀이·가사·자연·건강 관련 문항을 포함했습니다.</div>
+<div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
+</section>
+
+<section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
+<section id="statsView" class="panel"><h2>문항 수</h2><div id="statsBox"></div></section>
+
+<section id="trainingView" class="panel hidden">
+<div id="question" class="question">빈칸에 알맞은 동사를 고르세요.</div>
+<div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+<div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="sentence" class="sentence"></div></div></div>
+<div id="answerOptions" class="answer-options"></div>
+<div id="feedbackBox" class="feedback"></div>
+<div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
+<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+</section>
+
+<section id="finishView" class="panel hidden">
+<h2>훈련 결과</h2>
+<p id="finishText"></p>
+<div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div>
+<div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+</section>
+</main>
+
+<script>
+const Store = { load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }, save(key, value) { localStorage.setItem(key, JSON.stringify(value)); } };
+const subjects = Store.load("speech_subjects", []);
+const selectedSubjectId = Store.load("speech_selected_subject", null);
+const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+
+const SENTENCE_DB = [
+  {
+    "answer": "먹습니다",
+    "sentence": "배가 고파서 밥을 ___.",
+    "wrongs": [
+      "마십니다",
+      "읽습니다",
+      "잡니다",
+      "씻습니다",
+      "달립니다"
+    ]
+  },
+  {
+    "answer": "마십니다",
+    "sentence": "목이 말라서 물을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "씁니다",
+      "뜁니다",
+      "잡습니다",
+      "읽습니다"
+    ]
+  },
+  {
+    "answer": "잡니다",
+    "sentence": "밤이 되면 침대에서 ___.",
+    "wrongs": [
+      "달립니다",
+      "먹습니다",
+      "씁니다",
+      "던집니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "일어납니다",
+    "sentence": "아침이 되면 잠에서 ___.",
+    "wrongs": [
+      "잡니다",
+      "먹습니다",
+      "던집니다",
+      "읽습니다",
+      "접습니다"
+    ]
+  },
+  {
+    "answer": "씻습니다",
+    "sentence": "밥을 먹기 전에 손을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "읽습니다",
+      "던집니다",
+      "탑니다",
+      "잡니다"
+    ]
+  },
+  {
+    "answer": "닦습니다",
+    "sentence": "아침마다 이를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "뜁니다",
+      "잡니다",
+      "엽니다"
+    ]
+  },
+  {
+    "answer": "입습니다",
+    "sentence": "밖에 나가기 전에 옷을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "탑니다",
+      "잡니다"
+    ]
+  },
+  {
+    "answer": "신습니다",
+    "sentence": "밖에 나가려고 신발을 ___.",
+    "wrongs": [
+      "씁니다",
+      "먹습니다",
+      "읽습니다",
+      "던집니다",
+      "마십니다"
+    ]
+  },
+  {
+    "answer": "씁니다",
+    "sentence": "햇빛을 가리려고 모자를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "신습니다",
+      "씻습니다",
+      "뜁니다"
+    ]
+  },
+  {
+    "answer": "낍니다",
+    "sentence": "추운 날 손에 장갑을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "잡니다",
+      "뜁니다"
+    ]
+  },
+  {
+    "answer": "두릅니다",
+    "sentence": "추운 날 목에 목도리를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "던집니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "펼칩니다",
+    "sentence": "비가 오면 우산을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "잡니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "접습니다",
+    "sentence": "비가 그치면 우산을 ___.",
+    "wrongs": [
+      "마십니다",
+      "먹습니다",
+      "뜁니다",
+      "읽습니다",
+      "탑니다"
+    ]
+  },
+  {
+    "answer": "엽니다",
+    "sentence": "방에 들어가려고 문을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "잡니다",
+      "뜁니다"
+    ]
+  },
+  {
+    "answer": "닫습니다",
+    "sentence": "바람이 들어와서 창문을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "달립니다",
+      "잡니다",
+      "읽습니다"
+    ]
+  },
+  {
+    "answer": "켭니다",
+    "sentence": "방이 어두워서 전등을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "뜁니다"
+    ]
+  },
+  {
+    "answer": "끕니다",
+    "sentence": "잠을 자기 전에 전등을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "앉습니다",
+    "sentence": "의자 위에 조용히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "던집니다",
+      "씁니다",
+      "접습니다"
+    ]
+  },
+  {
+    "answer": "섭니다",
+    "sentence": "줄을 설 때 바르게 ___.",
+    "wrongs": [
+      "잡니다",
+      "먹습니다",
+      "마십니다",
+      "던집니다",
+      "읽습니다"
+    ]
+  },
+  {
+    "answer": "걷습니다",
+    "sentence": "길에서는 천천히 ___.",
+    "wrongs": [
+      "잡니다",
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "씁니다"
+    ]
+  },
+  {
+    "answer": "뜁니다",
+    "sentence": "운동장에서 빠르게 ___.",
+    "wrongs": [
+      "잡니다",
+      "마십니다",
+      "읽습니다",
+      "씁니다",
+      "먹습니다"
+    ]
+  },
+  {
+    "answer": "달립니다",
+    "sentence": "경주에서 결승선까지 ___.",
+    "wrongs": [
+      "잡니다",
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "씁니다"
+    ]
+  },
+  {
+    "answer": "멈춥니다",
+    "sentence": "빨간불이 켜지면 길 앞에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "기다립니다",
+    "sentence": "버스를 타려고 정류장에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씁니다",
+      "던집니다"
+    ]
+  },
+  {
+    "answer": "탑니다",
+    "sentence": "학교에 가려고 버스를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "잡니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "내립니다",
+    "sentence": "목적지에 도착하면 버스에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씁니다",
+      "던집니다"
+    ]
+  },
+  {
+    "answer": "올라갑니다",
+    "sentence": "높은 층에 가려고 계단을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "던집니다"
+    ]
+  },
+  {
+    "answer": "내려갑니다",
+    "sentence": "아래층에 가려고 계단을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씁니다"
+    ]
+  },
+  {
+    "answer": "들어갑니다",
+    "sentence": "수업을 들으려고 교실에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "던집니다",
+      "씁니다"
+    ]
+  },
+  {
+    "answer": "나갑니다",
+    "sentence": "쉬는 시간이 되어 운동장으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씁니다"
+    ]
+  },
+  {
+    "answer": "갑니다",
+    "sentence": "공부하러 학교에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씁니다",
+      "던집니다"
+    ]
+  },
+  {
+    "answer": "옵니다",
+    "sentence": "학교가 끝나고 집에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씁니다",
+      "던집니다"
+    ]
+  },
+  {
+    "answer": "돌아옵니다",
+    "sentence": "여행을 마치고 집으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "던집니다"
+    ]
+  },
+  {
+    "answer": "지나갑니다",
+    "sentence": "버스가 정류장 앞을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "잡니다",
+      "씁니다"
+    ]
+  },
+  {
+    "answer": "건넙니다",
+    "sentence": "초록불이 켜지면 횡단보도를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씁니다",
+      "접습니다"
+    ]
+  },
+  {
+    "answer": "읽습니다",
+    "sentence": "도서관에서 책을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "씁니다",
+    "sentence": "공책에 글씨를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "그립니다",
+    "sentence": "종이에 그림을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "색칠합니다",
+    "sentence": "색연필로 그림을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "지웁니다",
+    "sentence": "틀린 글씨를 지우개로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "자릅니다",
+    "sentence": "가위로 종이를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "입습니다",
+      "뜁니다"
+    ]
+  },
+  {
+    "answer": "붙입니다",
+    "sentence": "풀로 종이를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "접습니다",
+    "sentence": "색종이로 종이비행기를 만들려고 종이를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "펴습니다",
+    "sentence": "접힌 종이를 다시 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "신습니다"
+    ]
+  },
+  {
+    "answer": "찢습니다",
+    "sentence": "못 쓰는 종이를 작게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "세웁니다",
+    "sentence": "쓰러진 책을 책상 위에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "읽습니다"
+    ]
+  },
+  {
+    "answer": "놓습니다",
+    "sentence": "책을 책상 위에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "넣습니다",
+    "sentence": "연필을 필통 안에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "꺼냅니다",
+    "sentence": "가방에서 공책을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "입습니다",
+      "뜁니다"
+    ]
+  },
+  {
+    "answer": "찾습니다",
+    "sentence": "잃어버린 지우개를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "잃어버립니다",
+    "sentence": "조심하지 않으면 물건을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "잡니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "빌립니다",
+    "sentence": "도서관에서 책을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "돌려줍니다",
+    "sentence": "빌린 책을 도서관에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "배웁니다",
+    "sentence": "학교에서 새로운 내용을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "던집니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "가르칩니다",
+    "sentence": "선생님은 학생에게 글자를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "공부합니다",
+    "sentence": "시험을 잘 보려고 열심히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "던집니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "외웁니다",
+    "sentence": "새로운 단어를 반복해서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "생각합니다",
+    "sentence": "문제를 풀기 전에 곰곰이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "던집니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "묻습니다",
+    "sentence": "모르는 것은 선생님께 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "대답합니다",
+    "sentence": "질문을 들으면 알맞게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "발표합니다",
+    "sentence": "친구들 앞에서 생각을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "듣습니다",
+    "sentence": "수업 시간에는 선생님 말씀을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "신습니다"
+    ]
+  },
+  {
+    "answer": "말합니다",
+    "sentence": "친구에게 하고 싶은 말을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "이야기합니다",
+    "sentence": "친구와 재미있는 일을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "인사합니다",
+    "sentence": "어른을 만나면 바르게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "웃습니다",
+    "sentence": "재미있는 이야기를 듣고 활짝 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씻습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "웁니다",
+    "sentence": "슬픈 일이 있으면 눈물을 흘리며 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "놀랍니다",
+    "sentence": "큰 소리를 듣고 깜짝 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "화냅니다",
+    "sentence": "기분이 몹시 나쁘면 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "기뻐합니다",
+    "sentence": "좋은 선물을 받고 매우 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "슬퍼합니다",
+    "sentence": "아끼던 장난감이 망가져서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "무서워합니다",
+    "sentence": "어두운 길을 보면 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "좋아합니다",
+    "sentence": "맛있는 과자를 보면 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "던집니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "싫어합니다",
+    "sentence": "먹기 싫은 음식을 보면 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "도와줍니다",
+    "sentence": "친구가 힘들어하면 옆에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "나눕니다",
+    "sentence": "간식을 친구와 함께 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "양보합니다",
+    "sentence": "친구가 먼저 하고 싶어 하면 차례를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "기다립니다",
+    "sentence": "차례가 올 때까지 조용히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "던집니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "약속합니다",
+    "sentence": "친구와 내일 만나기로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "지킵니다",
+    "sentence": "친구와 한 약속을 꼭 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "사과합니다",
+    "sentence": "잘못했을 때 미안하다고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "용서합니다",
+    "sentence": "친구가 사과하면 마음을 풀고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "칭찬합니다",
+    "sentence": "친구가 잘했을 때 좋게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "박수칩니다",
+    "sentence": "공연이 끝나면 손뼉을 치며 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씻습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "노래합니다",
+    "sentence": "음악에 맞춰 즐겁게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씻습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "부릅니다",
+    "sentence": "가수는 무대에서 노래를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "춤춥니다",
+    "sentence": "신나는 음악에 맞춰 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "연주합니다",
+    "sentence": "피아노로 아름다운 곡을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씻습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "칩니다",
+    "sentence": "손가락으로 피아노를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씻습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "두드립니다",
+    "sentence": "막대로 북을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "붑니다",
+    "sentence": "입으로 피리를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "찍습니다",
+    "sentence": "카메라로 사진을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "봅니다",
+    "sentence": "영화관에서 영화를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "구경합니다",
+    "sentence": "동물원에서 여러 동물을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "관찰합니다",
+    "sentence": "돋보기로 작은 벌레를 자세히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "뜁니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "만집니다",
+    "sentence": "부드러운 인형을 손으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "달립니다"
+    ]
+  },
+  {
+    "answer": "느낍니다",
+    "sentence": "얼굴에 스치는 바람을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씁니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "맡습니다",
+    "sentence": "코로 꽃향기를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "맛봅니다",
+    "sentence": "처음 먹는 음식을 조금 ___.",
+    "wrongs": [
+      "잡니다",
+      "달립니다",
+      "씻습니다",
+      "닫습니다",
+      "던집니다"
+    ]
+  },
+  {
+    "answer": "던집니다",
+    "sentence": "친구에게 공을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "받습니다",
+    "sentence": "친구가 던진 공을 두 손으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "찹니다",
+    "sentence": "발로 축구공을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "굴립니다",
+    "sentence": "바닥에서 공을 데굴데굴 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씁니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "쌓습니다",
+    "sentence": "블록을 높이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "무너뜨립니다",
+    "sentence": "쌓은 블록을 손으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "만듭니다",
+    "sentence": "눈을 굴려 눈사람을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "부숩니다",
+    "sentence": "망가진 장난감을 더 세게 치면 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "고칩니다",
+    "sentence": "망가진 장난감을 다시 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "차립니다",
+    "sentence": "밥 먹기 전에 식탁을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "요리합니다",
+    "sentence": "저녁밥을 만들려고 주방에서 ___.",
+    "wrongs": [
+      "잡니다",
+      "달립니다",
+      "읽습니다",
+      "닫습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "끓입니다",
+    "sentence": "냄비에 물을 넣고 국을 ___.",
+    "wrongs": [
+      "잡니다",
+      "달립니다",
+      "읽습니다",
+      "입습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "굽습니다",
+    "sentence": "프라이팬에 고기를 ___.",
+    "wrongs": [
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "달립니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "볶습니다",
+    "sentence": "팬에 채소를 넣고 ___.",
+    "wrongs": [
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "삶습니다",
+    "sentence": "끓는 물에 달걀을 ___.",
+    "wrongs": [
+      "잡니다",
+      "달립니다",
+      "읽습니다",
+      "입습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "썹니다",
+    "sentence": "도마 위에서 채소를 ___.",
+    "wrongs": [
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "깎습니다",
+    "sentence": "칼로 사과 껍질을 ___.",
+    "wrongs": [
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "섞습니다",
+    "sentence": "그릇에 재료를 넣고 골고루 ___.",
+    "wrongs": [
+      "잡니다",
+      "달립니다",
+      "읽습니다",
+      "입습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "담습니다",
+    "sentence": "완성된 음식을 그릇에 ___.",
+    "wrongs": [
+      "잡니다",
+      "달립니다",
+      "읽습니다",
+      "입습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "따릅니다",
+    "sentence": "컵에 물을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "잡니다",
+      "읽습니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "흘립니다",
+    "sentence": "컵을 기울이다가 물을 ___.",
+    "wrongs": [
+      "잡니다",
+      "읽습니다",
+      "입습니다",
+      "닫습니다",
+      "신습니다"
+    ]
+  },
+  {
+    "answer": "닦습니다",
+    "sentence": "흘린 물을 수건으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "치웁니다",
+    "sentence": "밥을 먹고 난 뒤 식탁을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "씻습니다",
+    "sentence": "더러운 그릇을 물로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "말립니다",
+    "sentence": "젖은 수건을 햇볕에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "빱니다",
+    "sentence": "더러운 옷을 세탁기로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "널습니다",
+    "sentence": "빨래한 옷을 빨랫줄에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "개킵니다",
+    "sentence": "마른 빨래를 반듯하게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "정리합니다",
+    "sentence": "어질러진 방을 깨끗하게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "청소합니다",
+    "sentence": "먼지가 많은 방을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "쓸습니다",
+    "sentence": "빗자루로 바닥을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "닦습니다",
+    "sentence": "걸레로 바닥을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "버립니다",
+    "sentence": "쓰레기를 쓰레기통에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "줍습니다",
+    "sentence": "길에 떨어진 쓰레기를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "분리수거합니다",
+    "sentence": "종이와 플라스틱을 따로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "심습니다",
+    "sentence": "화분에 씨앗을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "기릅니다",
+    "sentence": "화분에서 꽃을 정성껏 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "자랍니다",
+    "sentence": "씨앗에서 싹이 나고 식물이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "핍니다",
+    "sentence": "봄이 되면 꽃이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "집니다",
+    "sentence": "시간이 지나면 꽃이 시들어 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "떨어집니다",
+    "sentence": "가을이 되면 나뭇잎이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "흔들립니다",
+    "sentence": "바람이 불면 나뭇가지가 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "붑니다",
+    "sentence": "창밖에서 바람이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "내립니다",
+    "sentence": "하늘에서 비가 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "쌓입니다",
+    "sentence": "겨울에 눈이 많이 오면 길에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "녹습니다",
+    "sentence": "따뜻해지면 얼음이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "얼습니다",
+    "sentence": "날씨가 아주 추우면 물이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "빛납니다",
+    "sentence": "낮에는 해가 밝게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "반짝입니다",
+    "sentence": "밤하늘에서 별이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "뜹니다",
+    "sentence": "밤이 되면 하늘에 달이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "흐릅니다",
+    "sentence": "강물이 아래로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "넘칩니다",
+    "sentence": "컵에 물을 많이 따르면 물이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "말라갑니다",
+    "sentence": "햇볕이 강하면 젖은 땅이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "짖습니다",
+    "sentence": "강아지가 멍멍 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "웁니다",
+    "sentence": "고양이가 야옹 하고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "날아갑니다",
+    "sentence": "새가 날개를 펴고 하늘로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "헤엄칩니다",
+    "sentence": "물고기가 물속에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "기어갑니다",
+    "sentence": "거북이가 천천히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "뜁니다",
+    "sentence": "토끼가 깡충깡충 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "날아다닙니다",
+    "sentence": "나비가 꽃 주변을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "기어다닙니다",
+    "sentence": "개미가 줄을 지어 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "먹입니다",
+    "sentence": "농부가 동물에게 먹이를 ___.",
+    "wrongs": [
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "돌봅니다",
+    "sentence": "아픈 동물을 정성껏 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "키웁니다",
+    "sentence": "집에서 강아지를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "쓰다듬습니다",
+    "sentence": "강아지의 등을 부드럽게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "안습니다",
+    "sentence": "귀여운 인형을 품에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "깨뭅니다",
+    "sentence": "강아지가 장난감을 입으로 ___.",
+    "wrongs": [
+      "잡니다",
+      "읽습니다",
+      "씻습니다",
+      "입습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "핥습니다",
+    "sentence": "고양이가 발을 혀로 ___.",
+    "wrongs": [
+      "잡니다",
+      "읽습니다",
+      "달립니다",
+      "입습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "숨어있습니다",
+    "sentence": "고양이가 소파 밑에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "찾아냅니다",
+    "sentence": "숨은 친구를 끝까지 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "입습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "놀습니다",
+    "sentence": "친구들과 놀이터에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "탑니다",
+    "sentence": "놀이터에서 그네를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "미끄러집니다",
+    "sentence": "미끄럼틀 위에서 아래로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "흔듭니다",
+    "sentence": "손을 좌우로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "돌립니다",
+    "sentence": "팽이를 힘껏 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "날립니다",
+    "sentence": "바람 부는 날 연을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "입습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "불습니다",
+    "sentence": "입으로 풍선을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "터뜨립니다",
+    "sentence": "뾰족한 것으로 풍선을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "흘러갑니다",
+    "sentence": "종이배가 물 위를 따라 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "건드립니다",
+    "sentence": "깨지기 쉬운 물건을 조심히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "누릅니다",
+    "sentence": "엘리베이터를 타려고 버튼을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "당깁니다",
+    "sentence": "닫힌 문고리를 몸쪽으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "밉니다",
+    "sentence": "문을 열려고 앞으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "잠급니다",
+    "sentence": "외출하기 전에 문을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "엽니다",
+    "sentence": "열쇠로 잠긴 문을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "꽂습니다",
+    "sentence": "충전기를 콘센트에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "뺍니다",
+    "sentence": "충전이 끝나면 콘센트에서 충전기를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "충전합니다",
+    "sentence": "배터리가 없어서 휴대전화를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "전화합니다",
+    "sentence": "멀리 있는 친구에게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "보냅니다",
+    "sentence": "친구에게 문자를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "받습니다",
+    "sentence": "친구에게서 전화를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "확인합니다",
+    "sentence": "오늘 날짜를 달력에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "기록합니다",
+    "sentence": "중요한 일을 공책에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "기억합니다",
+    "sentence": "친구의 생일을 잘 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "잊어버립니다",
+    "sentence": "메모하지 않으면 약속을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "준비합니다",
+    "sentence": "소풍 가기 전에 도시락을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "챙깁니다",
+    "sentence": "학교에 가기 전에 준비물을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "놓고갑니다",
+    "sentence": "급하게 나가면 준비물을 집에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "기다립니다",
+    "sentence": "친구가 올 때까지 문 앞에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "만납니다",
+    "sentence": "약속한 시간에 친구를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "헤어집니다",
+    "sentence": "놀이가 끝나면 친구와 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "초대합니다",
+    "sentence": "생일잔치에 친구를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "축하합니다",
+    "sentence": "친구의 생일을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "선물합니다",
+    "sentence": "고마운 마음을 담아 꽃을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "받습니다",
+    "sentence": "생일에 선물을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "뜯습니다",
+    "sentence": "선물 포장지를 조심히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "묶습니다",
+    "sentence": "선물 상자에 리본을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "풀어봅니다",
+    "sentence": "묶인 끈을 천천히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "삽니다",
+    "sentence": "마트에서 필요한 물건을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "팝니다",
+    "sentence": "가게에서 빵을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "고릅니다",
+    "sentence": "여러 물건 중 마음에 드는 것을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "계산합니다",
+    "sentence": "물건을 산 뒤 돈을 내고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "냅니다",
+    "sentence": "물건값으로 돈을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "거슬러받습니다",
+    "sentence": "돈을 많이 내면 남은 돈을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "저축합니다",
+    "sentence": "돈을 모으려고 은행에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "찾습니다",
+    "sentence": "필요한 돈을 은행에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "보냅니다",
+    "sentence": "우체국에서 소포를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "받습니다",
+    "sentence": "집으로 온 택배를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "배달합니다",
+    "sentence": "배달원이 음식을 집까지 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "운전합니다",
+    "sentence": "운전기사가 버스를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "수리합니다",
+    "sentence": "고장 난 자전거를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "치료합니다",
+    "sentence": "의사가 아픈 사람을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "진찰합니다",
+    "sentence": "의사가 환자의 몸 상태를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "재봅니다",
+    "sentence": "체온계로 열을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "바릅니다",
+    "sentence": "상처에 약을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "붙입니다",
+    "sentence": "상처 위에 반창고를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "쉬습니다",
+    "sentence": "몸이 아플 때는 푹 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "달립니다",
+      "던집니다",
+      "씁니다"
+    ]
+  },
+  {
+    "answer": "운동합니다",
+    "sentence": "건강해지려고 매일 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "스트레칭합니다",
+    "sentence": "운동하기 전에 몸을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "숨쉽니다",
+    "sentence": "공기를 들이마시며 천천히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "기침합니다",
+    "sentence": "목이 간질간질하면 콜록콜록 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "재채기합니다",
+    "sentence": "코가 간지러우면 에취 하고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "하품합니다",
+    "sentence": "졸리면 입을 크게 벌리고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "달립니다",
+      "씻습니다",
+      "던집니다"
+    ]
+  },
+  {
+    "answer": "잠깹니다",
+    "sentence": "세수를 하면 졸음이 조금 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "달립니다",
+      "던집니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "졸립니다",
+    "sentence": "밤이 늦으면 눈이 감기고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "달립니다",
+      "씻습니다",
+      "던집니다"
+    ]
+  },
+  {
+    "answer": "아픕니다",
+    "sentence": "넘어져서 무릎이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "읽습니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "낫습니다",
+    "sentence": "약을 먹고 쉬면 병이 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "달립니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "다칩니다",
+    "sentence": "뛰다가 넘어지면 무릎을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "조심합니다",
+    "sentence": "뜨거운 냄비를 만질 때는 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "비킵니다",
+    "sentence": "길이 좁으면 옆으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "피합니다",
+    "sentence": "위험한 물건은 가까이 가지 않고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "확인합니다",
+    "sentence": "길을 건너기 전에 차가 오는지 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "신고합니다",
+    "sentence": "위험한 일을 보면 어른에게 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "도망칩니다",
+    "sentence": "위험한 곳에서는 빨리 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "구합니다",
+    "sentence": "소방관이 위험한 사람을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "끕니다",
+    "sentence": "소방관이 물로 불을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "막습니다",
+    "sentence": "우산으로 비를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "가립니다",
+    "sentence": "손으로 눈부신 햇빛을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "비춥니다",
+    "sentence": "손전등으로 어두운 길을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "따뜻하게합니다",
+    "sentence": "난로가 차가운 방을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "시원하게합니다",
+    "sentence": "에어컨이 더운 방을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "흘립니다",
+    "sentence": "슬플 때 눈물을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "참습니다",
+    "sentence": "화가 나도 마음을 가라앉히며 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "견딥니다",
+    "sentence": "조금 힘들어도 끝까지 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "이깁니다",
+    "sentence": "경기에서 상대보다 잘하면 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "씻습니다",
+      "닫습니다"
+    ]
+  },
+  {
+    "answer": "집니다",
+    "sentence": "경기에서 상대보다 점수가 낮으면 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "응원합니다",
+    "sentence": "경기하는 친구에게 힘내라고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "연습합니다",
+    "sentence": "잘하고 싶어서 매일 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "성공합니다",
+    "sentence": "열심히 노력하면 마침내 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "실패합니다",
+    "sentence": "준비가 부족하면 sometimes 하지 못하고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "다시합니다",
+    "sentence": "틀렸을 때 포기하지 않고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "끝냅니다",
+    "sentence": "숙제를 모두 마치면 일을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "시작합니다",
+    "sentence": "종이 울리면 수업을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "마칩니다",
+    "sentence": "수업 시간이 끝나면 공부를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "쉬어갑니다",
+    "sentence": "오래 걸으면 잠깐 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "달립니다",
+      "던집니다",
+      "씁니다"
+    ]
+  },
+  {
+    "answer": "출발합니다",
+    "sentence": "여행을 가려고 집에서 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "도착합니다",
+    "sentence": "버스를 타고 학교에 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "살펴봅니다",
+    "sentence": "새 물건이 어떤지 자세히 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "비교합니다",
+    "sentence": "두 물건의 크기를 서로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "고민합니다",
+    "sentence": "무엇을 고를지 한참 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "선택합니다",
+    "sentence": "여러 가지 중 하나를 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "바꿉니다",
+    "sentence": "작은 옷을 큰 옷으로 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "나눠줍니다",
+    "sentence": "친구들에게 간식을 하나씩 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "모읍니다",
+    "sentence": "저금통에 동전을 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "세어봅니다",
+    "sentence": "동전이 몇 개인지 하나씩 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  },
+  {
+    "answer": "재활용합니다",
+    "sentence": "다 쓴 종이를 버리지 않고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "읽습니다",
+      "입습니다"
+    ]
+  },
+  {
+    "answer": "아낍니다",
+    "sentence": "물을 낭비하지 않고 ___.",
+    "wrongs": [
+      "먹습니다",
+      "마십니다",
+      "잡니다",
+      "달립니다",
+      "씻습니다"
+    ]
+  }
+];
+
+let materials = [];
+let currentIndex = 0;
+let answers = [];
+let choiceLocked = false;
+let retryCount = 0;
+
+function unique(array) { return [...new Set(array)]; }
+function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+
+function renderSubject() {
+  const box = document.getElementById("subjectBox");
+  if (!selectedSubject) {
+    box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+    return;
+  }
+  box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`;
+}
+
+function getSettings() {
+  return {
+    count: Number(document.getElementById("count").value) || 10,
+    choiceCount: Number(document.getElementById("choiceCount").value) === 4 ? 4 : 2,
+    orderMode: document.getElementById("orderMode").value
+  };
+}
+
+function makeChoices(item, settings) {
+  const needWrong = settings.choiceCount - 1;
+  let wrongs = Array.isArray(item.wrongs) ? item.wrongs.filter(answer => answer !== item.answer) : [];
+  wrongs = shuffle(unique(wrongs)).slice(0, needWrong);
+  if (wrongs.length < needWrong) {
+    const pool = unique(SENTENCE_DB.map(x => x.answer).filter(answer => answer !== item.answer && !wrongs.includes(answer)));
+    wrongs.push(...shuffle(pool).slice(0, needWrong - wrongs.length));
+  }
+  return shuffle([item.answer, ...wrongs.slice(0, needWrong)]);
+}
+
+function buildMaterials() {
+  const settings = getSettings();
+  const source = settings.orderMode === "random" ? shuffle(SENTENCE_DB) : [...SENTENCE_DB];
+  return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
+    ...item,
+    choices: makeChoices(item, settings),
+    question: "빈칸에 알맞은 동사를 고르세요."
+  }));
+}
+
+function sentenceToHtml(sentence) {
+  return sentence.replace("___", `<span class="blank">&nbsp;</span>`);
+}
+
+function safeText(value) {
+  return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function generateMaterials() {
+  materials = buildMaterials();
+  renderPreview();
+}
+
+function renderPreview() {
+  const settings = getSettings();
+  const previewTitle = document.getElementById("previewTitle");
+  const previewList = document.getElementById("previewList");
+  previewTitle.textContent = `동사 · ${settings.choiceCount}개 보기 · 문장 완성 ${materials.length}개`;
+  if (materials.length === 0) {
+    previewList.innerHTML = `<div class="item-card">문항이 없습니다.</div>`;
+    return;
+  }
+  previewList.innerHTML = materials.map((item, index) =>
+    `<div class="item-card"><strong>${index + 1}.</strong>${safeText(item.sentence.replace("___", "_____"))}</div>`
+  ).join("");
+}
+
+function renderStats() {
+  document.getElementById("statsBox").innerHTML =
+    `<div class="stats-mini"><div><span>동사 문항</span><b>${SENTENCE_DB.length}</b></div><div><span>보기</span><b>2개/4개</b></div><div><span>재시도</span><b>1회</b></div></div>`;
+}
+
+function startTraining() {
+  if (!selectedSubject) {
+    alert("대상자를 먼저 등록하거나 선택해주세요.");
+    location.href = "main.html";
+    return;
+  }
+  if (materials.length === 0) generateMaterials();
+  if (materials.length === 0) return;
+  currentIndex = 0;
+  answers = [];
+  choiceLocked = false;
+  retryCount = 0;
+  document.getElementById("setupView").classList.add("hidden");
+  document.getElementById("previewView").classList.add("hidden");
+  document.getElementById("statsView").classList.add("hidden");
+  document.getElementById("trainingView").classList.remove("hidden");
+  document.getElementById("finishView").classList.add("hidden");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const item = materials[currentIndex];
+  choiceLocked = false;
+  retryCount = 0;
+  document.getElementById("itemMemo").value = "";
+  document.getElementById("trainingTitle").textContent = `${currentIndex + 1}번 문항 / ${materials.length}개`;
+  document.getElementById("question").textContent = item.question;
+  document.getElementById("sentence").innerHTML = sentenceToHtml(item.sentence);
+  document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
+
+  const feedbackBox = document.getElementById("feedbackBox");
+  feedbackBox.style.display = "none";
+  feedbackBox.textContent = "";
+
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("answerOptions").innerHTML = item.choices.map(choice => {
+    const safe = safeText(choice);
+    return `<button class="answer-btn" data-choice="${safe}" onclick="chooseAnswer(this, this.dataset.choice)">${safe}</button>`;
+  }).join("");
+}
+
+function showFeedback(message, isCorrectStyle) {
+  const feedbackBox = document.getElementById("feedbackBox");
+  feedbackBox.style.display = "block";
+  feedbackBox.textContent = message;
+  feedbackBox.style.background = isCorrectStyle ? "#e8fff4" : "#fff1f1";
+  feedbackBox.style.color = isCorrectStyle ? "#16a06f" : "#e54848";
+  feedbackBox.style.border = isCorrectStyle ? "1px solid #a7f3d0" : "1px solid #fecaca";
+}
+
+function markChoices(selectedButton, selected) {
+  const item = materials[currentIndex];
+  document.querySelectorAll(".answer-btn").forEach(btn => {
+    if (btn.textContent === item.answer) btn.classList.add("correct-choice");
+    if (btn === selectedButton && selected !== item.answer) btn.classList.add("wrong-choice");
+  });
+}
+
+function chooseAnswer(button, selected) {
+  if (choiceLocked) return;
+
+  const item = materials[currentIndex];
+  const isCorrect = selected === item.answer;
+
+  if (isCorrect) {
+    choiceLocked = true;
+    markChoices(button, selected);
+    const countedCorrect = retryCount === 0;
+
+    if (countedCorrect) showFeedback("정답입니다.", true);
+    else showFeedback("정답입니다.", false);
+
+    setTimeout(() => recordAnswer(countedCorrect ? "correct" : "wrong", selected, retryCount), 1200);
+    return;
+  }
+
+  retryCount += 1;
+
+  if (retryCount === 1) {
+    button.classList.add("wrong-choice");
+    showFeedback("다시 풀어보세요.", false);
+    setTimeout(() => button.classList.remove("wrong-choice"), 800);
+    return;
+  }
+
+  choiceLocked = true;
+  markChoices(button, selected);
+  showFeedback("정답을 확인한 뒤 다음 문제를 눌러주세요.", false);
+  document.getElementById("nextBtn").style.display = "inline-block";
+}
+
+function nextQuestionManual() {
+  if (!choiceLocked) return;
+  recordAnswer("wrong", "오답", retryCount);
+}
+
+function recordAnswer(result, selected, retry) {
+  const item = materials[currentIndex];
+  answers.push({
+    index: currentIndex + 1,
+    sentence: item.sentence,
+    answer: item.answer,
+    selected: selected || "",
+    type: "문장완성하기(동사)",
+    result,
+    retry: retry || 0,
+    memo: document.getElementById("itemMemo").value || ""
+  });
+  currentIndex++;
+  if (currentIndex >= materials.length) finishTraining();
+  else renderQuestion();
+}
+
+function finishTraining() {
+  document.getElementById("trainingView").classList.add("hidden");
+  document.getElementById("finishView").classList.remove("hidden");
+  document.getElementById("progressBar").style.width = "100%";
+  const total = answers.length;
+  const correct = answers.filter(answer => answer.result === "correct").length;
+  const wrong = total - correct;
+  const rate = total ? Math.round((correct / total) * 100) : 0;
+
+document.getElementById("finishText").textContent = `${selectedSubject ? selectedSubject.name + " 대상자" : "대상자"}의 문장완성하기(동사) 훈련이 완료되었습니다.`;
+document.getElementById("summaryGrid").innerHTML = `
+  <div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div>
+  <div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정답</span></div>
+  <div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>오답</span></div>
+  <div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+
+const history = Store.load("speech_training_history", []);
+history.unshift({
+  id: Date.now(),
+  type: "문장완성하기(동사)",
+  subjectId: selectedSubjectId,
+  subjectName: selectedSubject ? selectedSubject.name : "",
+  date: new Date().toISOString(),
+  total,
+  correct,
+  wrong,
+  rate,
+  answers
+});
+  Store.save("speech_training_history", history.slice(0, 200));
+}
+
+renderSubject();
+renderStats();
+generateMaterials();
+</script>
+</body>
+</html>

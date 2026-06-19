@@ -1,0 +1,429 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>범주화 단어 훈련</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Pretendard","Noto Sans KR",Arial,sans-serif; background:#f4f6fa; color:#162033; }
+    .app { max-width:1120px; margin:0 auto; padding:24px 22px 48px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; gap:12px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:900; }
+    .logo { width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#315cff,#37c4ff); color:white; display:grid; place-items:center; font-weight:900; }
+    button { border:none; border-radius:14px; padding:12px 17px; font-size:15px; font-weight:900; cursor:pointer; }
+    .primary { background:#246bfe; color:white; } .secondary { background:#eef3ff; color:#246bfe; } .gray { background:#edf1f6; color:#5d687b; }
+    .blue { background:#246bfe; color:white; } .red { background:#e54848; color:white; }
+    .panel { background:white; border:1px solid #e2e8f0; border-radius:24px; padding:22px; box-shadow:0 8px 24px rgba(15,30,60,.06); margin-bottom:20px; }
+    .panel h2 { margin:0 0 16px; font-size:22px; }
+    .setup-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    label { display:block; font-size:13px; font-weight:900; color:#475569; margin-bottom:7px; }
+    select, textarea { width:100%; border:1px solid #dce3ef; border-radius:13px; padding:12px 13px; font-size:14px; outline:none; background:white; }
+    textarea { min-height:74px; resize:vertical; }
+    .subject-box, .help-box { background:#f8faff; border:1px solid #e2e8f0; border-radius:18px; padding:16px; margin-bottom:16px; color:#475569; line-height:1.6; }
+    .help-box { margin-top:16px; font-size:14px; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .word-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .item-card { background:#f8faff; border:1px solid #e2e8f0; border-radius:15px; padding:14px; font-size:18px; line-height:1.5; }
+    .item-card strong { color:#246bfe; margin-right:5px; }
+    .tag { display:inline-block; margin-left:6px; padding:3px 8px; border-radius:999px; background:#eef3ff; color:#246bfe; font-size:12px; font-weight:900; }
+    .hidden { display:none !important; }
+    .progress-line { height:10px; background:#edf1f7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+    .progress-bar { height:100%; width:0%; background:#246bfe; }
+    .question { color:#246bfe; font-size:26px; line-height:1.5; font-weight:900; text-align:center; margin-bottom:16px; }
+    .training-box { background:#f8faff; border-radius:24px; padding:42px 24px; text-align:center; margin-bottom:18px; min-height:310px; display:grid; place-items:center; }
+    .training-title { font-size:22px; font-weight:900; color:#246bfe; margin-bottom:22px; }
+    .stimulus { font-size:76px; font-weight:900; margin-bottom:18px; word-break:keep-all; letter-spacing:-1px; }
+    .answer-chip { display:none; }
+.category-options {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-bottom:12px;
+}
+.category-btn {
+    background:#eef3ff;
+    color:#246bfe;
+    border:1px solid #dbe7ff;
+    border-radius:16px;
+    width:100%;
+    min-width:0;
+    min-height:68px;
+    padding:15px 12px;
+    font-size:22px;
+    font-weight:900;
+}
+    .category-btn:hover { background:#dfeaff; }
+    .category-btn.correct-choice { background:#16a06f; color:white; border-color:#16a06f; }
+    .category-btn.wrong-choice { background:#e54848; color:white; border-color:#e54848; }
+    .response-buttons { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .result-panel { background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); border-radius:24px; padding:16px; border:1px solid #edf2f7; box-shadow:0 10px 28px rgba(15,30,60,.05); }
+    .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+    .summary-card { background:white; border:1px solid #edf2f7; border-radius:20px; padding:22px 16px; text-align:center; box-shadow:0 8px 22px rgba(15,30,60,.06); }
+    .summary-icon { width:40px; height:40px; border-radius:14px; display:grid; place-items:center; margin:0 auto 10px; color:white; font-size:22px; font-weight:900; }
+    .summary-card strong { display:block; font-size:30px; line-height:1; margin-bottom:8px; font-weight:900; }
+    .summary-card span { color:#334155; font-size:15px; font-weight:800; }
+    .summary-card.total strong,.summary-card.rate strong { color:#246bfe; }
+    .summary-card.correct strong { color:#16a06f; }
+    .summary-card.wrong strong { color:#e54848; }
+    .summary-icon.total,.summary-icon.rate { background:#246bfe; }
+    .summary-icon.correct { background:#16a06f; }
+    .summary-icon.wrong { background:#e54848; }
+@media (max-width:900px){
+    .setup-grid{grid-template-columns:1fr;}
+    .word-grid{grid-template-columns:repeat(2,1fr);}
+    .topbar{align-items:flex-start; flex-direction:column;}
+}
+@media (max-width:560px){
+    .word-grid{grid-template-columns:1fr;}
+    .category-btn {
+    background:#eef3ff;
+    color:#246bfe;
+    border:1px solid #dbe7ff;
+    border-radius:16px;
+    width:100%;
+    min-width:0;
+    min-height:68px;
+    padding:15px 12px;
+    font-size:22px;
+    font-weight:900;
+}
+    .stimulus{font-size:56px;}
+    .question{font-size:22px;}
+}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><div class="logo">범</div><span>범주화 단어 훈련</span></div>
+      <button class="gray" onclick="location.href='main.html'">메인으로</button>
+    </header>
+
+    <section class="panel">
+      <h2>대상자</h2>
+      <div id="subjectBox" class="subject-box"></div>
+    </section>
+
+    <section id="setupView" class="panel">
+      <h2>훈련 설정</h2>
+      <div class="setup-grid">
+        <div>
+          <label for="categoryValue">범주</label>
+          <select id="categoryValue" onchange="generateMaterials()">
+            <option value="all" selected>전체</option>
+          </select>
+        </div>
+        <div>
+          <label for="count">개수</label>
+          <select id="count" onchange="generateMaterials()">
+            <option value="10" selected>10개</option>
+            <option value="20">20개</option>
+            <option value="30">30개</option>
+            <option value="40">40개</option>
+            <option value="50">50개</option>
+          </select>
+        </div>
+        <div>
+          <label for="choiceCount">범주 보기</label>
+          <select id="choiceCount" onchange="generateMaterials()">
+            <option value="2" selected>2개 보기</option>
+            <option value="4">4개 보기</option>
+          </select>
+        </div>
+        <div>
+          <label for="orderMode">제시 방식</label>
+          <select id="orderMode" onchange="generateMaterials()">
+            <option value="random" selected>무작위</option>
+            <option value="order">순서대로</option>
+          </select>
+        </div>
+      </div>
+      <div class="help-box">
+제시된 단어가 어떤 범주에 속하는지 구분하는 훈련입니다. 과일, 동물, 음식, 탈것 등 다양한 생활 어휘를 활용하여 의미 이해와 어휘 분류 능력 향상을 돕습니다.
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="generateMaterials()">자료 생성</button>
+        <button class="secondary" onclick="startTraining()">훈련 시작</button>
+      </div>
+    </section>
+
+    <section id="previewView" class="panel">
+      <h2 id="previewTitle">생성 자료</h2>
+      <div id="previewList" class="word-grid"></div>
+    </section>
+
+    <section id="trainingView" class="panel hidden">
+      <div id="question" class="question">이 단어는 어느 범주에 속하나요?</div>
+      <div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+      <div class="training-box"><div>
+        <div id="trainingTitle" class="training-title">1번 문항</div>
+        <div id="stimulus" class="stimulus">사과</div>
+      </div></div>
+      <div id="categoryOptions" class="category-options"></div>
+      <div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div>
+      <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
+      <div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+    </section>
+
+    <section id="finishView" class="panel hidden">
+      <h2>훈련 결과</h2>
+      <p id="finishText"></p>
+      <div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div>
+      <div class="actions">
+        <button class="primary" onclick="location.href='main.html'">메인으로</button>
+        <button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const Store = {
+      load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } },
+      save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+    };
+
+    const subjects = Store.load("speech_subjects", []);
+    const selectedSubjectId = Store.load("speech_selected_subject", null);
+    const selectedSubject = subjects.find(subject => subject.id === selectedSubjectId) || null;
+
+    const CATEGORY_DB = {
+      "과일": ["사과","배","감","귤","포도","딸기","수박","참외","복숭아","자두","바나나","오렌지","레몬","키위","망고","멜론","체리","토마토","파인애플","블루베리","석류","무화과","살구","매실","홍시","곶감","한라봉","자몽","유자","앵두","포멜로","아보카도","청포도","건포도","코코넛","라임","두리안","리치","용과","모과","대추","밤","호두","은행","땅콩","잣","아몬드","캐슈넛","피스타치오","마카다미아"],
+      "채소": ["배추","무","당근","양파","오이","호박","고추","상추","깻잎","시금치","콩나물","숙주","마늘","파","부추","가지","버섯","감자","고구마","옥수수","브로콜리","양배추","양상추","토란","연근","우엉","도라지","더덕","미나리","쑥갓","청경채","피망","파프리카","샐러리","아스파라거스","케일","비트","완두콩","강낭콩","검은콩","녹두","갓","열무","고사리","취나물","냉이","달래","근대","아욱","고수"],
+      "음식": ["밥","국","빵","라면","김치","만두","떡","국수","죽","고기","생선","계란","두부","불고기","비빔밥","김밥","냉면","칼국수","수제비","찌개","전골","삼계탕","설렁탕","갈비탕","감자탕","된장국","미역국","콩나물국","떡국","떡볶이","순대","튀김","잡채","피자","치킨","햄버거","샌드위치","스파게티","카레","짜장면","짬뽕","탕수육","초밥","우동","오므라이스","샐러드","요구르트","우유","주스","커피"],
+      "동물": ["강아지","고양이","토끼","호랑이","사자","코끼리","기린","원숭이","말","소","돼지","양","염소","닭","오리","거위","새","참새","비둘기","까치","독수리","펭귄","고래","상어","돌고래","물개","거북이","개구리","뱀","악어","도마뱀","개미","벌","나비","잠자리","메뚜기","사슴","곰","여우","늑대","하마","코뿔소","캥거루","팬더","다람쥐","쥐","고슴도치","문어","오징어","새우"],
+      "탈것": ["자동차","버스","택시","기차","비행기","자전거","오토바이","지하철","배","트럭","구급차","소방차","경찰차","승용차","화물차","유모차","휠체어","보행기","스쿠터","전동차","마차","요트","잠수함","헬리콥터","열차","고속버스","시외버스","마을버스","관광버스","셔틀버스","렌터카","캠핑카","지프차","트랙터","지게차","굴착기","불도저","크레인","카트","썰매","케이블카","리프트","곤돌라","킥보드","전동킥보드","카약","카누","고무보트","유람선","화물선"],
+      "의복": ["바지","치마","양말","모자","장갑","셔츠","외투","코트","점퍼","잠바","티셔츠","내복","속옷","팬티","브래지어","조끼","가디건","스웨터","원피스","정장","한복","교복","운동복","잠옷","우비","목도리","스카프","넥타이","벨트","운동화","구두","슬리퍼","샌들","장화","부츠","앞치마","마스크","귀마개","토시","레깅스","청바지","반바지","카디건","패딩","후드티","블라우스","양복","수영복","등산복","작업복"],
+      "장소": ["학교","병원","약국","마트","공원","은행","식당","카페","시장","우체국","도서관","놀이터","교회","성당","절","집","방","거실","주방","화장실","욕실","현관","복도","계단","정류장","주차장","지하철역","기차역","공항","항구","경찰서","소방서","주민센터","미용실","이발소","목욕탕","찜질방","영화관","백화점","편의점","빵집","세탁소","정비소","동물원","박물관","미술관","체육관","운동장","수영장","한의원"],
+      "가전제품": ["냉장고","세탁기","청소기","선풍기","에어컨","텔레비전","전자레인지","밥솥","가습기","공기청정기","정수기","다리미","드라이어","믹서기","토스터","전기포트","오븐","식기세척기","건조기","비데","전기장판","히터","보일러","라디오","스피커","컴퓨터","노트북","프린터","복사기","전화기","휴대폰","충전기","리모컨","전등","스탠드","전기면도기","체온계","혈압계","안마기","카메라","캠코더","공유기","키보드","마우스","모니터","태블릿","이어폰","헤드폰","게임기","제습기"],
+      "신체부위": ["머리","얼굴","눈","코","입","귀","목","어깨","가슴","배","등","허리","엉덩이","팔","손","손가락","손목","팔꿈치","다리","무릎","발","발목","발가락","이마","눈썹","속눈썹","눈꺼풀","볼","턱","입술","혀","치아","잇몸","목구멍","피부","뼈","근육","관절","심장","폐","위","간","장","혈관","혈액","두피","손등","손바닥","발등","발바닥"],
+      "직업": ["의사","간호사","약사","치료사","교사","경찰관","소방관","군인","요리사","운전기사","버스기사","택시기사","미용사","이발사","가수","배우","화가","작가","기자","아나운서","농부","어부","목수","전기기사","정비사","배달원","판매원","은행원","공무원","회사원","변호사","판사","검사","경비원","관리인","청소원","우체부","운동선수","감독","코치","사진사","제빵사","간병인","영양사","상담사","목사","신부","스님","학생","원장"],
+      "학용품": ["연필","지우개","공책","책","가위","풀","색연필","크레용","사인펜","볼펜","샤프","자","필통","책가방","칠판","분필","화이트보드","보드마카","종이","색종이","도화지","스케치북","물감","붓","팔레트","테이프","클립","스테이플러","파일","바인더","책갈피","책상","의자","컴퍼스","각도기","계산기","교과서","문제집","일기장","알림장","노트","메모지","포스트잇","풀테이프","커터칼","연필깎이","필기구","명찰","상장","교실"],
+      "생활용품": ["수건","비누","칫솔","치약","휴지","물티슈","샴푸","로션","빗","거울","면도기","손톱깎이","가방","지갑","열쇠","우산","시계","달력","안경","마스크","컵","접시","그릇","숟가락","젓가락","포크","냄비","프라이팬","도마","칼","가위","휴지통","쓰레기봉투","세제","빨래집게","옷걸이","베개","이불","담요","방석","의자","책상","서랍","옷장","신발장","리모컨","충전기","약통","물병","도장"]
+    };
+
+    let materials = [];
+    let currentIndex = 0;
+    let answers = [];
+    let choiceLocked = false;
+    let retryCount = 0;
+
+    function unique(array) { return [...new Set(array)]; }
+    function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+
+    function renderSubject() {
+      const box = document.getElementById("subjectBox");
+      if (!selectedSubject) {
+        box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+        return;
+      }
+      box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`;
+    }
+
+    function renderCategoryOptions() {
+      const select = document.getElementById("categoryValue");
+      const options = Object.keys(CATEGORY_DB).map(category => `<option value="${category}">${category}</option>`).join("");
+      select.innerHTML = `<option value="all" selected>전체</option>${options}`;
+    }
+
+    function getSettings() {
+      return {
+        categoryValue: document.getElementById("categoryValue").value,
+        count: Number(document.getElementById("count").value) || 10,
+        choiceCount: Number(document.getElementById("choiceCount").value) || 2,
+        orderMode: document.getElementById("orderMode").value
+      };
+    }
+
+    function getWordsBySetting(settings) {
+      if (settings.categoryValue === "all") {
+        return Object.entries(CATEGORY_DB).flatMap(([category, words]) => unique(words).map(word => ({ word, category })));
+      }
+      return unique(CATEGORY_DB[settings.categoryValue] || []).map(word => ({ word, category: settings.categoryValue }));
+    }
+
+    function makeCategoryChoices(correctCategory, choiceCount) {
+      const categories = Object.keys(CATEGORY_DB);
+      const wrongChoices = shuffle(categories.filter(category => category !== correctCategory)).slice(0, Math.max(1, choiceCount - 1));
+      return shuffle([correctCategory, ...wrongChoices]);
+    }
+
+    function buildMaterials() {
+      const settings = getSettings();
+      const list = getWordsBySetting(settings);
+      const source = settings.orderMode === "random" ? shuffle(list) : list;
+      return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
+        stimulus: item.word,
+        category: item.category,
+        choices: makeCategoryChoices(item.category, settings.choiceCount),
+        question: "이 단어는 어느 범주에 속하나요?",
+        answer: item.category
+      }));
+    }
+
+    function generateMaterials() { materials = buildMaterials(); renderPreview(); }
+
+    function renderPreview() {
+      const settings = getSettings();
+      const previewTitle = document.getElementById("previewTitle");
+      const previewList = document.getElementById("previewList");
+      const label = settings.categoryValue === "all" ? "전체 범주" : settings.categoryValue;
+      previewTitle.textContent = `${label} · ${materials.length}개`;
+      if (materials.length === 0) { previewList.innerHTML = `<div class="item-card">해당 조건의 단어가 없습니다.</div>`; return; }
+      previewList.innerHTML = materials.map((item, index) => `<div class="item-card"><strong>${index + 1}.</strong>${item.stimulus}<span class="tag">${item.category}</span></div>`).join("");
+    }
+
+    function startTraining() {
+      if (!selectedSubject) { alert("대상자를 먼저 등록하거나 선택해주세요."); location.href = "main.html"; return; }
+      if (materials.length === 0) generateMaterials();
+      if (materials.length === 0) return;
+      currentIndex = 0; answers = []; retryCount = 0;
+      document.getElementById("setupView").classList.add("hidden");
+      document.getElementById("previewView").classList.add("hidden");
+      document.getElementById("trainingView").classList.remove("hidden");
+      document.getElementById("finishView").classList.add("hidden");
+      renderTrainingItem();
+    }
+
+    function renderTrainingItem() {
+      const item = materials[currentIndex];
+      document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
+      document.getElementById("trainingTitle").textContent = `${currentIndex + 1} / ${materials.length}`;
+      document.getElementById("stimulus").textContent = item.stimulus;
+      document.getElementById("question").textContent = item.question;
+      document.getElementById("itemMemo").value = "";
+      choiceLocked = false;
+      retryCount = 0;
+
+      const feedbackBox = document.getElementById("feedbackBox");
+      if (feedbackBox) {
+        feedbackBox.style.display = "none";
+        feedbackBox.textContent = "";
+      }
+      const nextBtn = document.getElementById("nextBtn");
+      if (nextBtn) nextBtn.style.display = "none";
+
+      renderCategoryChoices();
+    }
+
+    function renderCategoryChoices() {
+      const item = materials[currentIndex];
+      const box = document.getElementById("categoryOptions");
+      box.innerHTML = item.choices.map(category =>
+        `<button class="category-btn" onclick="selectCategory('${category}')">${category}</button>`
+      ).join("");
+    }
+
+
+    function showFeedback(message, isCorrectStyle) {
+      const feedbackBox = document.getElementById("feedbackBox");
+      feedbackBox.style.display = "block";
+      feedbackBox.textContent = message;
+      feedbackBox.style.background = isCorrectStyle ? "#e8fff4" : "#fff1f1";
+      feedbackBox.style.color = isCorrectStyle ? "#16a06f" : "#e54848";
+      feedbackBox.style.border = isCorrectStyle ? "1px solid #a7f3d0" : "1px solid #fecaca";
+    }
+
+    function markCategoryChoices(selectedCategory) {
+      const item = materials[currentIndex];
+      const buttons = document.querySelectorAll(".category-btn");
+      buttons.forEach(button => {
+        if (button.textContent === item.category) button.classList.add("correct-choice");
+        if (button.textContent === selectedCategory && selectedCategory !== item.category) button.classList.add("wrong-choice");
+      });
+    }
+
+    function setCategoryButtonsDisabled(disabled) {
+      document.querySelectorAll(".category-btn").forEach(button => {
+        button.disabled = disabled;
+      });
+    }
+
+    function selectCategory(selectedCategory) {
+      if (choiceLocked) return;
+
+      const item = materials[currentIndex];
+      const isCorrect = selectedCategory === item.category;
+
+      if (isCorrect) {
+        choiceLocked = true;
+        setCategoryButtonsDisabled(true);
+        markCategoryChoices(selectedCategory);
+
+        const countedCorrect = retryCount === 0;
+        showFeedback("정답입니다.", true);
+
+        setTimeout(() => recordAnswer(countedCorrect ? "correct" : "wrong", selectedCategory, retryCount), 1200);
+        return;
+      }
+
+      retryCount += 1;
+
+      if (retryCount === 1) {
+        const buttons = document.querySelectorAll(".category-btn");
+        buttons.forEach(button => {
+          if (button.textContent === selectedCategory) button.classList.add("wrong-choice");
+        });
+        showFeedback("다시 풀어보세요.", false);
+
+        setTimeout(() => {
+          buttons.forEach(button => button.classList.remove("wrong-choice"));
+        }, 800);
+        return;
+      }
+
+      choiceLocked = true;
+      setCategoryButtonsDisabled(true);
+      markCategoryChoices(selectedCategory);
+      showFeedback("정답을 확인한 뒤 다음 문제를 눌러주세요.", false);
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function nextQuestionManual() {
+      if (!choiceLocked) return;
+      recordAnswer("wrong", "오답", retryCount);
+    }
+
+    function recordAnswer(type, selectedCategory, retry) {
+      const item = materials[currentIndex];
+      const memo = document.getElementById("itemMemo").value.trim();
+      answers.push({ stimulus:item.stimulus, category:item.category, selectedCategory, answer:item.answer, response:type, retry: retry || 0, memo, recordedAt:new Date().toISOString() });
+      currentIndex += 1;
+      if (currentIndex >= materials.length) finishTraining(); else renderTrainingItem();
+    }
+
+    function finishTraining() {
+      const settings = getSettings();
+      const total = answers.length;
+      const correct = answers.filter(item => item.response === "correct").length;
+      const wrong = answers.filter(item => item.response === "wrong").length;
+      const accuracy = total ? Math.round((correct / total) * 100) : 0;
+      const label = settings.categoryValue === "all" ? "전체 범주" : settings.categoryValue;
+      const result = {
+        id:`CG${Date.now()}`,
+        subjectId:selectedSubject.id,
+        subjectName:selectedSubject.name,
+        subjectNumber:selectedSubject.number,
+        program:"범주화 단어 훈련",
+        targetType:"category",
+        targetTypeName:"범주화",
+        targetValue:settings.categoryValue,
+        level:"word",
+        total, correct, wrong, accuracy, answers,
+        createdAt:new Date().toISOString(),
+        displayDate:new Date().toLocaleString()
+      };
+      const results = Store.load("speech_articulation_results", []);
+      results.unshift(result); Store.save("speech_articulation_results", results);
+      document.getElementById("trainingView").classList.add("hidden");
+      document.getElementById("finishView").classList.remove("hidden");
+      document.getElementById("finishText").textContent = `${selectedSubject.name} 대상자의 ${label} 범주화 단어 훈련 결과입니다.`;
+      document.getElementById("summaryGrid").innerHTML = `<div class="summary-card total"><div class="summary-icon total">▣</div><span>전체 문항</span><strong>${total}</strong></div><div class="summary-card correct"><div class="summary-icon correct">✓</div><span>정답</span><strong>${correct}</strong></div><div class="summary-card wrong"><div class="summary-icon wrong">×</div><span>오답</span><strong>${wrong}</strong></div><div class="summary-card rate"><div class="summary-icon rate">%</div><span>정답률</span><strong>${accuracy}%</strong></div>`;
+    }
+
+    renderSubject();
+    renderCategoryOptions();
+    generateMaterials();
+  </script>
+</body>
+</html>

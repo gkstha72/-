@@ -67,7 +67,7 @@ textarea{min-height:74px;resize:vertical}
 </head>
 <body>
 <main class="app">
-<header class="topbar"><div class="brand"><div class="logo">배</div><span>단어 듣고 음절 배열하기</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+<header class="topbar"><div class="brand"><div class="logo">배</div><span>단어 듣고 음절 배열하기</span></div><button class="gray" onclick="location.href='index.html'">메인으로</button></header>
 
 <section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
 
@@ -114,7 +114,7 @@ textarea{min-height:74px;resize:vertical}
 
 <section id="finishView" class="panel hidden">
 <h2>훈련 결과</h2><p id="finishText"></p><div class="summary-grid" id="summaryGrid"></div>
-<div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+<div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
 </section>
 </main>
 
@@ -135,7 +135,7 @@ function syllables(word){return [...word].filter(ch=>ch>="가"&&ch<="힣")}
 
 function renderSubject(){
   const box=document.getElementById("subjectBox");
-  if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;return}
+  if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`;return}
   box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`;
 }
 

@@ -38,7 +38,7 @@ textarea{min-height:74px;resize:vertical}
 </head>
 <body>
 <main class="app">
-<header class="topbar"><div class="brand"><div class="logo">순</div><span>문장 순서 배열 훈련</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+<header class="topbar"><div class="brand"><div class="logo">순</div><span>문장 순서 배열 훈련</span></div><button class="gray" onclick="location.href='index.html'">메인으로</button></header>
 <section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
 <section id="setupView" class="panel">
 <h2>훈련 설정</h2>
@@ -72,7 +72,7 @@ textarea{min-height:74px;resize:vertical}
 </section>
 <section id="finishView" class="panel hidden">
 <h2>훈련 결과</h2><p id="finishText"></p><div class="summary-grid" id="summaryGrid"></div>
-<div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+<div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
 </section>
 </main>
 <script>
@@ -85,7 +85,7 @@ const SEQUENCE_ITEMS=[{"title": "컵이 깨졌어요", "length": 3, "sentences":
 let materials=[],currentIndex=0,answers=[],choiceLocked=false,retryCount=0,currentOrder=[],dragIndex=null;
 function shuffle(array){const copy=[...array];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
 function escapeHtml(str){return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function renderSubject(){const box=document.getElementById("subjectBox");if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;return}box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`}
+function renderSubject(){const box=document.getElementById("subjectBox");if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`;return}box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`}
 function filteredDB(){const len=document.getElementById("sentenceLength").value;if(len==="all")return SEQUENCE_ITEMS;return SEQUENCE_ITEMS.filter(item=>item.length===Number(len))}
 function generateMaterials(){const countValue=document.getElementById("count").value;const orderMode=document.getElementById("orderMode").value;let source=filteredDB();source=orderMode==="random"?shuffle(source):[...source];const limit=countValue==="all"?source.length:Number(countValue);materials=source.slice(0,Math.min(limit,source.length)).map((item,idx)=>({...item,no:idx+1,memo:""}));currentIndex=0;answers=[];renderPreview()}
 function renderPreview(){document.getElementById("previewTitle").textContent=`생성 자료 ${materials.length}개`;const list=document.getElementById("previewList");if(!materials.length){list.innerHTML=`<div class="item-card">조건에 맞는 자료가 없습니다.</div>`;return}list.innerHTML=materials.map((item,idx)=>`<div class="item-card"><strong>${idx+1}.</strong>${escapeHtml(item.title)}<br><span class="tag">${item.length}문장</span></div>`).join("")}

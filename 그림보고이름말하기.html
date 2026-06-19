@@ -37,7 +37,7 @@ textarea{min-height:74px;resize:vertical}
 @media(max-width:560px){.preview-grid,.answer-options,.summary-grid,.ox-box,.oral-box{grid-template-columns:1fr}.question{font-size:21px}}
 </style></head>
 <body><main class="app">
-<header class="topbar"><div class="brand"><div class="logo">말</div><span>그림 보고 이름 말하기</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+<header class="topbar"><div class="brand"><div class="logo">말</div><span>그림 보고 이름 말하기</span></div><button class="gray" onclick="location.href='index.html'">메인으로</button></header>
 <section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
 <section id="setupView" class="panel"><h2>훈련 설정</h2>
 <div id="loadStatus" class="subject-box">이미지를 불러오는 중입니다.</div>
@@ -61,7 +61,7 @@ textarea{min-height:74px;resize:vertical}
 <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextItem()">다음 문제</button></div>
 <div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
 </section>
-<section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
+<section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
 </main><script>const AUTO_ITEMS = {
   "과일": [
     "감","귤","딸기","레몬","망고","멜론","바나나","배","복숭아","블루베리",
@@ -124,7 +124,7 @@ const EXTENSIONS=["png","jpg","jpeg","webp"];
 
 function renderSubject(){
  const box=document.getElementById("subjectBox");
- if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;return;}
+ if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`;return;}
  box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`;
 }
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}

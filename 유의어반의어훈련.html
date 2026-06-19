@@ -67,7 +67,7 @@
 </head>
 <body>
   <main class="app">
-    <header class="topbar"><div class="brand"><div class="logo">뜻</div><span>유의어·반의어 훈련</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+    <header class="topbar"><div class="brand"><div class="logo">뜻</div><span>유의어·반의어 훈련</span></div><button class="gray" onclick="location.href='index.html'">메인으로</button></header>
     <section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
     <section id="setupView" class="panel"><h2>훈련 설정</h2>
       <div class="setup-grid">
@@ -83,7 +83,7 @@
     <section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
     <section id="statsView" class="panel"><h2>유형별 문항 수</h2><div id="statsBox"></div></section>
     <section id="trainingView" class="panel hidden"><div id="question" class="question">제시어와 알맞은 관계의 단어를 고르세요.</div><div class="progress-line"><div id="progressBar" class="progress-bar"></div></div><div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="targetWord" class="target-word"></div><div id="hintLine" class="hint-line"></div><div id="modeLabel" class="mode-label"></div></div></div><div id="answerOptions" class="answer-options"></div><div id="oralBox" class="oral-box hidden"><button id="oralCorrectBtn" class="blue" onclick="recordOralAnswer('correct')">정답</button><button id="oralWrongBtn" class="red" onclick="recordOralAnswer('wrong')">오답</button></div><div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div><div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div><div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div></section>
-    <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
+    <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
   </main>
   <script>
     const Store = { load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }, save(key, value) { localStorage.setItem(key, JSON.stringify(value)); } };
@@ -4907,7 +4907,7 @@
 
     function renderSubject() {
       const box = document.getElementById("subjectBox");
-      if (!selectedSubject) { box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`; return; }
+      if (!selectedSubject) { box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`; return; }
       box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || ""} ${selectedSubject.memo ? " · " + selectedSubject.memo : ""}`;
     }
 

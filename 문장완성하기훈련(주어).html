@@ -63,7 +63,7 @@ textarea { min-height:74px; resize:vertical; }
 </head>
 <body>
 <main class="app">
-<header class="topbar"><div class="brand"><div class="logo">주</div><span>문장완성하기훈련 (주어)</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+<header class="topbar"><div class="brand"><div class="logo">주</div><span>문장완성하기훈련 (주어)</span></div><button class="gray" onclick="location.href='index.html'">메인으로</button></header>
 
 <section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
 
@@ -95,7 +95,7 @@ textarea { min-height:74px; resize:vertical; }
 <h2>훈련 결과</h2>
 <p id="finishText"></p>
 <div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div>
-<div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+<div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
 </section>
 </main>
 
@@ -1305,7 +1305,7 @@ function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1;
 function renderSubject() {
   const box = document.getElementById("subjectBox");
   if (!selectedSubject) {
-    box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+    box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`;
     return;
   }
   box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`;
@@ -1375,7 +1375,7 @@ function renderStats() {
 function startTraining() {
   if (!selectedSubject) {
     alert("대상자를 먼저 등록하거나 선택해주세요.");
-    location.href = "main.html";
+    location.href = "index.html";
     return;
   }
   if (materials.length === 0) generateMaterials();

@@ -56,7 +56,7 @@
 </head>
 <body>
   <main class="app">
-    <header class="topbar"><div class="brand"><div class="logo">단</div><span>단어 뜻 고르기 훈련</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+    <header class="topbar"><div class="brand"><div class="logo">단</div><span>단어 뜻 고르기 훈련</span></div><button class="gray" onclick="location.href='index.html'">메인으로</button></header>
     <section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
     <section id="setupView" class="panel"><h2>훈련 설정</h2>
       <div class="setup-grid">
@@ -72,7 +72,7 @@
     <section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
     <section id="statsView" class="panel"><h2>범주별 문항 수</h2><div id="statsBox"></div></section>
     <section id="trainingView" class="panel hidden"><div id="question" class="question">설명에 맞는 단어를 고르세요.</div><div class="progress-line"><div id="progressBar" class="progress-bar"></div></div><div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="description" class="description"></div></div></div><div id="answerOptions" class="answer-options"></div><div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div><div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div><div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div></section>
-    <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
+    <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
   </main>
   <script>
     const Store = { load(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } }, save(key, value) { localStorage.setItem(key, JSON.stringify(value)); } };
@@ -1735,7 +1735,7 @@
     function unique(array) { return [...new Set(array)]; }
     function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
     function getCategories() { return unique(DESCRIPTION_DB.map(item => item.category)); }
-    function renderSubject() { const box = document.getElementById("subjectBox"); if (!selectedSubject) { box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`; return; } box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`; }
+    function renderSubject() { const box = document.getElementById("subjectBox"); if (!selectedSubject) { box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`; return; } box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || "등록번호 없음"} · ${selectedSubject.gender} · ${selectedSubject.age}세<br />${selectedSubject.diagnosis || "진단명 미입력"} · ${selectedSubject.goal || "목표 미입력"}`; }
     function renderCategoryOptions() { const select = document.getElementById("categoryValue"); select.innerHTML = `<option value="all" selected>전체</option>` + getCategories().map(category => `<option value="${category}">${category}</option>`).join(""); }
     function renderStats() { const box = document.getElementById("statsBox"); const counts = getCategories().map(category => ({ category, total: DESCRIPTION_DB.filter(item => item.category === category).length })); box.innerHTML = `<div class="stats-mini">${counts.map(item => `<div><span>${item.category}</span><b>${item.total}개</b></div>`).join("")}</div>`; }
     function getSettings() {
@@ -1823,7 +1823,7 @@
       if (materials.length === 0) { previewList.innerHTML = `<div class="item-card">해당 조건의 문항이 없습니다.</div>`; return; }
       previewList.innerHTML = materials.map((item, index) => `<div class="item-card"><strong>${index + 1}.</strong>${item.description}<br /><span class="tag">${item.category}</span> 정답: ${item.answer}<br /><small>보기: ${item.choices.join(" / ")}</small></div>`).join("");
     }
-    function startTraining() { if (!selectedSubject) { alert("대상자를 먼저 등록하거나 선택해주세요."); location.href = "main.html"; return; } if (materials.length === 0) generateMaterials(); if (materials.length === 0) return; currentIndex = 0; answers = []; document.getElementById("setupView").classList.add("hidden"); document.getElementById("previewView").classList.add("hidden"); document.getElementById("statsView").classList.add("hidden"); document.getElementById("trainingView").classList.remove("hidden"); document.getElementById("finishView").classList.add("hidden"); renderTrainingItem(); }
+    function startTraining() { if (!selectedSubject) { alert("대상자를 먼저 등록하거나 선택해주세요."); location.href = "index.html"; return; } if (materials.length === 0) generateMaterials(); if (materials.length === 0) return; currentIndex = 0; answers = []; document.getElementById("setupView").classList.add("hidden"); document.getElementById("previewView").classList.add("hidden"); document.getElementById("statsView").classList.add("hidden"); document.getElementById("trainingView").classList.remove("hidden"); document.getElementById("finishView").classList.add("hidden"); renderTrainingItem(); }
     function renderTrainingItem() {
       const item = materials[currentIndex];
       choiceLocked = false;

@@ -64,7 +64,7 @@
   <main class="app">
     <header class="topbar">
       <div class="brand"><div class="logo">조</div><span>조음교대 훈련</span></div>
-      <button class="gray" onclick="location.href='main.html'">메인으로</button>
+      <button class="gray" onclick="location.href='index.html'">메인으로</button>
     </header>
 
     <section class="panel">
@@ -144,7 +144,7 @@
       <p id="finishText"></p>
       <div class="summary-grid" id="summaryGrid"></div>
       <div class="actions">
-        <button class="primary" onclick="location.href='main.html'">메인으로</button>
+        <button class="primary" onclick="location.href='index.html'">메인으로</button>
         <button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button>
       </div>
     </section>
@@ -912,7 +912,7 @@
     function renderSubject() {
       const box = document.getElementById("subjectBox");
       if (!selectedSubject) {
-        box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;
+        box.innerHTML = `선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`;
         return;
       }
       box.innerHTML = `<strong>${selectedSubject.name}</strong><br />${selectedSubject.number || ""} ${selectedSubject.memo ? " · " + selectedSubject.memo : ""}`;

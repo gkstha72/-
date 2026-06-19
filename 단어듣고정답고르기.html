@@ -10,7 +10,7 @@
 </head>
 <body>
 <main class="app">
-<header class="topbar"><div class="brand"><div class="logo">듣</div><span>단어 듣고 정답 고르기</span></div><button class="gray" onclick="location.href='main.html'">메인으로</button></header>
+<header class="topbar"><div class="brand"><div class="logo">듣</div><span>단어 듣고 정답 고르기</span></div><button class="gray" onclick="location.href='index.html'">메인으로</button></header>
 <section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
 <section id="setupView" class="panel"><h2>훈련 설정</h2><div class="setup-grid"><div><label for="categoryValue">범주</label><select id="categoryValue" onchange="generateMaterials();renderStats();"></select></div><div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="50">50개</option><option value="all">전체</option></select></div><div><label for="playLimit">재생 횟수</label><select id="playLimit" onchange="generateMaterials()"><option value="1">1회</option><option value="2" selected>2회</option><option value="0">무제한</option></select></div><div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div><div><label>보기 개수</label><select disabled><option>2개 보기</option></select></div></div><div class="help-box">스피커 버튼을 눌러 단어 음성을 듣고 알맞은 단어를 고르는 훈련입니다.</div><div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div></section>
 <section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
@@ -22,7 +22,7 @@
   <path d="M101 30c15 18 15 42 0 60" fill="none" stroke="#93b4ff" stroke-width="8" stroke-linecap="round"/>
 </svg>
 </button><div id="playInfo" class="play-info">스피커를 눌러 재생하세요.</div><audio id="audioPlayer"></audio></div></div><div id="answerOptions" class="answer-options"></div><div id="feedbackBox" class="feedback"></div><div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div><div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div></section>
-<section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="summary-grid" id="summaryGrid"></div><div class="actions"><button class="primary" onclick="location.href='main.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
+<section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="summary-grid" id="summaryGrid"></div><div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
 </main>
 <script>
 const TRAINING_NAME="단어 듣고 정답 고르기";
@@ -1957,7 +1957,7 @@ const AUDIO_DB=[
 ];
 let materials=[],currentIndex=0,answers=[],choiceLocked=false,retryCount=0,playCount=0;
 function unique(array){return[...new Set(array)]}function shuffle(array){const copy=[...array];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
-function renderSubject(){const box=document.getElementById("subjectBox");if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='main.html'">대상자 등록하기</button>`;return}box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`}
+function renderSubject(){const box=document.getElementById("subjectBox");if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`;return}box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`}
 function renderCategoryOptions(){const cats=unique(AUDIO_DB.map(item=>item.category)).filter(Boolean);const order=["전체","과일","동물","채소","탈것","가전가구","음식","의류","생활용품","기타"];const available=order.filter(cat=>cat==="전체"||cats.includes(cat));document.getElementById("categoryValue").innerHTML=available.map(cat=>`<option value="${cat}">${cat}</option>`).join("")}
 function filteredDB(){const cat=document.getElementById("categoryValue").value;if(cat==="전체")return AUDIO_DB;return AUDIO_DB.filter(item=>item.category===cat)}
 function buildOptions(item){const pool=shuffle(filteredDB().filter(v=>v.word!==item.word).map(v=>v.word));let options=unique([item.word,...pool]).slice(0,2);if(options.length<2){const allPool=shuffle(AUDIO_DB.filter(v=>v.word!==item.word).map(v=>v.word));options=unique([item.word,...allPool]).slice(0,2)}return shuffle(options)}

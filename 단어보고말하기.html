@@ -147,6 +147,7 @@ let micStream=null;
 let mediaRecorder=null;
 let audioChunks=[];
 let recordedAudioUrl=null;
+let recognitionWatchdog=null;
 
 function unique(array){return[...new Set(array)]}
 function shuffle(array){const copy=[...array];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
@@ -276,6 +277,8 @@ function setupSpeechRecognition(){
     setMicState("listening");
     document.getElementById("speechSupportMsg").textContent="듣고 있습니다. 단어를 천천히 말해주세요.";
     startAudioRecording();
+    clearTimeout(recognitionWatchdog);
+    recognitionWatchdog=setTimeout(()=>{ if(isRecognizing) stopSpeechRecognition(); },8000);
   };
 
   recognition.onresult=function(event){
@@ -300,13 +303,16 @@ function setupSpeechRecognition(){
     isRecognizing=false;
     setMicState("idle");
     stopAudioRecording();
-    document.getElementById("speechSupportMsg").textContent="음성인식 오류가 발생했습니다. 마이크 권한이나 주변 소음을 확인해 주세요.";
+    clearTimeout(recognitionWatchdog);
+    if(event.error==="no-speech") document.getElementById("speechSupportMsg").textContent="음성이 감지되지 않았습니다. 마이크를 눌러 다시 말해주세요.";
+    else document.getElementById("speechSupportMsg").textContent="음성인식 오류가 발생했습니다. 마이크 권한이나 주변 소음을 확인해 주세요.";
   };
 
   recognition.onend=function(){
     isRecognizing=false;
     setMicState("idle");
     stopAudioRecording();
+    clearTimeout(recognitionWatchdog);
     if(!choiceLocked) document.getElementById("speechSupportMsg").textContent="다시 말하려면 마이크를 눌러주세요.";
   };
 }
@@ -364,7 +370,7 @@ function setMicState(state){
   }
 }
 
-function toggleSpeechRecognition(){
+async function toggleSpeechRecognition(){
   if(choiceLocked)return;
   if(!recognition) setupSpeechRecognition();
   if(!recognition)return;
@@ -373,6 +379,7 @@ function toggleSpeechRecognition(){
     return;
   }
   clearSpeechResult(false);
+  try{ await ensureMicStream(); }catch(error){ /* 녹음 권한이 거부되어도 음성인식 자체는 계속 진행 */ }
   try{recognition.start();}catch(error){}
 }
 

@@ -801,6 +801,52 @@
   </style>
 </head>
 <body>
+  <div id="pwGateOverlay" style="position:fixed;inset:0;background:#0f1f3d;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:'Pretendard','Noto Sans KR',Arial,sans-serif;">
+    <div style="background:white;border-radius:20px;padding:36px 32px;width:90%;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,0.3);text-align:center;">
+      <div style="font-size:18px;font-weight:900;color:#162033;margin-bottom:18px;">비밀번호를 입력하세요</div>
+      <input id="pwGateInput" type="password" placeholder="비밀번호" style="width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:10px;" />
+      <button id="pwGateBtn" style="width:100%;border:none;border-radius:14px;padding:12px 17px;font-size:15px;font-weight:900;cursor:pointer;background:#246bfe;color:white;">입장하기</button>
+      <div id="pwGateError" style="color:#e23b3b;font-size:13px;margin-top:10px;display:none;">비밀번호가 올바르지 않습니다.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const PASSWORD = "9509500";
+      const SESSION_KEY = "speech_site_unlocked";
+
+      if (sessionStorage.getItem(SESSION_KEY) === "1") {
+        document.addEventListener("DOMContentLoaded", () => {
+          const overlay = document.getElementById("pwGateOverlay");
+          if (overlay) overlay.remove();
+        });
+        return;
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const input = document.getElementById("pwGateInput");
+        const btn = document.getElementById("pwGateBtn");
+        const error = document.getElementById("pwGateError");
+        const overlay = document.getElementById("pwGateOverlay");
+
+        function tryUnlock() {
+          if (input.value === PASSWORD) {
+            sessionStorage.setItem(SESSION_KEY, "1");
+            overlay.remove();
+          } else {
+            error.style.display = "block";
+            input.value = "";
+            input.focus();
+          }
+        }
+
+        btn.addEventListener("click", tryUnlock);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") tryUnlock();
+        });
+        input.focus();
+      });
+    })();
+  </script>
   <main class="app">
     <header class="topbar">
       <div class="brand">

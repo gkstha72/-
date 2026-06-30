@@ -129,7 +129,6 @@
         <div id="stimulus" class="stimulus">가족</div>
         <div id="cueBox" class="cue-box"></div>
       </div></div>
-      <div style="margin-top:12px; margin-bottom:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
       <div class="response-buttons">
         <button id="correctBtn" class="blue" onclick="recordReading('correct')">정답</button>
         <button id="wrongBtn" class="red" onclick="recordReading('wrong')">오답</button>
@@ -1966,7 +1965,7 @@ return lengthOK && initialOK;
       document.getElementById("question").textContent = item.question;
       document.getElementById("cueBox").style.display = "none";
       document.getElementById("cueBox").textContent = item.cue;
-      document.getElementById("itemMemo").value = "";
+      
 
       choiceLocked = false;
       retryCount = 0;
@@ -2047,8 +2046,7 @@ return lengthOK && initialOK;
 
     function recordAnswer(type, retry) {
       const item = materials[currentIndex];
-      const memo = document.getElementById("itemMemo").value.trim();
-      answers.push({ stimulus:item.stimulus, answer:item.answer, response:type, retry: retry || 0, cueShown, memo, recordedAt:new Date().toISOString() });
+answers.push({ stimulus:item.stimulus, answer:item.answer, response:type, retry: retry || 0, cueShown, recordedAt:new Date().toISOString() });
       currentIndex += 1;
       if (currentIndex >= materials.length) finishTraining(); else renderTrainingItem();
     }

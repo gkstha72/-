@@ -140,7 +140,6 @@
       <div id="feedbackBox" class="feedback"></div><div id="producedList" class="produced-list"></div>
       <div class="response-buttons"><button id="correctBtn" class="blue" onclick="manualRecord('correct')">정답</button><button id="wrongBtn" class="red" onclick="manualRecord('wrong')">오답</button></div>
       <div class="control-buttons"><button id="timerBtn" class="start-btn" onclick="toggleTimer()">시작</button><button id="finishBtn" class="finish-btn" onclick="finishCurrentTask()">훈련 종료</button></div>
-      <div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
     </section>
     <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
   </main>
@@ -376,7 +375,7 @@ function renderTrainingItem(){
   updateHintButtonVisibility();
   document.getElementById("progressBar").style.width="0%";
   document.getElementById("trainingTitle").textContent=`${timeLabel} 동안 말하기`; document.getElementById("initialDisplay").textContent=s.initialValue; document.getElementById("conditionText").textContent=`${s.initialValue}으로 시작하는 단어를 최대한 많이 말해보세요.`;
-  document.getElementById("spokenWordInput").value=""; document.getElementById("itemMemo").value=""; document.getElementById("producedList").innerHTML=""; document.getElementById("feedbackBox").style.display="none"; document.getElementById("hintBox").classList.add("hidden"); document.getElementById("hintBox").textContent="";
+  document.getElementById("spokenWordInput").value="";  document.getElementById("producedList").innerHTML=""; document.getElementById("feedbackBox").style.display="none"; document.getElementById("hintBox").classList.add("hidden"); document.getElementById("hintBox").textContent="";
   document.getElementById("spokenWordInput").focus();
 }
 function clearTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
@@ -463,8 +462,8 @@ function manualRecord(type){
 }
 function finishCurrentTask(){
   clearTimer();
-  const s=getSettings(); const memo=document.getElementById("itemMemo").value.trim();
-  answers=[{initial:s.initialValue, produced:currentProduced, producedCorrect:currentProduced.filter(x=>x.ok).length, producedWrong:currentProduced.filter(x=>!x.ok).length, timeLimit:s.timeLimit, hintMode:s.hintMode, memo, recordedAt:new Date().toISOString()}];
+  const s=getSettings();
+answers=[{initial:s.initialValue, produced:currentProduced, producedCorrect:currentProduced.filter(x=>x.ok).length, producedWrong:currentProduced.filter(x=>!x.ok).length, timeLimit:s.timeLimit, hintMode:s.hintMode, recordedAt:new Date().toISOString()}];
   finishTraining();
 }
 function finishTraining(){

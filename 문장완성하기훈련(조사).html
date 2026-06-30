@@ -88,7 +88,6 @@ textarea { min-height:74px; resize:vertical; }
 <div id="answerOptions" class="answer-options"></div>
 <div id="feedbackBox" class="feedback"></div>
 <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
-<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
 </section>
 
 <section id="finishView" class="panel hidden">
@@ -123,7 +122,6 @@ const SENTENCE_DB = [
     "wrongs": [
       "은",
       "이",
-      "가",
       "을",
       "를"
     ]
@@ -156,7 +154,6 @@ const SENTENCE_DB = [
     "wrongs": [
       "이",
       "은",
-      "는",
       "을",
       "를"
     ]
@@ -166,7 +163,6 @@ const SENTENCE_DB = [
     "sentence": "달___ 밤하늘에 떠 있습니다.",
     "wrongs": [
       "가",
-      "은",
       "는",
       "을",
       "를"
@@ -177,7 +173,6 @@ const SENTENCE_DB = [
     "sentence": "별___ 반짝입니다.",
     "wrongs": [
       "가",
-      "은",
       "는",
       "을",
       "를"
@@ -189,7 +184,6 @@ const SENTENCE_DB = [
     "wrongs": [
       "이",
       "은",
-      "는",
       "을",
       "를"
     ]
@@ -199,7 +193,6 @@ const SENTENCE_DB = [
     "sentence": "눈___ 하얗게 내립니다.",
     "wrongs": [
       "가",
-      "은",
       "는",
       "을",
       "를"
@@ -460,7 +453,7 @@ const SENTENCE_DB = [
   },
   {
     "answer": "을",
-    "sentence": "학생아 책___ 읽고 있습니다.",
+    "sentence": "학생이 책___ 읽고 있습니다.",
     "wrongs": [
       "를",
       "이",
@@ -477,7 +470,6 @@ const SENTENCE_DB = [
       "이",
       "가",
       "은",
-      "는"
     ]
   },
   {
@@ -486,9 +478,8 @@ const SENTENCE_DB = [
     "wrongs": [
       "에서",
       "으로",
-      "로",
-      "을",
-      "를"
+      "이",
+      "가"
     ]
   },
   {
@@ -496,7 +487,16 @@ const SENTENCE_DB = [
     "sentence": "아픈 사람은 병원___ 갑니다.",
     "wrongs": [
       "에서",
-      "으로",
+      "은",
+      "로",
+      "가",
+    ]
+  },
+  {
+    "answer": "에",
+    "sentence": "친구들과 식당___ 갑니다.",
+    "wrongs": [
+      "에서",
       "로",
       "을",
       "를"
@@ -504,23 +504,10 @@ const SENTENCE_DB = [
   },
   {
     "answer": "에",
-    "sentence": "식당___ 갑니다.",
+    "sentence": "시험 공부를 하러 도서관___ 갑니다.",
     "wrongs": [
       "에서",
-      "으로",
       "로",
-      "을",
-      "를"
-    ]
-  },
-  {
-    "answer": "에",
-    "sentence": "학생이 도서관___ 갑니다.",
-    "wrongs": [
-      "에서",
-      "으로",
-      "로",
-      "을",
       "를"
     ]
   },
@@ -532,17 +519,15 @@ const SENTENCE_DB = [
       "으로",
       "로",
       "을",
-      "를"
     ]
   },
   {
-    "answer": "으로",
-    "sentence": "버스를 타기위해 정류장___ 갑니다.",
+    "answer": "에",
+    "sentence": "버스를 타기 위해 정류장___ 갑니다.",
     "wrongs": [
       "에서",
       "이",
       "로",
-      "을",
       "를"
     ]
   },
@@ -551,9 +536,8 @@ const SENTENCE_DB = [
     "sentence": "집___ 갑니다.",
     "wrongs": [
       "에서",
-      "으로",
       "로",
-      "을",
+      "는",
       "를"
     ]
   },
@@ -564,7 +548,6 @@ const SENTENCE_DB = [
       "에서",
       "으로",
       "로",
-      "을",
       "를"
     ]
   },
@@ -575,7 +558,6 @@ const SENTENCE_DB = [
       "에서",
       "으로",
       "로",
-      "을",
       "를"
     ]
   },
@@ -789,10 +771,10 @@ const SENTENCE_DB = [
     ]
   },
   {
-    "answer": "으로",
+    "answer": "로",
     "sentence": "색연필___ 그림을 색칠합니다.",
     "wrongs": [
-      "로",
+      "으로",
       "에",
       "에서",
       "을",
@@ -800,10 +782,10 @@ const SENTENCE_DB = [
     ]
   },
   {
-    "answer": "로",
+    "answer": "으로",
     "sentence": "빗___ 머리카락을 빗습니다.",
     "wrongs": [
-      "으로",
+      "로",
       "에",
       "에서",
       "을",
@@ -977,7 +959,7 @@ const SENTENCE_DB = [
   },
   {
     "answer": "도",
-    "sentence": "아빠___ 요리를 합니다.",
+    "sentence": "아빠___ 함께 요리를 합니다.",
     "wrongs": [
       "만",
       "을",
@@ -1267,7 +1249,6 @@ function renderQuestion() {
   const item = materials[currentIndex];
   choiceLocked = false;
   retryCount = 0;
-  document.getElementById("itemMemo").value = "";
   document.getElementById("trainingTitle").textContent = `${currentIndex + 1}번 문항 / ${materials.length}개`;
   document.getElementById("question").textContent = item.question;
   document.getElementById("sentence").innerHTML = sentenceToHtml(item.sentence);
@@ -1349,7 +1330,6 @@ function recordAnswer(result, selected, retry) {
     type: "문장완성하기(조사)",
     result,
     retry: retry || 0,
-    memo: document.getElementById("itemMemo").value || ""
   });
   currentIndex++;
   if (currentIndex >= materials.length) finishTraining();

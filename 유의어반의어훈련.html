@@ -82,7 +82,7 @@
     </section>
     <section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
     <section id="statsView" class="panel"><h2>유형별 문항 수</h2><div id="statsBox"></div></section>
-    <section id="trainingView" class="panel hidden"><div id="question" class="question">제시어와 알맞은 관계의 단어를 고르세요.</div><div class="progress-line"><div id="progressBar" class="progress-bar"></div></div><div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="targetWord" class="target-word"></div><div id="hintLine" class="hint-line"></div><div id="modeLabel" class="mode-label"></div></div></div><div id="answerOptions" class="answer-options"></div><div id="oralBox" class="oral-box hidden"><button id="oralCorrectBtn" class="blue" onclick="recordOralAnswer('correct')">정답</button><button id="oralWrongBtn" class="red" onclick="recordOralAnswer('wrong')">오답</button></div><div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div><div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div><div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div></section>
+    <section id="trainingView" class="panel hidden"><div id="question" class="question">제시어와 알맞은 관계의 단어를 고르세요.</div><div class="progress-line"><div id="progressBar" class="progress-bar"></div></div><div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="targetWord" class="target-word"></div><div id="hintLine" class="hint-line"></div><div id="modeLabel" class="mode-label"></div></div></div><div id="answerOptions" class="answer-options"></div><div id="oralBox" class="oral-box hidden"><button id="oralCorrectBtn" class="blue" onclick="recordOralAnswer('correct')">정답</button><button id="oralWrongBtn" class="red" onclick="recordOralAnswer('wrong')">오답</button></div><div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div><div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div></section>
     <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
   </main>
   <script>
@@ -819,7 +819,7 @@
             "pair": "분노하다",
             "options": [
                   "분노하다",
-                  "성나다",
+                  "부끄럽다",
                   "두렵다",
                   "염려하다"
             ]
@@ -1426,9 +1426,9 @@
       },
       {
             "type": "synonym",
-            "word": "나오다",
-            "answer": "나가다",
-            "pair": "나가다",
+            "word": "주다",
+            "answer": "건네다",
+            "pair": "건네다",
             "options": [
                   "나가다",
                   "건네다",
@@ -4342,18 +4342,6 @@
       },
       {
             "type": "antonym",
-            "word": "보행 가능",
-            "answer": "보행 불가",
-            "pair": "보행 불가",
-            "options": [
-                  "보행 불가",
-                  "우측",
-                  "하지",
-                  "발"
-            ]
-      },
-      {
-            "type": "antonym",
             "word": "좌측",
             "answer": "우측",
             "pair": "우측",
@@ -4398,18 +4386,6 @@
                   "팔다리",
                   "심한 통증",
                   "나빠짐"
-            ]
-      },
-      {
-            "type": "antonym",
-            "word": "몸통",
-            "answer": "팔다리",
-            "pair": "팔다리",
-            "options": [
-                  "팔다리",
-                  "심한 통증",
-                  "나빠짐",
-                  "불편함"
             ]
       },
       {
@@ -4498,18 +4474,6 @@
       },
       {
             "type": "antonym",
-            "word": "가정",
-            "answer": "병원",
-            "pair": "병원",
-            "options": [
-                  "병원",
-                  "밖",
-                  "창문",
-                  "여자"
-            ]
-      },
-      {
-            "type": "antonym",
             "word": "안",
             "answer": "밖",
             "pair": "밖",
@@ -4578,18 +4542,6 @@
                   "저녁",
                   "오른손",
                   "오른발"
-            ]
-      },
-      {
-            "type": "antonym",
-            "word": "점심",
-            "answer": "저녁",
-            "pair": "저녁",
-            "options": [
-                  "저녁",
-                  "오른손",
-                  "오른발",
-                  "발쪽"
             ]
       },
       {
@@ -4971,7 +4923,7 @@
       document.getElementById("modeLabel").textContent = typeLabel(item.type);
       document.getElementById("modeLabel").className = `mode-label ${typeClass(item.type)}`;
       document.getElementById("progressBar").style.width = `${((currentIndex) / materials.length) * 100}%`;
-      document.getElementById("itemMemo").value = item.memo || "";
+      
       const feedbackBox = document.getElementById("feedbackBox");
       if (feedbackBox) {
         feedbackBox.style.display = "none";
@@ -5022,12 +4974,9 @@
       if (correctBtn) correctBtn.disabled = disabled;
       if (wrongBtn) wrongBtn.disabled = disabled;
     }
-
-    function saveMemo() { if (materials[currentIndex]) materials[currentIndex].memo = document.getElementById("itemMemo").value.trim(); }
-
-    function selectAnswer(button, choice) {
+function selectAnswer(button, choice) {
       if (choiceLocked) return;
-      saveMemo();
+      
       const item = materials[currentIndex];
       const isCorrect = choice === item.answer;
 
@@ -5037,7 +4986,7 @@
         markChoiceResult(button, choice);
         showFeedback("정답입니다.", true);
         const countedCorrect = retryCount === 0;
-        answers.push({ word:item.word, type:item.type, answer:item.answer, response:choice, correct:countedCorrect, retry:retryCount, memo:item.memo || "" });
+        answers.push({ word:item.word, type:item.type, answer:item.answer, response:choice, correct:countedCorrect, retry:retryCount });
         setTimeout(nextItem, 1200);
         return;
       }
@@ -5055,13 +5004,13 @@
       setAnswerButtonsDisabled(true);
       markChoiceResult(button, choice);
       showFeedback(`정답은 "${item.answer}"입니다. 다음 문제를 눌러주세요.`, false);
-      answers.push({ word:item.word, type:item.type, answer:item.answer, response:choice, correct:false, retry:retryCount, memo:item.memo || "" });
+      answers.push({ word:item.word, type:item.type, answer:item.answer, response:choice, correct:false, retry:retryCount });
       document.getElementById("nextBtn").style.display = "inline-block";
     }
 
     function recordOralAnswer(result) {
       if (choiceLocked) return;
-      saveMemo();
+      
       const item = materials[currentIndex];
 
       if (result === "correct") {
@@ -5070,7 +5019,7 @@
         document.getElementById("oralCorrectBtn").classList.add("correct-choice");
         showFeedback("정답입니다.", true);
         const countedCorrect = retryCount === 0;
-        answers.push({ word:item.word, type:item.type, answer:item.answer, response:"", correct:countedCorrect, retry:retryCount, memo:item.memo || "" });
+        answers.push({ word:item.word, type:item.type, answer:item.answer, response:"", correct:countedCorrect, retry:retryCount });
         setTimeout(nextItem, 1200);
         return;
       }
@@ -5088,7 +5037,7 @@
       setOralButtonsDisabled(true);
       document.getElementById("oralWrongBtn").classList.add("wrong-choice");
       showFeedback(`정답은 "${item.answer}"입니다. 다음 문제를 눌러주세요.`, false);
-      answers.push({ word:item.word, type:item.type, answer:item.answer, response:"오답", correct:false, retry:retryCount, memo:item.memo || "" });
+      answers.push({ word:item.word, type:item.type, answer:item.answer, response:"오답", correct:false, retry:retryCount });
       document.getElementById("nextBtn").style.display = "inline-block";
     }
 

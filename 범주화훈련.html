@@ -163,7 +163,7 @@
       <div id="categoryOptions" class="category-options"></div>
       <div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div>
       <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
-      <div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+      
     </section>
 
     <section id="finishView" class="panel hidden">
@@ -291,7 +291,7 @@
       document.getElementById("trainingTitle").textContent = `${currentIndex + 1} / ${materials.length}`;
       document.getElementById("stimulus").textContent = item.stimulus;
       document.getElementById("question").textContent = item.question;
-      document.getElementById("itemMemo").value = "";
+      
       choiceLocked = false;
       retryCount = 0;
 
@@ -386,8 +386,8 @@
 
     function recordAnswer(type, selectedCategory, retry) {
       const item = materials[currentIndex];
-      const memo = document.getElementById("itemMemo").value.trim();
-      answers.push({ stimulus:item.stimulus, category:item.category, selectedCategory, answer:item.answer, response:type, retry: retry || 0, memo, recordedAt:new Date().toISOString() });
+      
+      answers.push({ stimulus:item.stimulus, category:item.category, selectedCategory, answer:item.answer, response:type, retry: retry || 0, recordedAt:new Date().toISOString() });
       currentIndex += 1;
       if (currentIndex >= materials.length) finishTraining(); else renderTrainingItem();
     }

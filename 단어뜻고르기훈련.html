@@ -71,7 +71,7 @@
     </section>
     <section id="previewView" class="panel"><h2 id="previewTitle">생성 자료</h2><div id="previewList" class="word-grid"></div></section>
     <section id="statsView" class="panel"><h2>범주별 문항 수</h2><div id="statsBox"></div></section>
-    <section id="trainingView" class="panel hidden"><div id="question" class="question">설명에 맞는 단어를 고르세요.</div><div class="progress-line"><div id="progressBar" class="progress-bar"></div></div><div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="description" class="description"></div></div></div><div id="answerOptions" class="answer-options"></div><div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div><div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div><div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div></section>
+    <section id="trainingView" class="panel hidden"><div id="question" class="question">설명에 맞는 단어를 고르세요.</div><div class="progress-line"><div id="progressBar" class="progress-bar"></div></div><div class="training-box"><div><div id="trainingTitle" class="training-title">1번 문항</div><div id="description" class="description"></div></div></div><div id="answerOptions" class="answer-options"></div><div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div><div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div></section>
     <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
   </main>
   <script>
@@ -1832,7 +1832,6 @@
       document.getElementById("trainingTitle").textContent = `${currentIndex + 1} / ${materials.length}`;
       document.getElementById("description").textContent = item.description;
       document.getElementById("question").textContent = item.question;
-      document.getElementById("itemMemo").value = "";
 
       const feedbackBox = document.getElementById("feedbackBox");
       if (feedbackBox) {
@@ -1918,7 +1917,6 @@
     }
     function recordAnswer(type, selectedAnswer, retry) {
       const item = materials[currentIndex];
-      const memo = document.getElementById("itemMemo").value.trim();
       answers.push({
         description:item.description,
         stimulus:item.description,
@@ -1928,7 +1926,6 @@
         choices:item.choices,
         response:type,
         retry: retry || 0,
-        memo:memo,
         recordedAt:new Date().toISOString()
       });
       currentIndex += 1;

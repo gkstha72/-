@@ -102,7 +102,7 @@ textarea{min-height:74px;resize:vertical}
 <div id="feedbackBox" class="feedback"></div>
 <div id="meaningBox" class="meaning-box"></div>
 <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
-<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+
 </section>
 
 <section id="finishView" class="panel hidden">
@@ -836,7 +836,7 @@ function generateMaterials(){
   const orderMode=document.getElementById("orderMode").value;
   let source=orderMode==="random"?shuffle(PROVERBS):[...PROVERBS];
   const limit=countValue==="all"?source.length:Number(countValue);
-  materials=source.slice(0,Math.min(limit,source.length)).map((item,idx)=>({...item,no:idx+1,options:buildOptions(item),memo:""}));
+  materials=source.slice(0,Math.min(limit,source.length)).map((item,idx)=>({...item,no:idx+1,options:buildOptions(item)}));
   currentIndex=0;answers=[];renderPreview();
 }
 
@@ -866,7 +866,7 @@ function showItem(){
   document.getElementById("trainingTitle").textContent=`${currentIndex+1} / ${materials.length}`;
   document.getElementById("proverbText").innerHTML=formatDisplay(item.display);
   document.getElementById("progressBar").style.width=`${(currentIndex/materials.length)*100}%`;
-  document.getElementById("itemMemo").value=item.memo||"";
+  
   document.getElementById("feedbackBox").style.display="none";
   document.getElementById("feedbackBox").textContent="";
   document.getElementById("feedbackBox").className="feedback";
@@ -875,8 +875,6 @@ function showItem(){
   document.getElementById("nextBtn").style.display="none";
   document.getElementById("answerOptions").innerHTML=item.options.map(choice=>`<button class="answer-btn" onclick="selectAnswer(this, '${choice.replace(/'/g,"\\'")}')">${choice}</button>`).join("");
 }
-
-function saveMemo(){if(materials[currentIndex])materials[currentIndex].memo=document.getElementById("itemMemo").value.trim()}
 
 function showFeedback(message,isCorrectStyle){
   const box=document.getElementById("feedbackBox");
@@ -903,7 +901,6 @@ function markChoiceResult(selectedButton,selectedChoice){
 
 function selectAnswer(button,choice){
   if(choiceLocked)return;
-  saveMemo();
   const item=materials[currentIndex];
   const isCorrect=choice===item.blank;
 
@@ -914,7 +911,7 @@ function selectAnswer(button,choice){
     showFeedback("정답입니다.",true);
     showMeaning();
     const countedCorrect=retryCount===0;
-    answers.push({sentence:item.sentence,blank:item.blank,response:choice,correct:countedCorrect,retry:retryCount,memo:item.memo||""});
+    answers.push({sentence:item.sentence,blank:item.blank,response:choice,correct:countedCorrect,retry:retryCount});
     setTimeout(nextItem,1400);
     return;
   }
@@ -932,7 +929,7 @@ function selectAnswer(button,choice){
   markChoiceResult(button,choice);
   showFeedback(`정답은 "${item.blank}"입니다. 다음 문제를 눌러주세요.`,false);
   showMeaning();
-  answers.push({sentence:item.sentence,blank:item.blank,response:choice,correct:false,retry:retryCount,memo:item.memo||""});
+  answers.push({sentence:item.sentence,blank:item.blank,response:choice,correct:false,retry:retryCount});
   document.getElementById("nextBtn").style.display="inline-block";
 }
 

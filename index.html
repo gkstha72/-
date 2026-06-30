@@ -228,6 +228,98 @@
       line-height: 1.5;
     }
 
+    .program-category-list {
+      display: grid;
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    .program-category {
+      border: 1px solid #e2e8f0;
+      border-radius: 26px;
+      padding: 20px;
+      background: #f8faff;
+    }
+
+    .category-head {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-end;
+      margin-bottom: 0;
+      flex-wrap: wrap;
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .category-head:focus-visible {
+      outline: 3px solid rgba(36, 107, 254, 0.28);
+      outline-offset: 6px;
+    }
+
+    .category-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .category-toggle {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: #246bfe;
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .program-category .program-grid {
+      margin-top: 14px;
+    }
+
+    .program-category.collapsed .program-grid {
+      display: none;
+    }
+
+    .program-category.collapsed .category-toggle {
+      background: #e8eefb;
+      color: #246bfe;
+    }
+
+    .category-title {
+      margin: 0;
+      font-size: 23px;
+      letter-spacing: -0.03em;
+    }
+
+    .category-desc {
+      margin: 6px 0 0;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .category-count {
+      flex: 0 0 auto;
+      background: white;
+      color: #246bfe;
+      border: 1px solid #dbe7ff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
     .program-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -770,283 +862,342 @@
           <button class="gray" onclick="showPage('subjectPage')">대상자 정보로 돌아가기</button>
         </div>
 
-        <div class="program-grid">
-          <article class="program-card">
-            <div>
-              <h3>그림보고 OX 고르기</h3>
-              <p>그림과 제시된 단어가 일치하는지 OX로 판단하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">시각이해</span>
-                <span class="chip">OX판단</span>
-                <span class="chip">문장</span>
+        <div class="program-category-list">
+          <section class="program-category collapsed">
+            <button type="button" class="category-head" onclick="toggleProgramCategory(this)" aria-expanded="false">
+              <div>
+                <h3 class="category-title">문어이해력</h3>
+                <p class="category-desc"></p>
               </div>
+              <span class="category-meta"><span class="category-count">14개 훈련</span><span class="category-toggle" aria-hidden="true">+</span></span>
+            </button>
+            <div class="program-grid">
+              <article class="program-card">
+                <div>
+                  <h3>그림보고 OX 고르기</h3>
+                  <p>그림과 제시된 단어가 일치하는지 OX로 판단하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">OX판단</span>
+                    <span class="chip">그림-단어 매칭</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('그림보고OX고르기.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>그림보고 단어찾기</h3>
+                  <p>그림을 보고 알맞은 단어를 선택하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">어휘</span>
+                    <span class="chip">단어찾기</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('그림보고단어찾기.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>그림보고 동사 고르기</h3>
+                  <p>그림 속 동작을 보고 알맞은 동사를 선택하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">동사</span>
+                    <span class="chip">어휘</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('그림보고동사고르기.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>단어 뜻 고르기</h3>
+                  <p>제시된 단어의 의미를 이해하고 알맞은 뜻을 선택하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">어휘</span>
+                    <span class="chip">단어 뜻</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('단어뜻고르기훈련.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>동음이의어·다의어</h3>
+                  <p>같은 단어가 다른 뜻으로 쓰인 문장을 구분하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">다의어</span>
+                    <span class="chip">의미변별</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('동음이의어다의어훈련.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>문장순서배열</h3>
+                  <p>섞여 있는 문장을 시간 순서에 맞게 배열하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">순서</span>
+                    <span class="chip">추론</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('문장순서배열훈련.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>문장완성하기 - 동사</h3>
+                  <p>문장 속 빈칸에 알맞은 동사를 넣어 문장을 완성하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">문장완성</span>
+                    <span class="chip">동사</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('문장완성하기훈련(동사).html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>문장완성하기 - 목적어</h3>
+                  <p>문장 속 빈칸에 알맞은 목적어를 넣어 문장을 완성하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">문장완성</span>
+                    <span class="chip">목적어</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('문장완성하기훈련(목적어).html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>문장완성하기 - 조사</h3>
+                  <p>문장 속 빈칸에 알맞은 조사를 넣어 문장을 완성하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">문장완성</span>
+                    <span class="chip">조사</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('문장완성하기훈련(조사).html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>문장완성하기 - 주어</h3>
+                  <p>문장 속 빈칸에 알맞은 주어를 넣어 문장을 완성하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">문장완성</span>
+                    <span class="chip">주어</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('문장완성하기훈련(주어).html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>범주화훈련</h3>
+                  <p>제시된 단어가 어떤 범주에 속하는지 구분하고, 집행기능을 함께 자극하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">범주화</span>
+                    <span class="chip">집행력</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('범주화훈련.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>속담맞추기</h3>
+                  <p>속담의 빈칸을 완성하고 비유적 표현을 이해하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">속담</span>
+                    <span class="chip">추론</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('속담훈련.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>유의어·반의어</h3>
+                  <p>뜻이 비슷한 말과 반대되는 말을 구분하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">유의어</span>
+                    <span class="chip">반의어</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('유의어반의어훈련.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>상황에 맞는 말 고르기</h3>
+                  <p>상황을 읽고 사회적으로 적절한 말을 선택하는 화용언어 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어이해력</span>
+                    <span class="chip">화용언어</span>
+                    <span class="chip">상황판단</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('상황에맞는말고르기.html')">훈련 시작</button>
+              </article>
             </div>
-            <button class="primary" onclick="openProgram('그림보고OX고르기.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>그림보고 단어찾기</h3>
-              <p>그림을 보고 알맞은 단어를 선택하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">시각이해</span>
-                <span class="chip">어휘</span>
-                <span class="chip">단어찾기</span>
+          </section>
+
+          <section class="program-category collapsed">
+            <button type="button" class="category-head" onclick="toggleProgramCategory(this)" aria-expanded="false">
+              <div>
+                <h3 class="category-title">문어표현력</h3>
+                <p class="category-desc"></p>
               </div>
+              <span class="category-meta"><span class="category-count">1개 훈련</span><span class="category-toggle" aria-hidden="true">+</span></span>
+            </button>
+            <div class="program-grid">
+              <article class="program-card">
+                <div>
+                  <h3>단어보고 따라쓰기</h3>
+                  <p>제시된 단어를 보고 그대로 따라 쓰는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">문어표현력</span>
+                    <span class="chip">따라쓰기</span>
+                    <span class="chip">단어</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('단어보고따라쓰기훈련.html')">훈련 시작</button>
+              </article>
             </div>
-            <button class="primary" onclick="openProgram('그림보고단어찾기.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>그림보고 동사 고르기</h3>
-              <p>그림 속 동작을 보고 알맞은 동사를 선택하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">시각이해</span>
-                <span class="chip">동사</span>
-                <span class="chip">어휘</span>
+          </section>
+
+          <section class="program-category collapsed">
+            <button type="button" class="category-head" onclick="toggleProgramCategory(this)" aria-expanded="false">
+              <div>
+                <h3 class="category-title">구어이해력</h3>
+                <p class="category-desc"></p>
               </div>
+              <span class="category-meta"><span class="category-count">3개 훈련</span><span class="category-toggle" aria-hidden="true">+</span></span>
+            </button>
+            <div class="program-grid">
+              <article class="program-card">
+                <div>
+                  <h3>단어 듣고 음절 배열하기</h3>
+                  <p>단어 음성을 듣고 음절 조각을 순서대로 배열하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">구어이해력</span>
+                    <span class="chip">음절</span>
+                    <span class="chip">배열</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('단어듣고음절배열하기.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>단어 듣고 정답 고르기</h3>
+                  <p>단어 음성을 듣고 알맞은 단어를 고르는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">구어이해력</span>
+                    <span class="chip">단어</span>
+                    <span class="chip">선택</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('단어듣고정답고르기.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>단어 듣고 받아쓰기</h3>
+                  <p>단어 음성을 듣고 쓰기판에 직접 받아쓰는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">구어이해력</span>
+                    <span class="chip">듣기</span>
+                    <span class="chip">받아쓰기</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('단어듣고받아쓰기훈련.html')">훈련 시작</button>
+              </article>
             </div>
-            <button class="primary" onclick="openProgram('그림보고동사고르기.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>그림보고 이름말하기</h3>
-              <p>그림을 보고 대상의 이름을 말하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">표현언어</span>
-                <span class="chip">이름대기</span>
-                <span class="chip">말하기</span>
+          </section>
+
+          <section class="program-category collapsed">
+            <button type="button" class="category-head" onclick="toggleProgramCategory(this)" aria-expanded="false">
+              <div>
+                <h3 class="category-title">구어표현력</h3>
+                <p class="category-desc"></p>
               </div>
+              <span class="category-meta"><span class="category-count">6개 훈련</span><span class="category-toggle" aria-hidden="true">+</span></span>
+            </button>
+            <div class="program-grid">
+              <article class="program-card">
+                <div>
+                  <h3>단어보고 말하기</h3>
+                  <p>제시된 단어를 보고 소리 내어 말하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">구어표현력</span>
+                    <span class="chip">단어읽기</span>
+                    <span class="chip">말하기</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('단어보고말하기.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>그림보고 이름말하기</h3>
+                  <p>그림을 보고 대상의 이름을 말하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">구어표현력</span>
+                    <span class="chip">이름대기</span>
+                    <span class="chip">말하기</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('그림보고이름말하기.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>조음교대훈련</h3>
+                  <p>제시된 음절 또는 문장을 또박또박 반복하는 조음 교대 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">구어표현력</span>
+                    <span class="chip">조음</span>
+                    <span class="chip">AMR·SMR</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('조음교대훈련.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>종성받침훈련</h3>
+                  <p>받침이 포함된 단어를 읽고 정확한 종성 산출을 연습하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">구어표현력</span>
+                    <span class="chip">종성</span>
+                    <span class="chip">받침</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('종성받침훈련.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>초성단어말하기</h3>
+                  <p>제시된 초성으로 시작하는 단어를 떠올려 말하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">구어표현력</span>
+                    <span class="chip">초성단서</span>
+                    <span class="chip">단어말하기</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('초성단어말하기.html')">훈련 시작</button>
+              </article>
+              <article class="program-card">
+                <div>
+                  <h3>초성훈련</h3>
+                  <p>제시된 초성에 해당하는 단어를 보고 읽거나 말하는 훈련입니다.</p>
+                  <div class="chip-row">
+                    <span class="chip">구어표현력</span>
+                    <span class="chip">초성</span>
+                    <span class="chip">단어</span>
+                  </div>
+                </div>
+                <button class="primary" onclick="openProgram('초성훈련.html')">훈련 시작</button>
+              </article>
             </div>
-            <button class="primary" onclick="openProgram('그림보고이름말하기.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>단어보고 따라쓰기</h3>
-              <p>제시된 단어를 보고 그대로 따라 쓰는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">읽기</span>
-                <span class="chip">따라쓰기</span>
-                <span class="chip">단어</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('단어보고따라쓰기훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>단어 듣고 음절 배열하기</h3>
-              <p>단어 음성을 듣고 음절 조각을 순서대로 배열하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">청각이해</span>
-                <span class="chip">음절</span>
-                <span class="chip">배열</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('단어듣고음절배열하기.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>단어 듣고 정답 고르기</h3>
-              <p>단어 음성을 듣고 알맞은 단어를 고르는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">청각이해</span>
-                <span class="chip">단어</span>
-                <span class="chip">선택</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('단어듣고정답고르기.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>단어 뜻 고르기</h3>
-              <p>제시된 단어의 의미를 이해하고 알맞은 뜻을 선택하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">언어이해</span>
-                <span class="chip">어휘</span>
-                <span class="chip">단어 뜻</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('단어뜻고르기훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>단어 듣고 받아쓰기</h3>
-              <p>단어 음성을 듣고 쓰기판에 직접 받아쓰는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">듣기</span>
-                <span class="chip">쓰기</span>
-                <span class="chip">받아쓰기</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('단어듣고받아쓰기훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>동음이의어·다의어</h3>
-              <p>같은 단어가 다른 뜻으로 쓰인 문장을 구분하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">언어이해</span>
-                <span class="chip">다의어</span>
-                <span class="chip">의미변별</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('동음이의어다의어훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>문장순서배열</h3>
-              <p>섞여 있는 문장을 시간 순서에 맞게 배열하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">문장이해</span>
-                <span class="chip">순서</span>
-                <span class="chip">추론</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('문장순서배열훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>문장완성하기 - 동사</h3>
-              <p>문장 속 빈칸에 알맞은 동사를 넣어 문장을 완성하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">문장완성</span>
-                <span class="chip">동사</span>
-                <span class="chip">문맥</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('문장완성하기훈련(동사).html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>문장완성하기 - 목적어</h3>
-              <p>문장 속 빈칸에 알맞은 목적어를 넣어 문장을 완성하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">문장완성</span>
-                <span class="chip">목적어</span>
-                <span class="chip">어휘</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('문장완성하기훈련(목적어).html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>문장완성하기 - 조사</h3>
-              <p>문장 속 빈칸에 알맞은 조사를 넣어 문장을 완성하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">문장완성</span>
-                <span class="chip">조사</span>
-                <span class="chip">문법</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('문장완성하기훈련(조사).html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>문장완성하기 - 주어</h3>
-              <p>문장 속 빈칸에 알맞은 주어를 넣어 문장을 완성하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">문장완성</span>
-                <span class="chip">주어</span>
-                <span class="chip">문법</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('문장완성하기훈련(주어).html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>범주화훈련</h3>
-              <p>제시된 단어가 어떤 범주에 속하는지 구분하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">언어이해</span>
-                <span class="chip">범주화</span>
-                <span class="chip">어휘</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('범주화훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>속담맞추기</h3>
-              <p>속담의 빈칸을 완성하고 비유적 표현을 이해하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">언어이해</span>
-                <span class="chip">속담</span>
-                <span class="chip">추론</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('속담훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>유의어·반의어</h3>
-              <p>뜻이 비슷한 말과 반대되는 말을 구분하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">언어이해</span>
-                <span class="chip">유의어</span>
-                <span class="chip">반의어</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('유의어반의어훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>상황에 맞는 말 고르기</h3>
-              <p>상황을 읽고 사회적으로 적절한 말을 선택하거나 직접 말하는 화용언어 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">화용언어</span>
-                <span class="chip">상황판단</span>
-                <span class="chip">말하기</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('상황에맞는말고르기.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>조음교대훈련</h3>
-              <p>제시된 음절 또는 문장을 또박또박 반복하는 조음 교대 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">조음</span>
-                <span class="chip">AMR·SMR</span>
-                <span class="chip">말하기</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('조음교대훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>종성받침훈련</h3>
-              <p>받침이 포함된 단어를 읽고 정확한 종성 산출을 연습하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">음운인식</span>
-                <span class="chip">종성</span>
-                <span class="chip">받침</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('종성받침훈련.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>초성단어말하기</h3>
-              <p>제시된 초성으로 시작하는 단어를 떠올려 말하는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">표현언어</span>
-                <span class="chip">초성단서</span>
-                <span class="chip">단어말하기</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('초성단어말하기.html')">훈련 시작</button>
-          </article>
-          <article class="program-card">
-            <div>
-              <h3>초성훈련</h3>
-              <p>제시된 초성에 해당하는 단어를 보고 읽는 훈련입니다.</p>
-              <div class="chip-row">
-                <span class="chip">음운인식</span>
-                <span class="chip">초성</span>
-                <span class="chip">단어</span>
-              </div>
-            </div>
-            <button class="primary" onclick="openProgram('초성훈련.html')">훈련 시작</button>
-          </article>
+          </section>
         </div>
 
         <div class="section-gap">
@@ -1395,6 +1546,15 @@
         <div class="date-group-list">
           ${dateGroupHtml}
         </div>`;
+    }
+
+    function toggleProgramCategory(button) {
+      const category = button.closest(".program-category");
+      if (!category) return;
+      const isCollapsed = category.classList.toggle("collapsed");
+      button.setAttribute("aria-expanded", String(!isCollapsed));
+      const toggle = button.querySelector(".category-toggle");
+      if (toggle) toggle.textContent = isCollapsed ? "+" : "−";
     }
 
     function openProgram(path) {

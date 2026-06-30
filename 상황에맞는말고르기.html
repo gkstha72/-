@@ -96,7 +96,7 @@ textarea{min-height:74px;resize:vertical}
   </div>
   <div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div>
   <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
-  <div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
+  
 </section>
 
 <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='index.html?page=program'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
@@ -131,7 +131,7 @@ function generateMaterials() {
   let source = orderMode === "random" ? shuffle(SITUATION_DB) : [...SITUATION_DB];
   materials = source.slice(0, Math.min(count, source.length)).map((item, idx) => {
     const choices = shuffle([...item.choices]);
-    return {...item, no: idx + 1, choices, memo:""};
+    return {...item, no: idx + 1, choices};
   });
   currentIndex = 0;
   answers = [];
@@ -171,7 +171,7 @@ function showItem() {
   document.getElementById("promptText").textContent = item.question;
   
   document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
-  document.getElementById("itemMemo").value = item.memo || "";
+  
   const feedbackBox = document.getElementById("feedbackBox");
   feedbackBox.style.display = "none";
   feedbackBox.textContent = "";
@@ -211,11 +211,8 @@ function markChoiceResult(selectedButton, selectedChoice) {
   });
 }
 
-function saveMemo() { if (materials[currentIndex]) materials[currentIndex].memo = document.getElementById("itemMemo").value.trim(); }
-
 function selectAnswer(button, choice) {
   if (choiceLocked) return;
-  saveMemo();
   const item = materials[currentIndex];
   const isCorrect = choice === item.answer;
 
@@ -225,7 +222,7 @@ function selectAnswer(button, choice) {
     markChoiceResult(button, choice);
     showFeedback("정답입니다.", true);
     const countedCorrect = retryCount === 0;
-    answers.push({ situation:item.situation, answer:item.answer, response:choice, correct:countedCorrect, retry:retryCount, memo:item.memo || "", mode:"choice" });
+    answers.push({ situation:item.situation, answer:item.answer, response:choice, correct:countedCorrect, retry:retryCount, mode:"choice" });
     setTimeout(nextItem, 1200);
     return;
   }
@@ -243,13 +240,12 @@ function selectAnswer(button, choice) {
   setAnswerButtonsDisabled(true);
   markChoiceResult(button, choice);
   showFeedback("정답을 확인한 뒤 다음 문제를 눌러주세요.", false);
-  answers.push({ situation:item.situation, answer:item.answer, response:choice, correct:false, retry:retryCount, memo:item.memo || "", mode:"choice" });
+  answers.push({ situation:item.situation, answer:item.answer, response:choice, correct:false, retry:retryCount, mode:"choice" });
   document.getElementById("nextBtn").style.display = "inline-block";
 }
 
 function recordOpenAnswer(result) {
   if (choiceLocked) return;
-  saveMemo();
   const item = materials[currentIndex];
   choiceLocked = true;
   document.getElementById("oralCorrectBtn").disabled = true;
@@ -259,7 +255,7 @@ function recordOpenAnswer(result) {
   const exampleBox = document.getElementById("exampleBox");
   exampleBox.style.display = "block";
   exampleBox.innerHTML = `<strong>예시 답안</strong><br>${escapeHtml(item.answer)}`;
-  answers.push({ situation:item.situation, answer:item.answer, response:result, correct:isCorrect, retry:0, memo:item.memo || "", mode:"open" });
+  answers.push({ situation:item.situation, answer:item.answer, response:result, correct:isCorrect, retry:0, mode:"open" });
   document.getElementById("nextBtn").style.display = "inline-block";
 }
 

@@ -59,7 +59,6 @@ textarea{min-height:74px;resize:vertical}
 <div class="ox-box"><button id="oBtn" class="blue" onclick="recordOX(true)">O</button><button id="xBtn" class="red" onclick="recordOX(false)">X</button></div>
 <div id="feedbackBox" style="display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center;"></div>
 <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextItem()">다음 문제</button></div>
-<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
 </section>
 <section id="finishView" class="panel hidden"><h2>훈련 결과</h2><p id="finishText"></p><div class="result-panel"><div id="summaryGrid" class="summary-grid"></div></div><div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div></section>
 </main><script>const AUTO_ITEMS = {
@@ -189,7 +188,6 @@ function renderStats(){
  const cats=unique(imageDB.map(x=>x.category));
  document.getElementById("statsBox").innerHTML=`<div class="stats-mini"><div><span>전체</span><b>${imageDB.length}</b></div><div><span>범주 수</span><b>${cats.length}</b></div><div><span>선택 자료</span><b>${materials.length}</b></div><div><span>현재 범주</span><b>${document.getElementById("categoryValue").value}</b></div><div><span>방식</span><b>${document.getElementById("orderMode").value==="random"?"무작위":"순서"}</b></div></div>`;
 }
-function saveMemo(){if(materials[currentIndex])materials[currentIndex].memo=document.getElementById("itemMemo").value.trim()}
 function nextItem(){currentIndex++; if(currentIndex>=materials.length)finishTraining(); else showItem();}
 function finishTraining(){
  document.getElementById("progressBar").style.width="100%";
@@ -240,7 +238,6 @@ function showItem(){
  document.getElementById("stimulusImg").src=item.url;
  document.getElementById("wordLabel").textContent=item.shownName;
  document.getElementById("progressBar").style.width=`${currentIndex/materials.length*100}%`;
- document.getElementById("itemMemo").value=item.memo||"";
 
  document.getElementById("nextBtn").style.display="none";
 
@@ -282,8 +279,6 @@ function recordOX(choice){
 
  if(isCorrect){
    choiceLocked=true;
-   saveMemo();
-
    const countedCorrect=retryCount===0;
 
    answers.push({
@@ -293,8 +288,7 @@ function recordOX(choice){
      response:choice?"O":"X",
      answer:item.correctAnswer?"O":"X",
      correct:countedCorrect,
-     retry:retryCount,
-     memo:item.memo||""
+     retry:retryCount
    });
 
    markOXButtons(choice);
@@ -323,8 +317,6 @@ function recordOX(choice){
  }
 
  choiceLocked=true;
- saveMemo();
-
  answers.push({
    image:item.name,
    category:item.category,
@@ -332,8 +324,7 @@ function recordOX(choice){
    response:choice?"O":"X",
    answer:item.correctAnswer?"O":"X",
    correct:false,
-   retry:retryCount,
-   memo:item.memo||""
+   retry:retryCount
  });
 
  markOXButtons(choice);

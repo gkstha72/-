@@ -88,7 +88,6 @@ textarea { min-height:74px; resize:vertical; }
 <div id="answerOptions" class="answer-options"></div>
 <div id="feedbackBox" class="feedback"></div>
 <div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" style="display:none;" onclick="nextQuestionManual()">다음 문제</button></div>
-<div style="margin-top:12px;"><textarea id="itemMemo" placeholder="문항별 메모"></textarea></div>
 </section>
 
 <section id="finishView" class="panel hidden">
@@ -3247,7 +3246,6 @@ function renderQuestion() {
   const item = materials[currentIndex];
   choiceLocked = false;
   retryCount = 0;
-  document.getElementById("itemMemo").value = "";
   document.getElementById("trainingTitle").textContent = `${currentIndex + 1}번 문항 / ${materials.length}개`;
   document.getElementById("question").textContent = item.question;
   document.getElementById("sentence").innerHTML = sentenceToHtml(item.sentence);
@@ -3329,7 +3327,6 @@ function recordAnswer(result, selected, retry) {
     type: "문장완성하기(동사)",
     result,
     retry: retry || 0,
-    memo: document.getElementById("itemMemo").value || ""
   });
   currentIndex++;
   if (currentIndex >= materials.length) finishTraining();

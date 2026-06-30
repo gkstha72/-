@@ -929,7 +929,7 @@
       let source = filteredDB();
       source = orderMode === "random" ? shuffle(source) : [...source];
       const limit = countValue === "all" ? source.length : Number(countValue);
-      materials = source.slice(0, Math.min(limit, source.length)).map((item, idx) => ({...item, no:idx+1, memo:""}));
+      materials = source.slice(0, Math.min(limit, source.length)).map((item, idx) => ({...item, no:idx+1}));
       currentIndex = 0;
       answers = [];
       renderPreview();
@@ -978,7 +978,7 @@
       target.className = item.type === "문장" ? "target sentence" : "target";
       
       document.getElementById("progressBar").style.width = `${(currentIndex / materials.length) * 100}%`;
-      document.getElementById("itemMemo").value = item.memo || "";
+      
       document.getElementById("feedbackBox").style.display = "none";
       document.getElementById("feedbackBox").textContent = "";
       document.getElementById("feedbackBox").className = "feedback";
@@ -986,12 +986,7 @@
       document.getElementById("correctBtn").disabled = false;
       document.getElementById("wrongBtn").disabled = false;
     }
-
-    function saveMemo() {
-      if (materials[currentIndex]) materials[currentIndex].memo = document.getElementById("itemMemo").value.trim();
-    }
-
-    function showFeedback(message, isCorrectStyle) {
+function showFeedback(message, isCorrectStyle) {
       const feedbackBox = document.getElementById("feedbackBox");
       feedbackBox.style.display = "block";
       feedbackBox.textContent = message;
@@ -1013,7 +1008,7 @@
         setRatingDisabled(true);
         showFeedback("정확합니다.", true);
         const countedCorrect = retryCount === 0;
-        answers.push({ target:item.target, type:item.type, label:item.label, response:"정확", correct:countedCorrect, retry:retryCount, memo:item.memo || "" });
+        answers.push({ target:item.target, type:item.type, label:item.label, response:"정확", correct:countedCorrect, retry:retryCount });
         setTimeout(nextItem, 1200);
         return;
       }
@@ -1028,7 +1023,7 @@
       choiceLocked = true;
       setRatingDisabled(true);
       showFeedback(`모델을 들려준 뒤 다음 항목으로 진행하세요. 목표: "${item.target}"`, false);
-      answers.push({ target:item.target, type:item.type, label:item.label, response:"부정확", correct:false, retry:retryCount, memo:item.memo || "" });
+      answers.push({ target:item.target, type:item.type, label:item.label, response:"부정확", correct:false, retry:retryCount });
       document.getElementById("nextBtn").style.display = "inline-block";
     }
 

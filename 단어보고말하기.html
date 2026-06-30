@@ -20,7 +20,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .red{background:#e54848;color:white}
 .panel{background:white;border:1px solid #e2e8f0;border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(15,30,60,.06);margin-bottom:20px}
 .panel h2{margin:0 0 16px;font-size:22px}
-.setup-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.setup-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 label{display:block;font-size:13px;font-weight:900;color:#475569;margin-bottom:7px}
 select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;font-size:14px;outline:none;background:white}
 .subject-box,.help-box{background:#f8faff;border:1px solid #e2e8f0;border-radius:18px;padding:16px;margin-bottom:16px;color:#475569;line-height:1.6}
@@ -38,12 +38,18 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 .training-title{font-size:22px;font-weight:900;color:#246bfe;margin-bottom:20px}
 .target-word{font-size:86px;line-height:1.15;font-weight:1000;letter-spacing:-2px;color:#162033;margin-bottom:24px;word-break:keep-all}
 .speech-card{background:white;border:2px solid #dbe7ff;border-radius:22px;padding:18px;max-width:880px;margin:0 auto;box-shadow:0 8px 22px rgba(15,30,60,.06)}
-.mic-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-.mic-row button{min-height:64px;font-size:20px}
+.mic-row{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:12px}
+.mic-btn{width:96px;height:96px;border-radius:50%;border:none;background:#246bfe;color:white;font-size:38px;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 22px rgba(36,107,254,.35);transition:transform .15s,background .2s,box-shadow .2s}
+.mic-btn:active{transform:scale(.95)}
+.mic-btn.listening{background:#e54848;box-shadow:0 0 0 0 rgba(229,72,72,.55);animation:micPulse 1.4s infinite}
+.mic-btn:disabled{opacity:.45;cursor:not-allowed;animation:none}
+.mic-label{font-size:15px;font-weight:900;color:#475569}
+@keyframes micPulse{0%{box-shadow:0 0 0 0 rgba(229,72,72,.55)}70%{box-shadow:0 0 0 18px rgba(229,72,72,0)}100%{box-shadow:0 0 0 0 rgba(229,72,72,0)}}
 .result-box{background:#f8faff;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-top:14px;text-align:left}
 .result-label{font-size:13px;font-weight:900;color:#64748b;margin-bottom:6px}
 .recognized-text{font-size:32px;font-weight:1000;color:#162033;line-height:1.4;min-height:46px}
 .compare-text{margin-top:8px;font-size:17px;font-weight:900;line-height:1.5;color:#475569}
+.playback-btn{margin-top:12px;width:100%}
 .feedback{display:none;margin-top:12px;padding:16px;border-radius:16px;font-size:24px;font-weight:900;text-align:center}
 .feedback.correct{background:#e8fff4;color:#16a06f;border:1px solid #a7f3d0}
 .feedback.wrong{background:#fff1f1;color:#e54848;border:1px solid #fecaca}
@@ -59,7 +65,7 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 .summary-icon.correct{background:#16a06f}
 .summary-icon.wrong{background:#e54848}
 @media(max-width:900px){.setup-grid{grid-template-columns:1fr 1fr}.word-grid{grid-template-columns:repeat(2,1fr)}.summary-grid{grid-template-columns:repeat(2,1fr)}.topbar{align-items:flex-start;flex-direction:column}.target-word{font-size:68px}}
-@media(max-width:560px){.setup-grid,.word-grid,.summary-grid,.mic-row{grid-template-columns:1fr}.question{font-size:22px}.target-word{font-size:54px}.recognized-text{font-size:26px}}
+@media(max-width:560px){.setup-grid,.word-grid,.summary-grid{grid-template-columns:1fr}.question{font-size:22px}.target-word{font-size:54px}.recognized-text{font-size:26px}}
 </style>
 </head>
 <body>
@@ -78,10 +84,10 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
   <div><label for="syllableLength">글자 수</label><select id="syllableLength" onchange="generateMaterials()"><option value="all" selected>전체</option><option value="1">1글자</option><option value="2">2글자</option><option value="3">3글자</option><option value="4">4글자 이상</option></select></div>
   <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="50">50개</option><option value="all">전체</option></select></div>
   <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
-  <div><label for="scoreMode">채점 방식</label><select id="scoreMode"><option value="exact" selected>정확히 일치</option><option value="loose">비슷하면 정답</option></select></div>
 </div>
 <div class="help-box">
-  화면에 제시된 단어를 말하면, 핸드폰 또는 브라우저의 음성인식으로 발화를 텍스트로 변환하여 자동으로 정답/오답을 판정합니다.
+  화면에 제시된 단어를 말하면, 핸드폰 또는 브라우저의 음성인식으로 발화를 텍스트로 변환하여 자동으로 정답/오답을 판정합니다.<br/>
+  인식된 발음과 정답을 자모(초성·중성·종성) 단위로 비교해 채점하므로, 한두 글자 정도 어눌하게 들려도 유사도가 충분히 높으면 정답으로 인정됩니다.
 </div>
 <div class="actions">
   <button class="primary" onclick="generateMaterials()">자료 생성</button>
@@ -101,15 +107,16 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
     <div id="targetWord" class="target-word">단어</div>
     <div class="speech-card">
       <div class="mic-row">
-        <button id="speechStartBtn" class="primary" onclick="startSpeechRecognition()">말하기 시작</button>
-        <button id="speechStopBtn" class="gray" onclick="stopSpeechRecognition()">중지</button>
-        <button id="speechRetryBtn" class="secondary" onclick="clearSpeechResult()">다시 말하기</button>
+        <button id="micBtn" class="mic-btn" onclick="toggleSpeechRecognition()">🎤</button>
+        <div id="micLabel" class="mic-label">눌러서 말하기</div>
       </div>
-      <div id="speechSupportMsg" class="compare-text">버튼을 누르고 단어를 말해주세요.</div>
+      <div id="speechSupportMsg" class="compare-text">마이크를 눌러 단어를 말해주세요.</div>
       <div class="result-box">
         <div class="result-label">인식된 말</div>
         <div id="recognizedText" class="recognized-text">-</div>
         <div id="compareText" class="compare-text"></div>
+        <button id="playbackBtn" class="secondary playback-btn" onclick="playRecordedAudio()" disabled>🔊 내 발음 다시 듣기</button>
+        <audio id="recordedAudioPlayer" hidden></audio>
       </div>
     </div>
   </div>
@@ -136,11 +143,72 @@ let materials=[],currentIndex=0,answers=[],choiceLocked=false,retryCount=0;
 let recognition=null;
 let isRecognizing=false;
 let lastRecognizedText="";
+let micStream=null;
+let mediaRecorder=null;
+let audioChunks=[];
+let recordedAudioUrl=null;
 
 function unique(array){return[...new Set(array)]}
 function shuffle(array){const copy=[...array];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}
 function syllableCount(word){return [...word].filter(ch=>ch>="가"&&ch<="힣").length}
 function normalizeSpeech(value){return String(value||"").replace(/\s+/g,"").replace(/[.,!?~'"“”‘’()[\]{}<>:;·ㆍ]/g,"").trim()}
+
+// ===== 자모 단위 유사도 채점 (어눌한 발음 인정용) =====
+const CHO=["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+const JUNG=["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"];
+const JONG=["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+
+function decomposeToJamo(str){
+  const result=[];
+  for(const ch of String(str||"")){
+    const code=ch.charCodeAt(0)-0xAC00;
+    if(code>=0&&code<=11171){
+      const cho=Math.floor(code/(21*28));
+      const jung=Math.floor((code%(21*28))/28);
+      const jong=code%28;
+      result.push(CHO[cho],JUNG[jung]);
+      if(JONG[jong])result.push(JONG[jong]);
+    }else{
+      result.push(ch);
+    }
+  }
+  return result;
+}
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0));
+  for(let i=0;i<=m;i++)dp[i][0]=i;
+  for(let j=0;j<=n;j++)dp[0][j]=j;
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      if(a[i-1]===b[j-1])dp[i][j]=dp[i-1][j-1];
+      else dp[i][j]=1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+// 0~1 사이 유사도 (1이면 완전 일치). 한글은 자모 단위로 분해해서 비교하므로
+// 음절 하나가 살짝 다르게 들려도(예: "사과"→"사가") 유사도가 크게 떨어지지 않음.
+function jamoSimilarity(expected,spoken){
+  const a=decomposeToJamo(expected);
+  const b=decomposeToJamo(spoken);
+  if(!a.length&&!b.length)return 1;
+  if(!a.length||!b.length)return 0;
+  const dist=levenshtein(a,b);
+  const maxLen=Math.max(a.length,b.length);
+  return 1-(dist/maxLen);
+}
+
+// 유사도 임계값: 글자 수가 짧을수록(1~2글자) 엄격하게, 길수록 조금 더 관대하게
+function similarityThreshold(expected){
+  const n=syllableCount(expected);
+  if(n<=1)return 0.85;
+  if(n===2)return 0.75;
+  if(n===3)return 0.7;
+  return 0.65;
+}
 
 function renderSubject(){
   const box=document.getElementById("subjectBox");
@@ -193,8 +261,7 @@ function setupSpeechRecognition(){
   const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SpeechRecognition){
     document.getElementById("speechSupportMsg").textContent="이 브라우저는 음성인식을 지원하지 않을 수 있습니다. Android Chrome 또는 Edge에서 사용해 주세요.";
-    document.getElementById("speechStartBtn").disabled=true;
-    document.getElementById("speechStopBtn").disabled=true;
+    document.getElementById("micBtn").disabled=true;
     return;
   }
 
@@ -206,36 +273,105 @@ function setupSpeechRecognition(){
 
   recognition.onstart=function(){
     isRecognizing=true;
+    setMicState("listening");
     document.getElementById("speechSupportMsg").textContent="듣고 있습니다. 단어를 천천히 말해주세요.";
+    startAudioRecording();
   };
 
   recognition.onresult=function(event){
     let transcript="";
+    let finalAlternatives=[];
     for(let i=event.resultIndex;i<event.results.length;i++) {
       transcript += event.results[i][0].transcript;
+      if(event.results[i].isFinal){
+        for(let a=0;a<event.results[i].length;a++){
+          finalAlternatives.push(event.results[i][a].transcript);
+        }
+      }
     }
     lastRecognizedText=transcript.trim();
     document.getElementById("recognizedText").textContent=lastRecognizedText||"-";
 
     const isFinal=event.results[event.results.length-1].isFinal;
-    if(isFinal) checkSpeechAnswer(lastRecognizedText);
+    if(isFinal) checkSpeechAnswer(finalAlternatives.length?finalAlternatives:[lastRecognizedText]);
   };
 
   recognition.onerror=function(event){
     isRecognizing=false;
+    setMicState("idle");
+    stopAudioRecording();
     document.getElementById("speechSupportMsg").textContent="음성인식 오류가 발생했습니다. 마이크 권한이나 주변 소음을 확인해 주세요.";
   };
 
   recognition.onend=function(){
     isRecognizing=false;
-    if(!choiceLocked) document.getElementById("speechSupportMsg").textContent="음성인식이 종료되었습니다. 다시 말하려면 말하기 시작을 눌러주세요.";
+    setMicState("idle");
+    stopAudioRecording();
+    if(!choiceLocked) document.getElementById("speechSupportMsg").textContent="다시 말하려면 마이크를 눌러주세요.";
   };
 }
 
-function startSpeechRecognition(){
+// ===== 발화 녹음 & 재생 (청각적 피드백) =====
+function ensureMicStream(){
+  if(micStream)return Promise.resolve(micStream);
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return Promise.reject(new Error("getUserMedia 미지원"));
+  return navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{micStream=stream;return stream;});
+}
+
+function startAudioRecording(){
+  if(!window.MediaRecorder)return;
+  ensureMicStream().then(stream=>{
+    try{
+      audioChunks=[];
+      mediaRecorder=new MediaRecorder(stream);
+      mediaRecorder.ondataavailable=function(e){if(e.data&&e.data.size>0)audioChunks.push(e.data);};
+      mediaRecorder.onstop=function(){
+        if(!audioChunks.length)return;
+        if(recordedAudioUrl)URL.revokeObjectURL(recordedAudioUrl);
+        const blob=new Blob(audioChunks,{type:mediaRecorder.mimeType||"audio/webm"});
+        recordedAudioUrl=URL.createObjectURL(blob);
+        const player=document.getElementById("recordedAudioPlayer");
+        player.src=recordedAudioUrl;
+        document.getElementById("playbackBtn").disabled=false;
+      };
+      mediaRecorder.start();
+    }catch(error){/* 녹음을 지원하지 않는 환경은 조용히 무시 (음성인식만 정상 동작) */}
+  }).catch(()=>{/* 마이크 권한 거부 시 녹음 기능만 비활성, 음성인식은 별도로 동작 */});
+}
+
+function stopAudioRecording(){
+  if(mediaRecorder&&mediaRecorder.state==="recording"){try{mediaRecorder.stop();}catch(error){}}
+}
+
+function playRecordedAudio(){
+  const player=document.getElementById("recordedAudioPlayer");
+  if(!player.src)return;
+  player.currentTime=0;
+  player.play().catch(()=>{});
+}
+
+function setMicState(state){
+  const btn=document.getElementById("micBtn");
+  const label=document.getElementById("micLabel");
+  if(state==="listening"){
+    btn.classList.add("listening");
+    btn.textContent="⏹";
+    label.textContent="듣는 중... (눌러서 중지)";
+  }else{
+    btn.classList.remove("listening");
+    btn.textContent="🎤";
+    label.textContent="눌러서 말하기";
+  }
+}
+
+function toggleSpeechRecognition(){
   if(choiceLocked)return;
   if(!recognition) setupSpeechRecognition();
   if(!recognition)return;
+  if(isRecognizing){
+    stopSpeechRecognition();
+    return;
+  }
   clearSpeechResult(false);
   try{recognition.start();}catch(error){}
 }
@@ -248,26 +384,47 @@ function clearSpeechResult(clearMessage=true){
   lastRecognizedText="";
   document.getElementById("recognizedText").textContent="-";
   document.getElementById("compareText").textContent="";
-  if(clearMessage) document.getElementById("speechSupportMsg").textContent="버튼을 누르고 단어를 말해주세요.";
+  document.getElementById("playbackBtn").disabled=true;
+  if(clearMessage) document.getElementById("speechSupportMsg").textContent="마이크를 눌러 단어를 말해주세요.";
 }
 
 function isSpeechCorrect(expected, spoken){
   const expectedNorm=normalizeSpeech(expected);
   const spokenNorm=normalizeSpeech(spoken);
-  const mode=document.getElementById("scoreMode").value;
   if(!expectedNorm||!spokenNorm)return false;
-  if(mode==="loose")return spokenNorm.includes(expectedNorm)||expectedNorm.includes(spokenNorm);
-  return spokenNorm===expectedNorm;
+  if(spokenNorm===expectedNorm)return true;
+  if(spokenNorm.includes(expectedNorm)||expectedNorm.includes(spokenNorm))return true;
+  const sim=jamoSimilarity(expectedNorm,spokenNorm);
+  return sim>=similarityThreshold(expectedNorm);
 }
 
-function checkSpeechAnswer(spoken){
-  if(choiceLocked)return;
-  const item=materials[currentIndex];
-  const correct=isSpeechCorrect(item.word,spoken);
-  document.getElementById("compareText").textContent=`정답 단어: ${item.word} / 인식 결과: ${spoken||"-"}`;
+// 여러 인식 후보(alternatives) 중 정답과 가장 비슷한 것을 찾아 반환
+// {matched, best, bestSimilarity}
+function pickBestCandidate(expected, candidates){
+  const expectedNorm=normalizeSpeech(expected);
+  let best=null,bestSim=-1;
+  for(const cand of candidates){
+    const cNorm=normalizeSpeech(cand);
+    if(!cNorm)continue;
+    const sim=cNorm===expectedNorm?1:jamoSimilarity(expectedNorm,cNorm);
+    if(sim>bestSim){bestSim=sim;best=cand;}
+    if(isSpeechCorrect(expected,cand))return{matched:true,best:cand,bestSimilarity:sim};
+  }
+  return{matched:false,best:best||candidates[0]||"",bestSimilarity:Math.max(bestSim,0)};
+}
 
-  if(correct){
+function checkSpeechAnswer(spokenCandidates){
+  if(choiceLocked)return;
+  const candidates=Array.isArray(spokenCandidates)?spokenCandidates:[spokenCandidates];
+  const item=materials[currentIndex];
+  const{matched,best,bestSimilarity}=pickBestCandidate(item.word,candidates);
+  const spoken=best||candidates[0]||"";
+  const simPercent=Math.round(Math.max(0,bestSimilarity)*100);
+  document.getElementById("compareText").textContent=`정답 단어: ${item.word} / 인식 결과: ${spoken||"-"} (유사도 ${simPercent}%)`;
+
+  if(matched){
     choiceLocked=true;
+    document.getElementById("micBtn").disabled=true;
     showFeedback("정답입니다.",true);
     answers.push({word:item.word,category:item.category,response:spoken,correct:retryCount===0,retry:retryCount});
     setTimeout(nextItem,1200);
@@ -281,6 +438,7 @@ function checkSpeechAnswer(spoken){
   }
 
   choiceLocked=true;
+  document.getElementById("micBtn").disabled=true;
   showFeedback(`오답입니다. 정답은 "${item.word}"입니다. 다음 문제를 눌러주세요.`,false);
   answers.push({word:item.word,category:item.category,response:spoken,correct:false,retry:retryCount});
   document.getElementById("nextBtn").style.display="inline-block";
@@ -299,6 +457,8 @@ function startTraining(){
 
 function showItem(){
   choiceLocked=false;retryCount=0;lastRecognizedText="";
+  document.getElementById("micBtn").disabled=false;
+  setMicState("idle");
   const item=materials[currentIndex];
   document.getElementById("trainingTitle").textContent=`${currentIndex+1} / ${materials.length}`;
   document.getElementById("targetWord").textContent=item.word;

@@ -203,14 +203,13 @@ function jamoSimilarity(expected,spoken){
   return 1-(dist/maxLen);
 }
 
-// 유사도 임계값: 조금 어눌해도 정답으로 인정되도록 관대하게 설정
-// (아이패드 등 모바일 브라우저 음성인식은 소음이나 발음에 민감하므로 여유를 둠)
+// 유사도 임계값: 글자 수가 짧을수록(1~2글자) 엄격하게, 길수록 조금 더 관대하게
 function similarityThreshold(expected){
   const n=syllableCount(expected);
-  if(n<=1)return 0.70;
-  if(n===2)return 0.60;
-  if(n===3)return 0.55;
-  return 0.50;
+  if(n<=1)return 0.85;
+  if(n===2)return 0.75;
+  if(n===3)return 0.7;
+  return 0.65;
 }
 
 function renderSubject(){
@@ -450,29 +449,26 @@ function checkSpeechAnswer(spokenCandidates){
   const simPercent=Math.round(Math.max(0,bestSimilarity)*100);
   document.getElementById("compareText").textContent=`정답 단어: ${item.word} / 인식 결과: ${spoken||"-"} (유사도 ${simPercent}%)`;
 
-  // 판정 즉시 잠그고, 정답/오답 상관없이 자동으로 다음 문제로 진행
+  if(matched){
+    choiceLocked=true;
+    document.getElementById("micBtn").disabled=true;
+    showFeedback("정답입니다.",true);
+    answers.push({word:item.word,category:item.category,response:spoken,correct:retryCount===0,retry:retryCount});
+    setTimeout(nextItem,1200);
+    return;
+  }
+
+  retryCount+=1;
+  if(retryCount===1){
+    showFeedback("다시 말해보세요.",false);
+    return;
+  }
+
   choiceLocked=true;
   document.getElementById("micBtn").disabled=true;
-
-  if(matched){
-    showFeedback("정답입니다.",true);
-    answers.push({word:item.word,category:item.category,response:spoken,correct:true,retry:0});
-    scheduleAutoNext(1400);
-  }else{
-    showFeedback(`오답입니다. 정답은 "${item.word}"입니다.`,false);
-    answers.push({word:item.word,category:item.category,response:spoken,correct:false,retry:0});
-    scheduleAutoNext(2400);
-  }
-}
-
-// 다음 문제로 자동 진행하기 위한 타이머 (사용자가 "다음 문제" 버튼을 누르면 즉시 진행)
-let autoNextTimer=null;
-function scheduleAutoNext(delay){
-  clearAutoNext();
-  autoNextTimer=setTimeout(()=>{autoNextTimer=null;nextItem();},delay);
-}
-function clearAutoNext(){
-  if(autoNextTimer){clearTimeout(autoNextTimer);autoNextTimer=null;}
+  showFeedback(`오답입니다. 정답은 "${item.word}"입니다. 다음 문제를 눌러주세요.`,false);
+  answers.push({word:item.word,category:item.category,response:spoken,correct:false,retry:retryCount});
+  document.getElementById("nextBtn").style.display="inline-block";
 }
 
 function startTraining(){
@@ -493,7 +489,6 @@ function startTraining(){
 }
 
 function showItem(){
-  clearAutoNext();
   choiceLocked=false;retryCount=0;lastRecognizedText="";
   document.getElementById("micBtn").disabled=false;
   setMicState("idle");
@@ -504,10 +499,7 @@ function showItem(){
   document.getElementById("feedbackBox").style.display="none";
   document.getElementById("feedbackBox").textContent="";
   document.getElementById("feedbackBox").className="feedback";
-  // "다음 문제" 버튼은 상시 표시 (인식이 실패하거나 아이가 답을 못할 때 넘어갈 수 있게)
-  const nb=document.getElementById("nextBtn");
-  nb.style.display="inline-block";
-  nb.textContent="다음 문제";
+  document.getElementById("nextBtn").style.display="none";
   clearSpeechResult();
 }
 
@@ -516,25 +508,9 @@ function showFeedback(message,isCorrectStyle){
   box.style.display="block";box.textContent=message;box.className="feedback "+(isCorrectStyle?"correct":"wrong");
 }
 
-// "다음 문제" 버튼: 채점 완료 후엔 자동타이머 취소하고 즉시 진행,
-// 아직 답하기 전이라도 (인식이 안 되는 등의 상황) 그냥 넘어갈 수 있게 함
-function nextQuestionManual(){
-  clearAutoNext();
-  // 아직 마이크가 켜져 있으면 정리
-  stopSpeechRecognition();
-  // 아직 답하지 않고 넘긴 경우 미응답으로 기록
-  if(!choiceLocked){
-    const item=materials[currentIndex];
-    if(item){
-      answers.push({word:item.word,category:item.category,response:"(응답 없음)",correct:false,retry:0,skipped:true});
-    }
-    choiceLocked=true;
-  }
-  nextItem();
-}
+function nextQuestionManual(){if(!choiceLocked)return;nextItem()}
 
 function nextItem(){
-  clearAutoNext();
   stopSpeechRecognition();
   // iOS는 recognition.stop()의 정리가 지연되므로 짧은 딜레이로 다음 문제 렌더링 렉 방지
   const advance=()=>{

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -133,8 +133,6 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 
 <script>
 const TRAINING_NAME="단어 보고 말하기 훈련";
-// iOS/iPadOS 감지 (iPadOS 13+는 MacIntel + 터치포인트로 위장됨)
-const IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const Store={load(key,fallback){try{const value=localStorage.getItem(key);return value?JSON.parse(value):fallback}catch{return fallback}},save(key,value){localStorage.setItem(key,JSON.stringify(value))}};
 const subjects=Store.load("speech_subjects",[]);
 const selectedSubjectId=Store.load("speech_selected_subject",null);
@@ -269,17 +267,12 @@ function setupSpeechRecognition(){
 
   recognition=new SpeechRecognition();
   recognition.lang="ko-KR";
-  // iOS Safari는 interimResults가 불안정 → 최종결과만 받도록 함
-  recognition.interimResults=!IS_IOS;
+  recognition.interimResults=true;
   recognition.continuous=false;
   recognition.maxAlternatives=3;
 
-  // iOS에서 최종결과 이벤트가 누락되는 경우를 대비해 후보군을 별도로 누적
-  let iosFinalCandidates=[];
-
   recognition.onstart=function(){
     isRecognizing=true;
-    iosFinalCandidates=[];
     setMicState("listening");
     document.getElementById("speechSupportMsg").textContent="듣고 있습니다. 단어를 천천히 말해주세요.";
     startAudioRecording();
@@ -299,9 +292,6 @@ function setupSpeechRecognition(){
     lastRecognizedText=transcript.trim();
     document.getElementById("recognizedText").textContent=lastRecognizedText||"-";
 
-    // iOS 대응: 최종 후보를 별도 저장 (onend에서 fallback으로 사용)
-    if(finalAlternatives.length) iosFinalCandidates=finalAlternatives;
-
     const isFinal=event.results[event.results.length-1].isFinal;
     if(isFinal) checkSpeechAnswer(finalAlternatives.length?finalAlternatives:[lastRecognizedText]);
   };
@@ -310,28 +300,14 @@ function setupSpeechRecognition(){
     isRecognizing=false;
     setMicState("idle");
     stopAudioRecording();
-    // no-speech 등 흔한 오류는 사용자에게 부담을 덜 주는 메시지로
-    if(event&&event.error==="no-speech"){
-      if(!choiceLocked) document.getElementById("speechSupportMsg").textContent="소리가 인식되지 않았어요. 마이크를 눌러 다시 말해주세요.";
-    }else{
-      document.getElementById("speechSupportMsg").textContent="음성인식 오류가 발생했습니다. 마이크 권한이나 주변 소음을 확인해 주세요.";
-    }
+    document.getElementById("speechSupportMsg").textContent="음성인식 오류가 발생했습니다. 마이크 권한이나 주변 소음을 확인해 주세요.";
   };
 
   recognition.onend=function(){
     isRecognizing=false;
     setMicState("idle");
     stopAudioRecording();
-    // 아이패드 대응 핵심: 최종결과 이벤트가 오지 않은 채 종료된 경우
-    // 지금까지 인식된 텍스트로 채점을 진행해 "다음 문제로 못 넘어가는" 상황을 방지
-    if(!choiceLocked){
-      const candidates=iosFinalCandidates.length?iosFinalCandidates:(lastRecognizedText?[lastRecognizedText]:[]);
-      if(candidates.length){
-        checkSpeechAnswer(candidates);
-      }else{
-        document.getElementById("speechSupportMsg").textContent="다시 말하려면 마이크를 눌러주세요.";
-      }
-    }
+    if(!choiceLocked) document.getElementById("speechSupportMsg").textContent="다시 말하려면 마이크를 눌러주세요.";
   };
 }
 
@@ -343,9 +319,6 @@ function ensureMicStream(){
 }
 
 function startAudioRecording(){
-  // 아이패드/아이폰 Safari는 SpeechRecognition과 MediaRecorder가 같은 마이크를 동시에 잡으면
-  // 심한 렉이 걸리거나 인식이 멈추므로 iOS에서는 녹음(재생) 기능을 건너뜀
-  if(IS_IOS)return;
   if(!window.MediaRecorder)return;
   ensureMicStream().then(stream=>{
     try{
@@ -479,13 +452,7 @@ function startTraining(){
   document.getElementById("statsView").classList.add("hidden");
   document.getElementById("trainingView").classList.remove("hidden");
   document.getElementById("finishView").classList.add("hidden");
-  currentIndex=0;answers=[];setupSpeechRecognition();
-  // iOS는 녹음 기능을 쓰지 않으므로 "다시 듣기" 버튼을 숨김
-  if(IS_IOS){
-    const pb=document.getElementById("playbackBtn");
-    if(pb) pb.style.display="none";
-  }
-  showItem();
+  currentIndex=0;answers=[];setupSpeechRecognition();showItem();
 }
 
 function showItem(){
@@ -512,12 +479,8 @@ function nextQuestionManual(){if(!choiceLocked)return;nextItem()}
 
 function nextItem(){
   stopSpeechRecognition();
-  // iOS는 recognition.stop()의 정리가 지연되므로 짧은 딜레이로 다음 문제 렌더링 렉 방지
-  const advance=()=>{
-    currentIndex++;
-    if(currentIndex>=materials.length)finishTraining();else showItem();
-  };
-  if(IS_IOS) setTimeout(advance,180); else advance();
+  currentIndex++;
+  if(currentIndex>=materials.length)finishTraining();else showItem();
 }
 
 function finishTraining(){

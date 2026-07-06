@@ -373,16 +373,16 @@ function startRecognitionSafetyTimer(){
   recognitionSafetyTimer=setTimeout(()=>{
     recognitionSafetyTimer=null;
     if(isRecognizing&&!choiceLocked){
-      try{recognition&&recognition.stop();}catch(e){}
+      stopSpeechRecognition();
     }
-  },8000); // 8초 후 강제 종료
+  },8000);
 }
 function clearRecognitionSafetyTimer(){
   if(recognitionSafetyTimer){clearTimeout(recognitionSafetyTimer);recognitionSafetyTimer=null;}
 }
 
-// 디바운스 자동 채점: 인식 결과가 들어온 뒤 일정 시간(1.5초) 동안 새 결과가 없으면
-// = 사용자가 말을 마쳤다고 보고 강제로 stop → onend fallback 채점 실행
+// 디바운스 자동 채점: 인식 결과가 들어온 뒤 1초 동안 새 결과가 없으면
+// = 사용자가 말을 마쳤다고 보고 강제로 stop → 강제 채점 실행
 // (iOS Safari에서 isFinal 이벤트가 오지 않는 문제를 확실하게 커버)
 let debounceCheckTimer=null;
 function scheduleDebounceCheck(){
@@ -390,9 +390,9 @@ function scheduleDebounceCheck(){
   debounceCheckTimer=setTimeout(()=>{
     debounceCheckTimer=null;
     if(isRecognizing&&!choiceLocked){
-      try{recognition&&recognition.stop();}catch(e){}
+      stopSpeechRecognition();
     }
-  },1500);
+  },1000);
 }
 function clearDebounceCheck(){
   if(debounceCheckTimer){clearTimeout(debounceCheckTimer);debounceCheckTimer=null;}
@@ -407,12 +407,14 @@ function showManualCheckBtn(show){
 function manualCheckSpeech(){
   if(choiceLocked)return;
   clearDebounceCheck();
-  // 인식이 아직 진행 중이면 stop → onend에서 채점
-  // 이미 종료됐다면 lastRecognizedText로 즉시 채점
+  // stopSpeechRecognition이 내부적으로 강제 채점 안전장치를 실행하므로
+  // 어떤 상황(인식 진행 중이든 이미 종료됐든)이든 확실히 채점 트리거됨
   if(isRecognizing){
-    try{recognition&&recognition.stop();}catch(e){}
+    stopSpeechRecognition();
   }else if(lastRecognizedText){
     checkSpeechAnswer([lastRecognizedText]);
+  }else{
+    document.getElementById("speechSupportMsg").textContent="아직 인식된 말이 없어요. 마이크를 누르고 말해주세요.";
   }
 }
 
@@ -486,6 +488,14 @@ function toggleSpeechRecognition(){
 
 function stopSpeechRecognition(){
   if(recognition&&isRecognizing){try{recognition.stop();}catch(error){}}
+  // 확실한 강제 채점 안전장치: stop() 호출 후 800ms 내에 채점이 안 됐고
+  // 인식된 텍스트가 있으면 무조건 그것으로 채점 실행.
+  // (iOS Safari에서 stop() 후 onend 이벤트가 안 오는 극단적 상황 대비)
+  setTimeout(()=>{
+    if(!choiceLocked&&lastRecognizedText){
+      checkSpeechAnswer([lastRecognizedText]);
+    }
+  },800);
 }
 
 function clearSpeechResult(clearMessage=true){

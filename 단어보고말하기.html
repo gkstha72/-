@@ -270,8 +270,10 @@ function setupSpeechRecognition(){
 
   recognition=new SpeechRecognition();
   recognition.lang="ko-KR";
-  // iOS Safari는 interimResults가 불안정 → 최종결과만 받도록 함
-  recognition.interimResults=!IS_IOS;
+  // interimResults=true로 두어 중간 결과가 계속 들어오도록 함.
+  // (iOS Safari에서 false로 두면 onresult 이벤트 자체가 발생하지 않아 채점이 안 되는 경우가 있음)
+  // 렉의 원인이었던 MediaRecorder는 iOS에서 이미 비활성화했으므로 interimResults=true여도 안전함.
+  recognition.interimResults=true;
   recognition.continuous=false;
   recognition.maxAlternatives=3;
 
@@ -284,6 +286,7 @@ function setupSpeechRecognition(){
     setMicState("listening");
     document.getElementById("speechSupportMsg").textContent="듣고 있습니다. 단어를 천천히 말해주세요.";
     startAudioRecording();
+    startRecognitionSafetyTimer();
   };
 
   recognition.onresult=function(event){
@@ -311,6 +314,7 @@ function setupSpeechRecognition(){
     isRecognizing=false;
     setMicState("idle");
     stopAudioRecording();
+    clearRecognitionSafetyTimer();
     // no-speech 등 흔한 오류는 사용자에게 부담을 덜 주는 메시지로
     if(event&&event.error==="no-speech"){
       if(!choiceLocked) document.getElementById("speechSupportMsg").textContent="소리가 인식되지 않았어요. 마이크를 눌러 다시 말해주세요.";
@@ -323,6 +327,7 @@ function setupSpeechRecognition(){
     isRecognizing=false;
     setMicState("idle");
     stopAudioRecording();
+    clearRecognitionSafetyTimer();
     // 아이패드 대응 핵심: 최종결과 이벤트가 오지 않은 채 종료된 경우
     // 지금까지 인식된 텍스트로 채점을 진행해 "다음 문제로 못 넘어가는" 상황을 방지
     if(!choiceLocked){
@@ -334,6 +339,31 @@ function setupSpeechRecognition(){
       }
     }
   };
+
+  // 사용자가 말을 마친 것 같으면 잠시 후 강제 stop → onend 트리거
+  // (iOS Safari가 자동으로 stop을 잘 못하는 경우 대비)
+  recognition.onspeechend=function(){
+    setTimeout(()=>{
+      if(isRecognizing&&!choiceLocked){
+        try{recognition.stop();}catch(e){}
+      }
+    },700);
+  };
+}
+
+// 마이크가 켜진 뒤 일정 시간 동안 어떤 이벤트도 없으면 강제로 종료 (안전장치)
+let recognitionSafetyTimer=null;
+function startRecognitionSafetyTimer(){
+  clearRecognitionSafetyTimer();
+  recognitionSafetyTimer=setTimeout(()=>{
+    recognitionSafetyTimer=null;
+    if(isRecognizing&&!choiceLocked){
+      try{recognition&&recognition.stop();}catch(e){}
+    }
+  },10000); // 10초 후 강제 종료
+}
+function clearRecognitionSafetyTimer(){
+  if(recognitionSafetyTimer){clearTimeout(recognitionSafetyTimer);recognitionSafetyTimer=null;}
 }
 
 // ===== 발화 녹음 & 재생 (청각적 피드백) =====

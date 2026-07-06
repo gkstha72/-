@@ -327,6 +327,7 @@
     }
 
     .program-card {
+      position: relative;
       border: 1px solid #e2e8f0;
       border-radius: 22px;
       padding: 18px;
@@ -335,6 +336,29 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+    }
+
+    /* NEW 배지: data-added 속성이 있고 최근에 추가된 카드에 자동 표시됨 */
+    .program-card.is-new::before {
+      content: "NEW";
+      position: absolute;
+      top: -8px;
+      right: -6px;
+      background: linear-gradient(135deg, #ff4d5e, #e54848);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      padding: 5px 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(229, 72, 72, 0.35);
+      z-index: 2;
+      animation: newPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes newPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
     }
 
     .program-card h3 {
@@ -1182,7 +1206,7 @@
                 </div>
                 <button class="primary" onclick="openProgram('단어보고말하기.html')">훈련 시작</button>
               </article>
-              <article class="program-card">
+              <article class="program-card" data-added="2026-07-06">
                 <div>
                   <h3>따라 말하기 훈련</h3>
                   <p>자모, 숫자, 요일, 노래, 인사말 등 익숙한 표현을 듣고 그대로 따라 말하는 자동발화 훈련입니다.</p>
@@ -1633,6 +1657,29 @@
       location.reload();
     }
 
+    // ===== NEW 배지 자동 표시 =====
+    // data-added="YYYY-MM-DD" 속성이 있는 program-card 중 NEW_BADGE_DAYS 이내인 것에 NEW 배지 표시
+    // 새 프로그램을 추가하거나 기존 프로그램을 크게 업데이트할 때, 해당 카드에
+    //   <article class="program-card" data-added="2026-07-06"> 처럼 오늘 날짜를 넣으면 됨
+    const NEW_BADGE_DAYS = 2; // 며칠 동안 NEW 표시할지 (이 값만 바꾸면 표시 기간 조절 가능)
+    function refreshNewBadges() {
+      const now = Date.now();
+      const limitMs = NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
+      document.querySelectorAll(".program-card[data-added]").forEach(card => {
+        const raw = card.dataset.added;
+        // YYYY-MM-DD를 그날 자정(로컬 시간)으로 해석 → 추가한 날부터 딱 NEW_BADGE_DAYS만큼 표시
+        const added = new Date(raw + "T00:00:00");
+        if (isNaN(added.getTime())) return;
+        const diff = now - added.getTime();
+        if (diff >= 0 && diff <= limitMs) {
+          card.classList.add("is-new");
+        } else {
+          card.classList.remove("is-new");
+        }
+      });
+    }
+
+    refreshNewBadges();
     renderSubjects();
     const shouldReturnToProgramPage = sessionStorage.getItem("speech_return_to_program_page") === "1";
     if (shouldReturnToProgramPage && selectedSubjectId) {

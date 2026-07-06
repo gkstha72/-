@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -133,6 +133,8 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 
 <script>
 const TRAINING_NAME="단어 보고 말하기 훈련";
+// iOS/iPadOS 감지 (iPadOS 13+는 MacIntel + 터치포인트로 위장됨)
+const IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const Store={load(key,fallback){try{const value=localStorage.getItem(key);return value?JSON.parse(value):fallback}catch{return fallback}},save(key,value){localStorage.setItem(key,JSON.stringify(value))}};
 const subjects=Store.load("speech_subjects",[]);
 const selectedSubjectId=Store.load("speech_selected_subject",null);
@@ -201,13 +203,14 @@ function jamoSimilarity(expected,spoken){
   return 1-(dist/maxLen);
 }
 
-// 유사도 임계값: 글자 수가 짧을수록(1~2글자) 엄격하게, 길수록 조금 더 관대하게
+// 유사도 임계값: 조금 어눌해도 정답으로 인정되도록 관대하게 설정
+// (아이패드 등 모바일 브라우저 음성인식은 소음이나 발음에 민감하므로 여유를 둠)
 function similarityThreshold(expected){
   const n=syllableCount(expected);
-  if(n<=1)return 0.85;
-  if(n===2)return 0.75;
-  if(n===3)return 0.7;
-  return 0.65;
+  if(n<=1)return 0.70;
+  if(n===2)return 0.60;
+  if(n===3)return 0.55;
+  return 0.50;
 }
 
 function renderSubject(){
@@ -267,12 +270,17 @@ function setupSpeechRecognition(){
 
   recognition=new SpeechRecognition();
   recognition.lang="ko-KR";
-  recognition.interimResults=true;
+  // iOS Safari는 interimResults가 불안정 → 최종결과만 받도록 함
+  recognition.interimResults=!IS_IOS;
   recognition.continuous=false;
   recognition.maxAlternatives=3;
 
+  // iOS에서 최종결과 이벤트가 누락되는 경우를 대비해 후보군을 별도로 누적
+  let iosFinalCandidates=[];
+
   recognition.onstart=function(){
     isRecognizing=true;
+    iosFinalCandidates=[];
     setMicState("listening");
     document.getElementById("speechSupportMsg").textContent="듣고 있습니다. 단어를 천천히 말해주세요.";
     startAudioRecording();
@@ -292,6 +300,9 @@ function setupSpeechRecognition(){
     lastRecognizedText=transcript.trim();
     document.getElementById("recognizedText").textContent=lastRecognizedText||"-";
 
+    // iOS 대응: 최종 후보를 별도 저장 (onend에서 fallback으로 사용)
+    if(finalAlternatives.length) iosFinalCandidates=finalAlternatives;
+
     const isFinal=event.results[event.results.length-1].isFinal;
     if(isFinal) checkSpeechAnswer(finalAlternatives.length?finalAlternatives:[lastRecognizedText]);
   };
@@ -300,14 +311,28 @@ function setupSpeechRecognition(){
     isRecognizing=false;
     setMicState("idle");
     stopAudioRecording();
-    document.getElementById("speechSupportMsg").textContent="음성인식 오류가 발생했습니다. 마이크 권한이나 주변 소음을 확인해 주세요.";
+    // no-speech 등 흔한 오류는 사용자에게 부담을 덜 주는 메시지로
+    if(event&&event.error==="no-speech"){
+      if(!choiceLocked) document.getElementById("speechSupportMsg").textContent="소리가 인식되지 않았어요. 마이크를 눌러 다시 말해주세요.";
+    }else{
+      document.getElementById("speechSupportMsg").textContent="음성인식 오류가 발생했습니다. 마이크 권한이나 주변 소음을 확인해 주세요.";
+    }
   };
 
   recognition.onend=function(){
     isRecognizing=false;
     setMicState("idle");
     stopAudioRecording();
-    if(!choiceLocked) document.getElementById("speechSupportMsg").textContent="다시 말하려면 마이크를 눌러주세요.";
+    // 아이패드 대응 핵심: 최종결과 이벤트가 오지 않은 채 종료된 경우
+    // 지금까지 인식된 텍스트로 채점을 진행해 "다음 문제로 못 넘어가는" 상황을 방지
+    if(!choiceLocked){
+      const candidates=iosFinalCandidates.length?iosFinalCandidates:(lastRecognizedText?[lastRecognizedText]:[]);
+      if(candidates.length){
+        checkSpeechAnswer(candidates);
+      }else{
+        document.getElementById("speechSupportMsg").textContent="다시 말하려면 마이크를 눌러주세요.";
+      }
+    }
   };
 }
 
@@ -319,6 +344,9 @@ function ensureMicStream(){
 }
 
 function startAudioRecording(){
+  // 아이패드/아이폰 Safari는 SpeechRecognition과 MediaRecorder가 같은 마이크를 동시에 잡으면
+  // 심한 렉이 걸리거나 인식이 멈추므로 iOS에서는 녹음(재생) 기능을 건너뜀
+  if(IS_IOS)return;
   if(!window.MediaRecorder)return;
   ensureMicStream().then(stream=>{
     try{
@@ -422,26 +450,29 @@ function checkSpeechAnswer(spokenCandidates){
   const simPercent=Math.round(Math.max(0,bestSimilarity)*100);
   document.getElementById("compareText").textContent=`정답 단어: ${item.word} / 인식 결과: ${spoken||"-"} (유사도 ${simPercent}%)`;
 
-  if(matched){
-    choiceLocked=true;
-    document.getElementById("micBtn").disabled=true;
-    showFeedback("정답입니다.",true);
-    answers.push({word:item.word,category:item.category,response:spoken,correct:retryCount===0,retry:retryCount});
-    setTimeout(nextItem,1200);
-    return;
-  }
-
-  retryCount+=1;
-  if(retryCount===1){
-    showFeedback("다시 말해보세요.",false);
-    return;
-  }
-
+  // 판정 즉시 잠그고, 정답/오답 상관없이 자동으로 다음 문제로 진행
   choiceLocked=true;
   document.getElementById("micBtn").disabled=true;
-  showFeedback(`오답입니다. 정답은 "${item.word}"입니다. 다음 문제를 눌러주세요.`,false);
-  answers.push({word:item.word,category:item.category,response:spoken,correct:false,retry:retryCount});
-  document.getElementById("nextBtn").style.display="inline-block";
+
+  if(matched){
+    showFeedback("정답입니다.",true);
+    answers.push({word:item.word,category:item.category,response:spoken,correct:true,retry:0});
+    scheduleAutoNext(1400);
+  }else{
+    showFeedback(`오답입니다. 정답은 "${item.word}"입니다.`,false);
+    answers.push({word:item.word,category:item.category,response:spoken,correct:false,retry:0});
+    scheduleAutoNext(2400);
+  }
+}
+
+// 다음 문제로 자동 진행하기 위한 타이머 (사용자가 "다음 문제" 버튼을 누르면 즉시 진행)
+let autoNextTimer=null;
+function scheduleAutoNext(delay){
+  clearAutoNext();
+  autoNextTimer=setTimeout(()=>{autoNextTimer=null;nextItem();},delay);
+}
+function clearAutoNext(){
+  if(autoNextTimer){clearTimeout(autoNextTimer);autoNextTimer=null;}
 }
 
 function startTraining(){
@@ -452,10 +483,17 @@ function startTraining(){
   document.getElementById("statsView").classList.add("hidden");
   document.getElementById("trainingView").classList.remove("hidden");
   document.getElementById("finishView").classList.add("hidden");
-  currentIndex=0;answers=[];setupSpeechRecognition();showItem();
+  currentIndex=0;answers=[];setupSpeechRecognition();
+  // iOS는 녹음 기능을 쓰지 않으므로 "다시 듣기" 버튼을 숨김
+  if(IS_IOS){
+    const pb=document.getElementById("playbackBtn");
+    if(pb) pb.style.display="none";
+  }
+  showItem();
 }
 
 function showItem(){
+  clearAutoNext();
   choiceLocked=false;retryCount=0;lastRecognizedText="";
   document.getElementById("micBtn").disabled=false;
   setMicState("idle");
@@ -466,7 +504,10 @@ function showItem(){
   document.getElementById("feedbackBox").style.display="none";
   document.getElementById("feedbackBox").textContent="";
   document.getElementById("feedbackBox").className="feedback";
-  document.getElementById("nextBtn").style.display="none";
+  // "다음 문제" 버튼은 상시 표시 (인식이 실패하거나 아이가 답을 못할 때 넘어갈 수 있게)
+  const nb=document.getElementById("nextBtn");
+  nb.style.display="inline-block";
+  nb.textContent="다음 문제";
   clearSpeechResult();
 }
 
@@ -475,12 +516,32 @@ function showFeedback(message,isCorrectStyle){
   box.style.display="block";box.textContent=message;box.className="feedback "+(isCorrectStyle?"correct":"wrong");
 }
 
-function nextQuestionManual(){if(!choiceLocked)return;nextItem()}
+// "다음 문제" 버튼: 채점 완료 후엔 자동타이머 취소하고 즉시 진행,
+// 아직 답하기 전이라도 (인식이 안 되는 등의 상황) 그냥 넘어갈 수 있게 함
+function nextQuestionManual(){
+  clearAutoNext();
+  // 아직 마이크가 켜져 있으면 정리
+  stopSpeechRecognition();
+  // 아직 답하지 않고 넘긴 경우 미응답으로 기록
+  if(!choiceLocked){
+    const item=materials[currentIndex];
+    if(item){
+      answers.push({word:item.word,category:item.category,response:"(응답 없음)",correct:false,retry:0,skipped:true});
+    }
+    choiceLocked=true;
+  }
+  nextItem();
+}
 
 function nextItem(){
+  clearAutoNext();
   stopSpeechRecognition();
-  currentIndex++;
-  if(currentIndex>=materials.length)finishTraining();else showItem();
+  // iOS는 recognition.stop()의 정리가 지연되므로 짧은 딜레이로 다음 문제 렌더링 렉 방지
+  const advance=()=>{
+    currentIndex++;
+    if(currentIndex>=materials.length)finishTraining();else showItem();
+  };
+  if(IS_IOS) setTimeout(advance,180); else advance();
 }
 
 function finishTraining(){

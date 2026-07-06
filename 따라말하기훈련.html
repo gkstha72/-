@@ -168,27 +168,57 @@ const selectedSubject=subjects.find(subject=>subject.id===selectedSubjectId)||nu
 // ===== 자동발화 훈련 자료 =====
 // 필요할 때 얼마든지 추가/수정 가능. text는 TTS로 읽어줄 내용, title은 카드에 표시될 이름.
 const AUTOMATIC_SPEECH_DB=[
-  // --- 자모음 ---
+  // ============================================================
+  // 자모음
+  // ============================================================
   {id:"cons_short",category:"자모음",title:"가나다라마바사",text:"가 나 다 라 마 바 사"},
   {id:"cons_full",category:"자모음",title:"가나다라마바사아자차카타파하",text:"가 나 다 라 마 바 사 아 자 차 카 타 파 하"},
+  {id:"cons_name",category:"자모음",title:"자음 이름 (기역~히읗)",text:"기역 니은 디귿 리을 미음 비읍 시옷 이응 지읒 치읓 키읔 티읕 피읖 히읗"},
   {id:"vowel_short",category:"자모음",title:"아야어여오요",text:"아 야 어 여 오 요"},
   {id:"vowel_full",category:"자모음",title:"아야어여오요우유으이",text:"아 야 어 여 오 요 우 유 으 이"},
+  {id:"vowel_ai",category:"자모음",title:"아이우에오",text:"아 이 우 에 오"},
+  {id:"cv_ga",category:"자모음",title:"가갸거겨고교구규그기",text:"가 갸 거 겨 고 교 구 규 그 기"},
+  {id:"cv_na",category:"자모음",title:"나냐너녀노뇨누뉴느니",text:"나 냐 너 녀 노 뇨 누 뉴 느 니"},
+  {id:"cv_da",category:"자모음",title:"다댜더뎌도됴두듀드디",text:"다 댜 더 뎌 도 됴 두 듀 드 디"},
+  {id:"cv_la",category:"자모음",title:"라랴러려로료루류르리",text:"라 랴 러 려 로 료 루 류 르 리"},
+  {id:"cv_ma",category:"자모음",title:"마먀머며모묘무뮤므미",text:"마 먀 머 며 모 묘 무 뮤 므 미"},
 
-  // --- 숫자 ---
+  // ============================================================
+  // 숫자
+  // ============================================================
   {id:"num_1_5_s",category:"숫자",title:"일 이 삼 사 오 (1~5)",text:"일 이 삼 사 오"},
   {id:"num_1_10_s",category:"숫자",title:"일 이 삼 사 오 육 칠 팔 구 십 (1~10)",text:"일 이 삼 사 오 육 칠 팔 구 십"},
   {id:"num_1_5_n",category:"숫자",title:"하나 둘 셋 넷 다섯 (1~5)",text:"하나 둘 셋 넷 다섯"},
   {id:"num_1_10_n",category:"숫자",title:"하나 둘 셋 … 열 (1~10)",text:"하나 둘 셋 넷 다섯 여섯 일곱 여덟 아홉 열"},
-  {id:"num_tens",category:"숫자",title:"십 이십 삼십 … 백",text:"십 이십 삼십 사십 오십 육십 칠십 팔십 구십 백"},
+  {id:"num_11_20_n",category:"숫자",title:"열하나 ~ 스물 (11~20)",text:"열하나 열둘 열셋 열넷 열다섯 열여섯 열일곱 열여덟 열아홉 스물"},
+  {id:"num_tens",category:"숫자",title:"십 이십 삼십 … 백 (10~100)",text:"십 이십 삼십 사십 오십 육십 칠십 팔십 구십 백"},
+  {id:"num_tens_n",category:"숫자",title:"열 스물 서른 … 백 (순우리말)",text:"열 스물 서른 마흔 쉰 예순 일흔 여든 아흔 백"},
+  {id:"num_hundreds",category:"숫자",title:"백 이백 삼백 … 천 (100~1000)",text:"백 이백 삼백 사백 오백 육백 칠백 팔백 구백 천"},
   {id:"num_10_1_desc",category:"숫자",title:"거꾸로 세기 (10부터 1까지)",text:"십 구 팔 칠 육 오 사 삼 이 일"},
+  {id:"num_odd",category:"숫자",title:"홀수 세기 (1,3,5,7,9)",text:"일 삼 오 칠 구"},
+  {id:"num_even",category:"숫자",title:"짝수 세기 (2,4,6,8,10)",text:"이 사 육 팔 십"},
+  {id:"num_by5",category:"숫자",title:"다섯씩 세기 (5,10,15…50)",text:"오 십 십오 이십 이십오 삼십 삼십오 사십 사십오 오십"},
+  {id:"num_1_20_s",category:"숫자",title:"일부터 이십까지 (1~20)",text:"일 이 삼 사 오 육 칠 팔 구 십 십일 십이 십삼 십사 십오 십육 십칠 십팔 십구 이십"},
 
-  // --- 요일 · 달력 ---
+  // ============================================================
+  // 요일 · 달력
+  // ============================================================
   {id:"days_full",category:"요일 · 달력",title:"월요일 ~ 일요일",text:"월요일 화요일 수요일 목요일 금요일 토요일 일요일"},
   {id:"days_short",category:"요일 · 달력",title:"월 화 수 목 금 토 일",text:"월 화 수 목 금 토 일"},
   {id:"months",category:"요일 · 달력",title:"1월 ~ 12월",text:"일월 이월 삼월 사월 오월 유월 칠월 팔월 구월 시월 십일월 십이월"},
   {id:"seasons",category:"요일 · 달력",title:"봄 여름 가을 겨울",text:"봄 여름 가을 겨울"},
+  {id:"time_am_pm",category:"요일 · 달력",title:"오전 오후",text:"오전 오후"},
+  {id:"time_daypart",category:"요일 · 달력",title:"아침 점심 저녁",text:"아침 점심 저녁"},
+  {id:"time_daypart2",category:"요일 · 달력",title:"새벽 아침 낮 저녁 밤",text:"새벽 아침 낮 저녁 밤"},
+  {id:"time_yesterday",category:"요일 · 달력",title:"어제 오늘 내일 모레",text:"어제 오늘 내일 모레"},
+  {id:"time_yesterday2",category:"요일 · 달력",title:"그저께 어제 오늘 내일 모레 글피",text:"그저께 어제 오늘 내일 모레 글피"},
+  {id:"time_week",category:"요일 · 달력",title:"지난주 이번주 다음주",text:"지난주 이번주 다음주"},
+  {id:"time_month",category:"요일 · 달력",title:"지난달 이번달 다음달",text:"지난달 이번달 다음달"},
+  {id:"time_year",category:"요일 · 달력",title:"작년 올해 내년",text:"작년 올해 내년"},
 
-  // --- 노래 ---
+  // ============================================================
+  // 노래 (전래 동요 · 민요 · 관습적으로 널리 부르는 노래 위주로)
+  // ============================================================
   {id:"song_birthday",category:"노래",title:"생일 축하 노래",text:"생일 축하합니다 생일 축하합니다 사랑하는 우리 가족 생일 축하합니다"},
   {id:"song_pongdang",category:"노래",title:"퐁당퐁당",text:"퐁당 퐁당 돌을 던지자 누나 몰래 돌을 던지자"},
   {id:"song_school",category:"노래",title:"학교종",text:"학교 종이 땡땡땡 어서 모이자 선생님이 우리를 기다리신다"},
@@ -198,18 +228,64 @@ const AUTOMATIC_SPEECH_DB=[
   {id:"song_star",category:"노래",title:"반짝반짝 작은 별",text:"반짝 반짝 작은 별 아름답게 비치네"},
   {id:"song_arirang",category:"노래",title:"아리랑",text:"아리랑 아리랑 아라리요 아리랑 고개로 넘어간다"},
   {id:"song_doraji",category:"노래",title:"도라지",text:"도라지 도라지 백도라지 심심 산천에 백도라지"},
+  {id:"song_saya",category:"노래",title:"새야 새야 파랑새야",text:"새야 새야 파랑새야 녹두밭에 앉지 마라"},
+  {id:"song_dukkeobi",category:"노래",title:"두껍아 두껍아",text:"두껍아 두껍아 헌집 줄게 새집 다오"},
+  {id:"song_yeouya",category:"노래",title:"여우야 여우야 뭐하니",text:"여우야 여우야 뭐하니 잠잔다 잠꾸러기"},
+  {id:"song_wewatt",category:"노래",title:"우리집에 왜 왔니",text:"우리집에 왜 왔니 왜 왔니 왜 왔니 꽃 찾으러 왔단다 왔단다 왔단다"},
+  {id:"song_lullaby",category:"노래",title:"자장가",text:"자장 자장 우리 아기 잘도 잔다 우리 아기"},
+  {id:"song_gohyang",category:"노래",title:"고향의 봄",text:"나의 살던 고향은 꽃 피는 산골"},
+  {id:"song_daemun",category:"노래",title:"대문놀이",text:"동 동 동대문을 열어라 남 남 남대문을 열어라"},
 
-  // --- 인사말 · 자동표현 ---
+  // ============================================================
+  // 인사말 · 자동표현
+  // ============================================================
   {id:"hi",category:"인사말",title:"안녕하세요",text:"안녕하세요"},
   {id:"thanks",category:"인사말",title:"감사합니다",text:"감사합니다"},
+  {id:"thanks_p",category:"인사말",title:"고맙습니다",text:"고맙습니다"},
   {id:"sorry",category:"인사말",title:"죄송합니다",text:"죄송합니다"},
+  {id:"sorry_p",category:"인사말",title:"미안합니다",text:"미안합니다"},
   {id:"bye_go",category:"인사말",title:"안녕히 가세요",text:"안녕히 가세요"},
   {id:"bye_stay",category:"인사말",title:"안녕히 계세요",text:"안녕히 계세요"},
   {id:"bye_sleep",category:"인사말",title:"안녕히 주무세요",text:"안녕히 주무세요"},
+  {id:"good_morning",category:"인사말",title:"좋은 아침입니다",text:"좋은 아침입니다"},
   {id:"welcome",category:"인사말",title:"어서 오세요",text:"어서 오세요"},
   {id:"nice_meet",category:"인사말",title:"반갑습니다",text:"반갑습니다"},
+  {id:"first_meet",category:"인사말",title:"처음 뵙겠습니다",text:"처음 뵙겠습니다"},
+  {id:"long_time",category:"인사말",title:"오랜만이에요",text:"오랜만이에요"},
   {id:"eat_well",category:"인사말",title:"잘 먹겠습니다",text:"잘 먹겠습니다"},
   {id:"ate_well",category:"인사말",title:"잘 먹었습니다",text:"잘 먹었습니다"},
+  {id:"come_back",category:"인사말",title:"다녀오겠습니다",text:"다녀오겠습니다"},
+  {id:"came_back",category:"인사말",title:"다녀왔습니다",text:"다녀왔습니다"},
+  {id:"congrats",category:"인사말",title:"축하합니다",text:"축하합니다"},
+  {id:"good_work",category:"인사말",title:"수고하셨습니다",text:"수고하셨습니다"},
+  {id:"excuse_me",category:"인사말",title:"실례합니다",text:"실례합니다"},
+  {id:"take_care",category:"인사말",title:"잘 지내세요",text:"잘 지내세요"},
+  {id:"help_me",category:"인사말",title:"도와주세요",text:"도와주세요"},
+  {id:"understood",category:"인사말",title:"알겠습니다",text:"알겠습니다"},
+  {id:"yes",category:"인사말",title:"네 알겠습니다",text:"네 알겠습니다"},
+  {id:"no_thanks",category:"인사말",title:"아니요 괜찮습니다",text:"아니요 괜찮습니다"},
+
+  // ============================================================
+  // 일상 나열 (신체·색·가족·의식주 등 자주 쓰이는 어휘 나열)
+  // ============================================================
+  {id:"body_head",category:"일상 나열",title:"머리 어깨 무릎 발",text:"머리 어깨 무릎 발"},
+  {id:"body_face",category:"일상 나열",title:"얼굴 부위 (눈 코 입 귀)",text:"눈 코 입 귀"},
+  {id:"body_hand",category:"일상 나열",title:"손가락 (엄지 검지 중지 약지 새끼)",text:"엄지 검지 중지 약지 새끼"},
+  {id:"body_full",category:"일상 나열",title:"몸 부위 (머리 목 어깨 팔 손)",text:"머리 목 어깨 팔 손"},
+  {id:"color_rainbow",category:"일상 나열",title:"무지개 색 (빨주노초파남보)",text:"빨강 주황 노랑 초록 파랑 남색 보라"},
+  {id:"color_basic",category:"일상 나열",title:"기본 색 (빨강 노랑 파랑 초록)",text:"빨강 노랑 파랑 초록"},
+  {id:"color_bw",category:"일상 나열",title:"검정 회색 흰색",text:"검정 회색 흰색"},
+  {id:"family_close",category:"일상 나열",title:"가족 호칭 (아빠 엄마 형 누나)",text:"아빠 엄마 형 누나"},
+  {id:"family_close2",category:"일상 나열",title:"가족 호칭 (아빠 엄마 오빠 언니)",text:"아빠 엄마 오빠 언니"},
+  {id:"family_ext",category:"일상 나열",title:"할아버지 할머니 아버지 어머니",text:"할아버지 할머니 아버지 어머니"},
+  {id:"food_meal",category:"일상 나열",title:"밥 국 반찬 김치",text:"밥 국 반찬 김치"},
+  {id:"food_group",category:"일상 나열",title:"과일 채소 고기 생선",text:"과일 채소 고기 생선"},
+  {id:"animal_pet",category:"일상 나열",title:"강아지 고양이 토끼 새",text:"강아지 고양이 토끼 새"},
+  {id:"shape_basic",category:"일상 나열",title:"세모 네모 동그라미",text:"세모 네모 동그라미"},
+  {id:"direction",category:"일상 나열",title:"위 아래 앞 뒤 옆",text:"위 아래 앞 뒤 옆"},
+  {id:"direction_lr",category:"일상 나열",title:"동서남북",text:"동쪽 서쪽 남쪽 북쪽"},
+  {id:"weather",category:"일상 나열",title:"맑음 흐림 비 눈",text:"맑음 흐림 비 눈"},
+  {id:"size",category:"일상 나열",title:"크다 작다 길다 짧다",text:"크다 작다 길다 짧다"},
 ];
 
 let materials=[],currentIndex=0,answers=[],choiceLocked=false;
@@ -291,7 +367,7 @@ function renderSubject(){
 
 function renderCategoryOptions(){
   const cats=unique(AUTOMATIC_SPEECH_DB.map(item=>item.category));
-  const order=["전체","자모음","숫자","요일 · 달력","노래","인사말"];
+  const order=["전체","자모음","숫자","요일 · 달력","노래","인사말","일상 나열"];
   const available=order.filter(cat=>cat==="전체"||cats.includes(cat));
   document.getElementById("categoryValue").innerHTML=available.map(cat=>`<option value="${cat}">${cat}</option>`).join("");
 }
@@ -462,8 +538,9 @@ function setupSpeechRecognition(){
   }
   recognition=new SpeechRecognition();
   recognition.lang="ko-KR";
-  // iOS Safari는 interimResults가 불안정 → 최종결과만 받도록 함
-  recognition.interimResults=!IS_IOS;
+  // interimResults=true로 두어 중간 결과가 계속 들어오도록 함.
+  // (iOS Safari에서 false로 두면 onresult 이벤트 자체가 발생하지 않아 채점이 안 되는 경우가 있음)
+  recognition.interimResults=true;
   recognition.continuous=false;
   recognition.maxAlternatives=3;
 
@@ -475,6 +552,7 @@ function setupSpeechRecognition(){
     iosFinalCandidates=[];
     setMicState("listening");
     document.getElementById("speechSupportMsg").textContent="듣고 있어요. 따라 말해보세요.";
+    startRecognitionSafetyTimer();
   };
 
   recognition.onresult=function(event){
@@ -498,6 +576,7 @@ function setupSpeechRecognition(){
   recognition.onerror=function(event){
     isRecognizing=false;
     setMicState("idle");
+    clearRecognitionSafetyTimer();
     if(event&&event.error==="no-speech"){
       if(!choiceLocked)document.getElementById("speechSupportMsg").textContent="소리가 인식되지 않았어요. 🎤 마이크를 눌러 다시 말해보세요.";
     }else{
@@ -508,7 +587,8 @@ function setupSpeechRecognition(){
   recognition.onend=function(){
     isRecognizing=false;
     setMicState("idle");
-    // 아이패드 대응: 최종결과 이벤트가 오지 않은 채 종료된 경우
+    clearRecognitionSafetyTimer();
+    // 아이패드 대응 핵심: 최종결과 이벤트가 오지 않은 채 종료된 경우
     // 지금까지 인식된 텍스트로 채점을 진행해 "멈춤" 상황을 방지
     if(!choiceLocked){
       const candidates=iosFinalCandidates.length?iosFinalCandidates:(lastRecognizedText?[lastRecognizedText]:[]);
@@ -516,6 +596,32 @@ function setupSpeechRecognition(){
       else document.getElementById("speechSupportMsg").textContent="다시 말하려면 🎤 마이크를 눌러주세요.";
     }
   };
+
+  // 사용자가 말을 마친 것 같으면 잠시 후 강제 stop → onend 트리거
+  // (iOS Safari가 자동으로 stop을 잘 못하는 경우 대비)
+  recognition.onspeechend=function(){
+    setTimeout(()=>{
+      if(isRecognizing&&!choiceLocked){
+        try{recognition.stop();}catch(e){}
+      }
+    },700);
+  };
+}
+
+// 마이크가 켜진 뒤 일정 시간 동안 어떤 이벤트도 없으면 강제로 종료 (안전장치)
+// 따라 말하기는 노래처럼 긴 발화도 있으니 15초로 여유 있게 설정
+let recognitionSafetyTimer=null;
+function startRecognitionSafetyTimer(){
+  clearRecognitionSafetyTimer();
+  recognitionSafetyTimer=setTimeout(()=>{
+    recognitionSafetyTimer=null;
+    if(isRecognizing&&!choiceLocked){
+      try{recognition&&recognition.stop();}catch(e){}
+    }
+  },15000);
+}
+function clearRecognitionSafetyTimer(){
+  if(recognitionSafetyTimer){clearTimeout(recognitionSafetyTimer);recognitionSafetyTimer=null;}
 }
 
 function toggleSpeechRecognition(){
@@ -574,12 +680,14 @@ function checkSpeechAnswer(spokenCandidates){
   choiceLocked=true;
   document.getElementById("micBtn").disabled=true;
 
+  // 노래일 때는 "부르기", 그 외엔 "말하기" 표현으로 자연스럽게
+  const isSong=item.category==="노래";
   if(matched){
-    showFeedback("잘 하셨어요! 정답입니다.",true);
+    showFeedback(isSong?"잘 부르셨어요! 정답입니다.":"잘 하셨어요! 정답입니다.",true);
     answers.push({title:item.title,category:item.category,text:item.text,response:spoken,correct:true});
     scheduleAutoNext(1600);
   }else{
-    showFeedback("아쉬워요. 다음 문제로 넘어갑니다.",false);
+    showFeedback(isSong?"다시 한번 불러볼까요?":"다시 한번 말해볼까요?",false);
     answers.push({title:item.title,category:item.category,text:item.text,response:spoken,correct:false});
     scheduleAutoNext(2600);
   }

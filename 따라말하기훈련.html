@@ -102,9 +102,21 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
     </select>
   </div>
 </div>
+
+<div style="margin-top:14px;">
+  <label for="voiceValue">🎙️ 듣기 목소리 선택 <span style="color:#94a3b8;font-weight:700;font-size:12px;margin-left:6px;">(원하는 목소리를 고르고 미리 들어보세요)</span></label>
+  <div style="display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;">
+    <select id="voiceValue" onchange="onVoiceChange()" style="flex:1;min-width:200px;">
+      <option value="">기기 기본 목소리</option>
+    </select>
+    <button class="secondary" onclick="previewSelectedVoice()" style="white-space:nowrap;">🔊 미리듣기</button>
+  </div>
+  <div id="voiceHint" style="color:#94a3b8;font-size:12.5px;font-weight:700;margin-top:6px;line-height:1.5;"></div>
+</div>
+
 <div class="help-box">
-  🔊 <b>듣기</b> 버튼으로 활동을 먼저 들려주고, 🎤 <b>마이크</b>를 눌러 그대로 따라 말하거나 따라 부르게 합니다.<br/>
-  자모, 숫자, 요일, 노래, 인사말 등 익숙한 시퀀스를 자동으로 발화하는 훈련은 실어증·아동 언어치료에서 널리 쓰이는 자료예요.
+  🔊 <b>듣기</b> 버튼으로 활동을 먼저 들려주고, 🎤 <b>마이크</b>를 눌러 그대로 따라 말하게 합니다.<br/>
+  자모, 숫자, 요일, 인사말 등 익숙한 시퀀스를 자동으로 발화하는 훈련은 실어증·아동 언어치료에서 널리 쓰이는 자료예요.
 </div>
 
 <div class="chooser-head">
@@ -219,25 +231,10 @@ const AUTOMATIC_SPEECH_DB=[
   {id:"time_month",category:"요일 · 달력",title:"지난달 이번달 다음달",text:"지난달 이번달 다음달"},
   {id:"time_year",category:"요일 · 달력",title:"작년 올해 내년",text:"작년 올해 내년"},
 
-  // ============================================================
-  // 노래 (전래 동요 · 민요 · 관습적으로 널리 부르는 노래 위주로)
-  // ============================================================
-  {id:"song_birthday",category:"노래",title:"생일 축하 노래",text:"생일 축하합니다 생일 축하합니다 사랑하는 우리 가족 생일 축하합니다"},
-  {id:"song_pongdang",category:"노래",title:"퐁당퐁당",text:"퐁당 퐁당 돌을 던지자 누나 몰래 돌을 던지자"},
-  {id:"song_school",category:"노래",title:"학교종",text:"학교 종이 땡땡땡 어서 모이자 선생님이 우리를 기다리신다"},
-  {id:"song_bears",category:"노래",title:"곰 세 마리",text:"곰 세 마리가 한 집에 있어 아빠 곰 엄마 곰 아기 곰"},
-  {id:"song_santoki",category:"노래",title:"산토끼",text:"산 토끼 토끼야 어디를 가느냐 깡충 깡충 뛰면서 어디를 가느냐"},
-  {id:"song_nabi",category:"노래",title:"나비야",text:"나비야 나비야 이리 날아 오너라 노랑 나비 흰 나비 춤을 추며 오너라"},
-  {id:"song_star",category:"노래",title:"반짝반짝 작은 별",text:"반짝 반짝 작은 별 아름답게 비치네"},
-  {id:"song_arirang",category:"노래",title:"아리랑",text:"아리랑 아리랑 아라리요 아리랑 고개로 넘어간다"},
-  {id:"song_doraji",category:"노래",title:"도라지",text:"도라지 도라지 백도라지 심심 산천에 백도라지"},
-  {id:"song_saya",category:"노래",title:"새야 새야 파랑새야",text:"새야 새야 파랑새야 녹두밭에 앉지 마라"},
-  {id:"song_dukkeobi",category:"노래",title:"두껍아 두껍아",text:"두껍아 두껍아 헌집 줄게 새집 다오"},
-  {id:"song_yeouya",category:"노래",title:"여우야 여우야 뭐하니",text:"여우야 여우야 뭐하니 잠잔다 잠꾸러기"},
-  {id:"song_wewatt",category:"노래",title:"우리집에 왜 왔니",text:"우리집에 왜 왔니 왜 왔니 왜 왔니 꽃 찾으러 왔단다 왔단다 왔단다"},
-  {id:"song_lullaby",category:"노래",title:"자장가",text:"자장 자장 우리 아기 잘도 잔다 우리 아기"},
-  {id:"song_gohyang",category:"노래",title:"고향의 봄",text:"나의 살던 고향은 꽃 피는 산골"},
-  {id:"song_daemun",category:"노래",title:"대문놀이",text:"동 동 동대문을 열어라 남 남 남대문을 열어라"},
+  // ※ "노래" 카테고리는 저작권/구현 이슈로 잠시 뺐어요.
+  //   나중에 다시 넣고 싶으면 아래 형식으로 항목을 추가하면 됩니다.
+  //   audioFile 필드를 넣으면 그 mp3 파일을 재생하고, 없으면 TTS로 낭독합니다.
+  //   예: {id:"song_xxx", category:"노래", title:"제목", text:"가사 텍스트", audioFile:"audio/파일명.mp3"},
 
   // ============================================================
   // 인사말 · 자동표현
@@ -429,7 +426,7 @@ function startTraining(){
 
 function showItem(){
   clearAutoNext();
-  stopTTS();
+  stopModelPlayback();
   choiceLocked=false;lastRecognizedText="";
   const micBtn=document.getElementById("micBtn");
   micBtn.disabled=false;
@@ -469,7 +466,7 @@ function clearAutoNext(){if(autoNextTimer){clearTimeout(autoNextTimer);autoNextT
 function nextQuestionManual(){
   clearAutoNext();
   stopSpeechRecognition();
-  stopTTS();
+  stopModelPlayback();
   if(!choiceLocked){
     const item=materials[currentIndex];
     if(item)answers.push({title:item.title,category:item.category,text:item.text,response:"(응답 없음)",correct:false,skipped:true});
@@ -481,7 +478,7 @@ function nextQuestionManual(){
 function nextItem(){
   clearAutoNext();
   stopSpeechRecognition();
-  stopTTS();
+  stopModelPlayback();
   const advance=()=>{
     currentIndex++;
     if(currentIndex>=materials.length)finishTraining();else showItem();
@@ -511,32 +508,116 @@ function pickPreferredKoreanVoice(voices){
   return koVoices[0];
 }
 
-// 페이지 로드 시점에 미리 계산해두는 캐시 (voiceschanged 이벤트에서 갱신됨)
-let preferredKoreanVoice=null;
-function refreshPreferredVoice(){
+// 사용자가 선택한 목소리를 localStorage에 저장/로드
+let userSelectedVoiceURI=Store.load("speech_tts_voice_uri","");
+let availableKoVoices=[];
+
+function refreshAvailableVoices(){
   if(!synth)return;
-  preferredKoreanVoice=pickPreferredKoreanVoice(synth.getVoices());
+  const voices=synth.getVoices();
+  availableKoVoices=voices.filter(v=>v.lang&&(v.lang==="ko-KR"||v.lang.toLowerCase().startsWith("ko")));
+  renderVoiceOptions();
+}
+
+function getCurrentVoice(){
+  if(!synth)return null;
+  // 1) 사용자가 명시적으로 선택한 목소리
+  if(userSelectedVoiceURI){
+    const v=availableKoVoices.find(x=>x.voiceURI===userSelectedVoiceURI);
+    if(v)return v;
+  }
+  // 2) 자동 추천 (여자 아나운서 톤 우선)
+  return pickPreferredKoreanVoice(availableKoVoices);
+}
+
+// 목소리 이름에 여자/남자 힌트를 추정해 라벨에 추가
+function guessVoiceGender(name){
+  const n=(name||"").toLowerCase();
+  const femaleHints=["yuna","sora","heami","sunhi","sun-hi","nari","female","woman","여자","여성","한국의"];
+  const maleHints=["siwoo","minjun","injoon","jinho","male","남자","남성"];
+  for(const h of femaleHints)if(n.includes(h))return "여자";
+  for(const h of maleHints)if(n.includes(h))return "남자";
+  return "";
+}
+
+function renderVoiceOptions(){
+  const sel=document.getElementById("voiceValue");
+  if(!sel)return;
+  const currentValue=sel.value;
+  let html=`<option value="">기기 기본 목소리 (자동 추천)</option>`;
+  if(!availableKoVoices.length){
+    html+=`<option value="" disabled>사용 가능한 한국어 목소리가 없습니다</option>`;
+  }else{
+    for(const v of availableKoVoices){
+      const gender=guessVoiceGender(v.name);
+      const label=gender?`${v.name} (${gender})`:v.name;
+      html+=`<option value="${v.voiceURI}">${label}</option>`;
+    }
+  }
+  sel.innerHTML=html;
+  // 저장된 선택 복원
+  if(userSelectedVoiceURI)sel.value=userSelectedVoiceURI;
+  else if(currentValue)sel.value=currentValue;
+  updateVoiceHint();
+}
+
+function updateVoiceHint(){
+  const hint=document.getElementById("voiceHint");
+  if(!hint)return;
+  const v=getCurrentVoice();
+  if(!v){
+    hint.textContent="이 브라우저에서 사용 가능한 한국어 목소리를 찾지 못했어요.";
+  }else{
+    const gender=guessVoiceGender(v.name);
+    hint.textContent=`현재 선택된 목소리: ${v.name}${gender?" ("+gender+")":""}`;
+  }
+}
+
+function onVoiceChange(){
+  const sel=document.getElementById("voiceValue");
+  userSelectedVoiceURI=sel.value||"";
+  Store.save("speech_tts_voice_uri",userSelectedVoiceURI);
+  updateVoiceHint();
+}
+
+function previewSelectedVoice(){
+  if(!synth)return;
+  try{synth.cancel();}catch(e){}
+  const utter=new SpeechSynthesisUtterance("안녕하세요. 이 목소리로 문장을 읽어드립니다.");
+  utter.lang="ko-KR";
+  utter.rate=0.95;
+  utter.pitch=1.0;
+  utter.volume=1.0;
+  const v=getCurrentVoice();
+  if(v)utter.voice=v;
+  synth.speak(utter);
 }
 
 function playModel(){
-  if(!synth){
-    document.getElementById("speechSupportMsg").textContent="이 브라우저는 음성 재생을 지원하지 않습니다.";
-    return;
-  }
-  if(ttsSpeaking){stopTTS();return;}
+  if(ttsSpeaking||audioPlaying){stopModelPlayback();return;}
   // 재생 시작 전에 마이크가 켜져 있으면 정리
   stopSpeechRecognition();
   const item=materials[currentIndex];
   if(!item)return;
+
+  // 1) 항목에 audioFile 필드가 있으면 mp3 파일 재생 (진짜 노래 등)
+  if(item.audioFile){
+    playAudioFile(item.audioFile,item);
+    return;
+  }
+
+  // 2) 없으면 TTS로 낭독
+  if(!synth){
+    document.getElementById("speechSupportMsg").textContent="이 브라우저는 음성 재생을 지원하지 않습니다.";
+    return;
+  }
   const utter=new SpeechSynthesisUtterance(item.text);
   utter.lang="ko-KR";
-  // 아나운서 톤: 자연스러운 속도 + 안정적인 pitch + 명확한 볼륨
   utter.rate=0.9;
   utter.pitch=1.0;
   utter.volume=1.0;
-  // 목소리가 아직 로드 안 됐다면 이 시점에서 한 번 더 시도
-  if(!preferredKoreanVoice)refreshPreferredVoice();
-  if(preferredKoreanVoice)utter.voice=preferredKoreanVoice;
+  const v=getCurrentVoice();
+  if(v)utter.voice=v;
   utter.onstart=function(){ttsSpeaking=true;setPlayState(true);};
   utter.onend=function(){
     ttsSpeaking=false;setPlayState(false);
@@ -546,6 +627,52 @@ function playModel(){
   ttsUtter=utter;
   try{synth.cancel();}catch(e){}
   synth.speak(utter);
+}
+
+// mp3 오디오 파일 재생 (진짜 노래를 넣을 때 사용)
+let audioEl=null,audioPlaying=false;
+function playAudioFile(src,item){
+  stopAudioPlayback();
+  audioEl=new Audio(src);
+  audioEl.onplay=function(){audioPlaying=true;setPlayState(true);};
+  audioEl.onended=function(){
+    audioPlaying=false;setPlayState(false);
+    if(!choiceLocked)document.getElementById("speechSupportMsg").textContent="이제 🎤 마이크를 눌러 따라 불러보세요!";
+  };
+  audioEl.onerror=function(){
+    audioPlaying=false;setPlayState(false);
+    // mp3 파일을 못 찾으면 TTS로 fallback
+    document.getElementById("speechSupportMsg").textContent=`"${src}" 파일을 찾을 수 없어 낭독으로 대체합니다.`;
+    const backupItem={...item,audioFile:null};
+    // audioFile 없는 상태로 다시 시도
+    const utter=new SpeechSynthesisUtterance(item.text);
+    utter.lang="ko-KR";utter.rate=0.9;utter.pitch=1.0;utter.volume=1.0;
+    const v=getCurrentVoice();if(v)utter.voice=v;
+    utter.onstart=function(){ttsSpeaking=true;setPlayState(true);};
+    utter.onend=function(){ttsSpeaking=false;setPlayState(false);};
+    try{synth&&synth.cancel();}catch(e){}
+    synth&&synth.speak(utter);
+    ttsUtter=utter;
+  };
+  audioEl.play().catch(()=>{
+    audioPlaying=false;setPlayState(false);
+    document.getElementById("speechSupportMsg").textContent="오디오 재생에 실패했어요.";
+  });
+}
+
+function stopAudioPlayback(){
+  if(audioEl){
+    try{audioEl.pause();}catch(e){}
+    audioEl=null;
+  }
+  audioPlaying=false;
+}
+
+// TTS와 오디오 재생을 모두 정리
+function stopModelPlayback(){
+  stopTTS();
+  stopAudioPlayback();
+  setPlayState(false);
 }
 
 function stopTTS(){
@@ -709,7 +836,7 @@ function manualCheckSpeech(){
 
 function toggleSpeechRecognition(){
   if(choiceLocked)return;
-  if(ttsSpeaking){/* 재생 중엔 마이크 못 켜게 */return;}
+  if(ttsSpeaking||audioPlaying){/* 재생 중엔 마이크 못 켜게 */return;}
   if(!recognition)setupSpeechRecognition();
   if(!recognition)return;
   if(isRecognizing){stopSpeechRecognition();return;}
@@ -818,11 +945,11 @@ function finishTraining(){
 }
 
 // ===== TTS 음성 로드 (iOS 등 브라우저에서 getVoices()가 지연되는 경우 대비) =====
-// 목소리 목록이 준비되면 여자 아나운서 톤 목소리를 미리 골라둠
+// 목소리 목록이 준비되면 목소리 선택 UI를 갱신
 if(synth&&typeof synth.onvoiceschanged!=="undefined"){
-  synth.onvoiceschanged=function(){refreshPreferredVoice();};
+  synth.onvoiceschanged=function(){refreshAvailableVoices();};
 }
-if(synth){synth.getVoices();refreshPreferredVoice();}
+if(synth){synth.getVoices();refreshAvailableVoices();}
 
 // ===== 초기 렌더 =====
 renderSubject();renderCategoryOptions();renderActivityList();

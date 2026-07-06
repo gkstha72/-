@@ -142,6 +142,9 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
         <div class="result-label">인식된 말</div>
         <div id="recognizedText" class="recognized-text">-</div>
         <div id="compareText" class="compare-text"></div>
+        <div style="text-align:center;margin-top:8px;">
+          <button id="manualCheckBtn" class="primary" style="display:none;" onclick="manualCheckSpeech()">이 결과로 채점</button>
+        </div>
       </div>
     </div>
   </div>
@@ -569,14 +572,25 @@ function setupSpeechRecognition(){
     lastRecognizedText=transcript.trim();
     document.getElementById("recognizedText").textContent=lastRecognizedText||"-";
     if(finalAlternatives.length)iosFinalCandidates=finalAlternatives;
+
+    // 인식된 텍스트가 있으면 "채점" 버튼 보이게 (사용자가 즉시 채점 트리거 가능)
+    if(lastRecognizedText)showManualCheckBtn(true);
+
     const isFinal=event.results[event.results.length-1].isFinal;
-    if(isFinal)checkSpeechAnswer(finalAlternatives.length?finalAlternatives:[lastRecognizedText]);
+    if(isFinal){
+      checkSpeechAnswer(finalAlternatives.length?finalAlternatives:[lastRecognizedText]);
+    }else if(lastRecognizedText){
+      // 디바운스: 새 결과가 오면 이전 타이머 취소하고 새로 시작
+      // 노래 등 긴 발화는 문구 사이 공백이 길 수 있으니 2초로 여유 있게 설정
+      scheduleDebounceCheck();
+    }
   };
 
   recognition.onerror=function(event){
     isRecognizing=false;
     setMicState("idle");
     clearRecognitionSafetyTimer();
+    clearDebounceCheck();
     if(event&&event.error==="no-speech"){
       if(!choiceLocked)document.getElementById("speechSupportMsg").textContent="소리가 인식되지 않았어요. 🎤 마이크를 눌러 다시 말해보세요.";
     }else{
@@ -588,6 +602,7 @@ function setupSpeechRecognition(){
     isRecognizing=false;
     setMicState("idle");
     clearRecognitionSafetyTimer();
+    clearDebounceCheck();
     // 아이패드 대응 핵심: 최종결과 이벤트가 오지 않은 채 종료된 경우
     // 지금까지 인식된 텍스트로 채점을 진행해 "멈춤" 상황을 방지
     if(!choiceLocked){
@@ -609,7 +624,7 @@ function setupSpeechRecognition(){
 }
 
 // 마이크가 켜진 뒤 일정 시간 동안 어떤 이벤트도 없으면 강제로 종료 (안전장치)
-// 따라 말하기는 노래처럼 긴 발화도 있으니 15초로 여유 있게 설정
+// 따라 말하기는 노래처럼 긴 발화도 있으니 12초로 여유 있게 설정
 let recognitionSafetyTimer=null;
 function startRecognitionSafetyTimer(){
   clearRecognitionSafetyTimer();
@@ -618,10 +633,44 @@ function startRecognitionSafetyTimer(){
     if(isRecognizing&&!choiceLocked){
       try{recognition&&recognition.stop();}catch(e){}
     }
-  },15000);
+  },12000);
 }
 function clearRecognitionSafetyTimer(){
   if(recognitionSafetyTimer){clearTimeout(recognitionSafetyTimer);recognitionSafetyTimer=null;}
+}
+
+// 디바운스 자동 채점: 인식 결과가 들어온 뒤 일정 시간 동안 새 결과가 없으면
+// = 사용자가 말을 마쳤다고 보고 강제로 stop → onend fallback 채점 실행
+// (iOS Safari에서 isFinal 이벤트가 오지 않는 문제를 확실하게 커버)
+// 노래 등 긴 발화는 문구 사이 공백이 길 수 있어 2초로 설정
+let debounceCheckTimer=null;
+function scheduleDebounceCheck(){
+  clearDebounceCheck();
+  debounceCheckTimer=setTimeout(()=>{
+    debounceCheckTimer=null;
+    if(isRecognizing&&!choiceLocked){
+      try{recognition&&recognition.stop();}catch(e){}
+    }
+  },2000);
+}
+function clearDebounceCheck(){
+  if(debounceCheckTimer){clearTimeout(debounceCheckTimer);debounceCheckTimer=null;}
+}
+
+// "이 결과로 채점" 버튼: 인식된 텍스트가 있을 때 사용자가 직접 채점 트리거
+function showManualCheckBtn(show){
+  const btn=document.getElementById("manualCheckBtn");
+  if(!btn)return;
+  btn.style.display=show?"inline-block":"none";
+}
+function manualCheckSpeech(){
+  if(choiceLocked)return;
+  clearDebounceCheck();
+  if(isRecognizing){
+    try{recognition&&recognition.stop();}catch(e){}
+  }else if(lastRecognizedText){
+    checkSpeechAnswer([lastRecognizedText]);
+  }
 }
 
 function toggleSpeechRecognition(){
@@ -642,6 +691,7 @@ function clearSpeechResult(clearMessage=true){
   lastRecognizedText="";
   document.getElementById("recognizedText").textContent="-";
   document.getElementById("compareText").textContent="";
+  showManualCheckBtn(false);
   if(clearMessage)document.getElementById("speechSupportMsg").textContent="🔊 듣기 버튼으로 먼저 들어보세요. 그 다음 🎤 마이크를 눌러 따라 말해보세요.";
 }
 
@@ -670,6 +720,7 @@ function pickBestCandidate(expected,candidates){
 
 function checkSpeechAnswer(spokenCandidates){
   if(choiceLocked)return;
+  clearDebounceCheck();
   const candidates=Array.isArray(spokenCandidates)?spokenCandidates:[spokenCandidates];
   const item=materials[currentIndex];
   const{matched,best,bestSimilarity}=pickBestCandidate(item.text,candidates);
@@ -679,6 +730,7 @@ function checkSpeechAnswer(spokenCandidates){
 
   choiceLocked=true;
   document.getElementById("micBtn").disabled=true;
+  showManualCheckBtn(false);
 
   // 노래일 때는 "부르기", 그 외엔 "말하기" 표현으로 자연스럽게
   const isSong=item.category==="노래";

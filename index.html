@@ -1681,26 +1681,57 @@
       location.reload();
     }
 
-    // ===== NEW 배지 자동 표시 =====
-    // data-added="YYYY-MM-DD" 속성이 있는 program-card 중 NEW_BADGE_DAYS 이내인 것에 NEW 배지 표시
-    // 새 프로그램을 추가하거나 기존 프로그램을 크게 업데이트할 때, 해당 카드에
-    //   <article class="program-card" data-added="2026-07-06"> 처럼 오늘 날짜를 넣으면 됨
-    const NEW_BADGE_DAYS = 2; // 며칠 동안 NEW 표시할지 (이 값만 바꾸면 표시 기간 조절 가능)
+    // ===== NEW 배지 자동 표시 + 새로운 훈련 섹션 =====
+    // data-added="YYYY-MM-DD" 속성이 있는 program-card 중 NEW_BADGE_DAYS 이내인 것에
+    //   1) NEW 배지를 붙이고
+    //   2) 최상단에 "🆕 새로운 훈련" 섹션을 만들어 카드를 복제해 표시
+    const NEW_BADGE_DAYS = 7; // 며칠 동안 NEW 표시할지 (이 값만 바꾸면 표시 기간 조절 가능)
     function refreshNewBadges() {
       const now = Date.now();
       const limitMs = NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
+      const newCards = [];
       document.querySelectorAll(".program-card[data-added]").forEach(card => {
         const raw = card.dataset.added;
-        // YYYY-MM-DD를 그날 자정(로컬 시간)으로 해석 → 추가한 날부터 딱 NEW_BADGE_DAYS만큼 표시
         const added = new Date(raw + "T00:00:00");
         if (isNaN(added.getTime())) return;
         const diff = now - added.getTime();
         if (diff >= 0 && diff <= limitMs) {
           card.classList.add("is-new");
+          newCards.push(card);
         } else {
           card.classList.remove("is-new");
         }
       });
+      renderNewSection(newCards);
+    }
+
+    function renderNewSection(newCards) {
+      const list = document.querySelector(".program-category-list");
+      if (!list) return;
+      // 기존 "새로운 훈련" 섹션 제거 (중복 방지)
+      const existing = list.querySelector('.program-category[data-new-section="1"]');
+      if (existing) existing.remove();
+      if (!newCards.length) return;
+
+      const section = document.createElement("section");
+      section.className = "program-category";
+      section.setAttribute("data-new-section", "1");
+      section.innerHTML = `
+        <button type="button" class="category-head" onclick="toggleProgramCategory(this)" aria-expanded="true">
+          <div>
+            <h3 class="category-title">🆕 새로운 훈련</h3>
+            <p class="category-desc">최근 ${NEW_BADGE_DAYS}일 이내 추가·업데이트된 훈련입니다.</p>
+          </div>
+          <span class="category-meta"><span class="category-count">${newCards.length}개 훈련</span><span class="category-toggle" aria-hidden="true">+</span></span>
+        </button>
+        <div class="program-grid"></div>
+      `;
+      const grid = section.querySelector(".program-grid");
+      newCards.forEach(card => {
+        const clone = card.cloneNode(true);
+        grid.appendChild(clone);
+      });
+      list.insertBefore(section, list.firstElementChild);
     }
 
     refreshNewBadges();

@@ -39,11 +39,40 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 .vowel-chart .grid-line{stroke:#dce3ef;stroke-width:1.5;fill:none;stroke-dasharray:4 4}
 .vowel-chart .trapezoid{stroke:#c8ced8;stroke-width:2;fill:none}
 .vowel-chart .active-arrow{stroke:#246bfe;stroke-width:4.5;fill:none;marker-end:url(#arrowhead)}
-.vowel-chart .vowel-node{fill:white;stroke:#94a3b8;stroke-width:2.5;transition:all .3s}
+.vowel-chart .vowel-node{fill:white;stroke:#94a3b8;stroke-width:2.5;transition:all .3s;cursor:pointer}
+.vowel-chart .vowel-node:hover{stroke:#246bfe;stroke-width:3.5}
 .vowel-chart .vowel-node.active{fill:#246bfe;stroke:#1e56d0;stroke-width:3;animation:pulse 1.4s ease-in-out infinite}
 .vowel-chart .vowel-label{font-family:"Noto Sans KR",sans-serif;font-weight:900;font-size:20px;fill:#334155;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .vowel-chart .vowel-label.active{fill:white}
+/* 슬로우모션 애니메이션용 이동 노드 (트랜지션으로 부드럽게 이동) */
+.vowel-chart .moving-node{fill:#246bfe;stroke:#1e56d0;stroke-width:3;opacity:.85;transition:cx 1.6s ease-in-out, cy 1.6s ease-in-out}
 @keyframes pulse{0%,100%{r:22}50%{r:26}}
+
+/* 조음 힌트 표시 영역 */
+.articulation-hint{background:#eef3ff;border:1px solid #dbe4ff;border-radius:12px;padding:12px 14px;margin-top:12px;font-size:13.5px;color:#334155;line-height:1.5;text-align:left}
+.articulation-hint strong{color:#246bfe;margin-right:4px}
+.articulation-hint .ipa{display:inline-block;background:#246bfe;color:white;padding:1px 8px;border-radius:6px;font-size:12px;font-weight:900;margin:0 4px}
+
+/* 삼각도 아래 애니메이션 재생 버튼 */
+.replay-btn{background:white;color:#246bfe;border:2px solid #eef3ff;border-radius:12px;padding:8px 16px;font-size:13px;font-weight:900;cursor:pointer;margin-top:10px}
+.replay-btn:hover{border-color:#246bfe;background:#eef3ff}
+
+/* 팝오버 모달 (모음 노드 탭 시) */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,30,60,.4);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:22px;padding:24px;max-width:400px;width:100%;box-shadow:0 20px 50px rgba(15,30,60,.2);animation:modalIn .25s ease-out}
+@keyframes modalIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .close-btn{float:right;background:transparent;color:#94a3b8;border:none;font-size:22px;cursor:pointer;padding:0 4px;line-height:1}
+.modal h3{margin:0 0 8px;font-size:34px;color:#246bfe;text-align:center}
+.modal .modal-ipa{text-align:center;background:#246bfe;color:white;padding:3px 12px;border-radius:8px;font-weight:900;font-size:14px;display:inline-block;margin:0 auto 14px}
+.modal .modal-ipa-wrap{text-align:center;margin-bottom:14px}
+.modal .mouth-image{width:100%;max-width:280px;height:180px;object-fit:contain;border-radius:14px;background:#f8faff;border:1px solid #e2e8f0;display:block;margin:0 auto 14px}
+.modal .mouth-image.placeholder{display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;font-weight:900;text-align:center;padding:20px}
+.modal .info-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.modal .info-cell{background:#f8faff;border-radius:10px;padding:8px 6px;text-align:center}
+.modal .info-cell .label{color:#94a3b8;font-size:11px;font-weight:900;margin-bottom:2px}
+.modal .info-cell .value{color:#162033;font-size:14px;font-weight:900}
+.modal .desc-box{background:#eef3ff;border-radius:12px;padding:12px 14px;font-size:14px;color:#334155;line-height:1.5}
 
 /* 문제 표시 */
 .problem-box{background:#f8faff;border-radius:20px;padding:24px 20px;display:flex;flex-direction:column;justify-content:center;min-height:340px;text-align:center}
@@ -141,7 +170,9 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 </div>
 <div class="help-box">
   <b>모음 삼각도(Vowel Chart)</b>는 한국어 모음의 조음 위치(혀 위치·입 벌림)를 시각화한 표준 도표입니다.<br/>
-  두 모음 사이의 조음 이동을 반복하며 조음 정확도와 유창성을 훈련합니다. 대상자의 발음을 직접 관찰해 <b>잘함/다시</b>로 채점하세요.
+  두 모음 사이의 조음 이동을 반복하며 조음 정확도와 유창성을 훈련합니다. 대상자의 발음을 직접 관찰해 <b>잘함/다시</b>로 채점하세요.<br/>
+  💡 <b>거울 활용 팁:</b> 손거울이나 태블릿 반사면을 활용해 대상자가 자기 입 모양을 보며 훈련하도록 안내하세요. 시각적 피드백이 조음 훈련 효과를 크게 높입니다.<br/>
+  🔍 훈련 화면의 <b>모음 노드를 탭</b>하면 입 모양·조음 위치 상세를 볼 수 있어요.
 </div>
 
 <div class="actions">
@@ -160,7 +191,12 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 <div id="trainingTitle" class="training-title">1 / 10</div>
 
 <div class="training-body">
-  <div class="vowel-chart-box" id="vowelChartBox"></div>
+  <div>
+    <div class="vowel-chart-box" id="vowelChartBox"></div>
+    <div style="text-align:center;">
+      <button class="replay-btn" id="replayBtn" onclick="replayTransition()">▶ 조음 이동 다시 보기</button>
+    </div>
+  </div>
 
   <div class="problem-box">
     <div><span class="step-badge" id="stepBadge">2단계</span></div>
@@ -170,6 +206,7 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
       <img class="hint-image placeholder" id="hintImage" alt="" style="display:none">
       <div class="answer-word hidden-word" id="answerWord">비누</div>
     </div>
+    <div class="articulation-hint" id="articulationHint" style="display:none"></div>
   </div>
 </div>
 
@@ -188,6 +225,22 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 </div>
 </section>
 </main>
+
+<!-- 모음 상세 팝오버 -->
+<div class="modal-overlay" id="vowelModal" onclick="closeVowelModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeVowelModal()">×</button>
+    <h3 id="modalVowel">ㅣ</h3>
+    <div class="modal-ipa-wrap"><span class="modal-ipa" id="modalIpa">[i]</span></div>
+    <img class="mouth-image placeholder" id="modalMouth" alt="" style="display:none">
+    <div class="info-row">
+      <div class="info-cell"><div class="label">혀 앞/뒤</div><div class="value" id="modalFrontness">전설</div></div>
+      <div class="info-cell"><div class="label">혀 높이</div><div class="value" id="modalHeight">고</div></div>
+      <div class="info-cell"><div class="label">입술</div><div class="value" id="modalRounded">비원순</div></div>
+    </div>
+    <div class="desc-box" id="modalDesc">입술을 옆으로 벌리고...</div>
+  </div>
+</div>
 
 <script>
 /**
@@ -480,6 +533,54 @@ const VOWELS = {
   'ㅏ': {x:0.50, y:0.95, num:4},
 };
 
+// 각 모음의 조음 특성 (혀 위치·입술 모양)
+const VOWEL_INFO = {
+  'ㅣ': {ipa:'i', frontness:'전설', frontLevel:1, height:'고', heightLevel:1, rounded:false,
+        desc:'입술을 옆으로 벌리고, 혀 앞쪽을 입천장 가깝게',
+        image:'이미지모음삼각도/입모양_ㅣ.png'},
+  'ㅔ': {ipa:'e', frontness:'전설', frontLevel:1, height:'중', heightLevel:2, rounded:false,
+        desc:'입술을 자연스럽게 벌리고, 혀 앞쪽을 중간 높이로',
+        image:'이미지모음삼각도/입모양_ㅔ.png'},
+  'ㅐ': {ipa:'ɛ', frontness:'전설', frontLevel:1, height:'저', heightLevel:3, rounded:false,
+        desc:'입을 좀 더 벌리고, 혀 앞쪽을 낮게',
+        image:'이미지모음삼각도/입모양_ㅐ.png'},
+  'ㅏ': {ipa:'a', frontness:'중설', frontLevel:2, height:'저', heightLevel:3, rounded:false,
+        desc:'입을 크게 벌리고, 혀를 낮게 유지',
+        image:'이미지모음삼각도/입모양_ㅏ.png'},
+  'ㅓ': {ipa:'ʌ', frontness:'후설', frontLevel:3, height:'중', heightLevel:2, rounded:false,
+        desc:'입을 자연스럽게 벌리고, 혀 뒤쪽을 중간 높이로',
+        image:'이미지모음삼각도/입모양_ㅓ.png'},
+  'ㅗ': {ipa:'o', frontness:'후설', frontLevel:3, height:'중', heightLevel:2, rounded:true,
+        desc:'입술을 동그랗게 오므리고, 혀 뒤쪽을 중간 높이로',
+        image:'이미지모음삼각도/입모양_ㅗ.png'},
+  'ㅜ': {ipa:'u', frontness:'후설', frontLevel:3, height:'고', heightLevel:1, rounded:true,
+        desc:'입술을 동그랗게 오므리고, 혀 뒤쪽을 높게',
+        image:'이미지모음삼각도/입모양_ㅜ.png'},
+};
+
+// 두 모음 사이 조음 이동을 자동 서술
+function getTransitionHint(from, to){
+  const f=VOWEL_INFO[from], t=VOWEL_INFO[to];
+  if(!f||!t)return '';
+  const parts=[];
+  // 혀 앞/뒤 이동
+  if(f.frontLevel !== t.frontLevel){
+    if(f.frontLevel < t.frontLevel)parts.push('혀를 앞 → 뒤로');
+    else parts.push('혀를 뒤 → 앞으로');
+  }
+  // 혀 높/저 이동
+  if(f.heightLevel !== t.heightLevel){
+    if(f.heightLevel < t.heightLevel)parts.push('입을 더 벌리며');
+    else parts.push('입을 좁히며');
+  }
+  // 원순성 이동
+  if(f.rounded !== t.rounded){
+    if(t.rounded)parts.push('입술을 옆으로 벌린 → 동그랗게 오므리기');
+    else parts.push('입술을 동그랗게 오므린 → 옆으로 벌리기');
+  }
+  return parts.length ? parts.join(', ') : '같은 조음 위치 유지';
+}
+
 let materials=[],currentIndex=0,answers=[],choiceLocked=false;
 
 function shuffle(arr){const c=[...arr];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]]}return c}
@@ -552,8 +653,8 @@ function drawNodes(W, H, pad, activeVowels){
     const isActive=activeVowels.includes(k);
     const r=isActive?24:20;
     return `
-      <circle class="vowel-node${isActive?' active':''}" cx="${cx}" cy="${cy}" r="${r}"/>
-      <text class="vowel-label${isActive?' active':''}" x="${cx}" y="${cy}">${k}</text>
+      <circle class="vowel-node${isActive?' active':''}" cx="${cx}" cy="${cy}" r="${r}" onclick="openVowelModal('${k}')" data-vowel="${k}"/>
+      <text class="vowel-label${isActive?' active':''}" x="${cx}" y="${cy}" onclick="openVowelModal('${k}')">${k}</text>
     `;
   }).join("");
 }
@@ -647,12 +748,17 @@ function showItem(){
     transitionInfo.style.display='block';
   }
 
+  // 조음 힌트 자동 생성
+  updateArticulationHint(item);
+
+  // 슬로우모션 재생 버튼: 전환이 있을 때만 표시
+  document.getElementById("replayBtn").style.display=(item.from&&item.to)?"inline-block":"none";
+
   const syllableDisplay=document.getElementById("syllableDisplay");
   const hintImage=document.getElementById("hintImage");
   const answerEl=document.getElementById("answerWord");
 
   if(item.word){
-    // Level 1, 3, 4 → 큰 syllable 숨김, 그림+낱말이 메인
     syllableDisplay.style.display='none';
     answerEl.textContent=item.word;
     answerEl.classList.remove('hidden-word');
@@ -669,7 +775,6 @@ function showItem(){
       hintImage.style.display='none';
     }
   }else{
-    // Level 2 무의미 → 큰 syllable이 메인
     syllableDisplay.style.display='block';
     syllableDisplay.textContent=item.syllables;
     answerEl.textContent='';
@@ -679,6 +784,96 @@ function showItem(){
 
   document.getElementById("trainingTitle").textContent=`${currentIndex+1} / ${materials.length}`;
   document.getElementById("progressBar").style.width=`${(currentIndex/materials.length)*100}%`;
+}
+
+// ===== 조음 힌트 자동 표시 =====
+function updateArticulationHint(item){
+  const hintBox=document.getElementById("articulationHint");
+  if(item.vowel){
+    // Level 1: 단일 모음
+    const info=VOWEL_INFO[item.vowel];
+    if(!info){hintBox.style.display='none';return}
+    hintBox.innerHTML=`<strong>${item.vowel}</strong><span class="ipa">${info.ipa}</span>${info.desc}`;
+    hintBox.style.display='block';
+  }else if(item.from&&item.to){
+    // Level 2, 3: 전환
+    const fInfo=VOWEL_INFO[item.from], tInfo=VOWEL_INFO[item.to];
+    if(!fInfo||!tInfo){hintBox.style.display='none';return}
+    const trans=getTransitionHint(item.from, item.to);
+    hintBox.innerHTML=`<strong>${item.from} → ${item.to}</strong> ${trans}`;
+    hintBox.style.display='block';
+  }else{
+    // Level 4: 여러 이동 (자동 생성 어려움)
+    hintBox.style.display='none';
+  }
+}
+
+// ===== 모음 상세 팝오버 =====
+function openVowelModal(vowel){
+  const info=VOWEL_INFO[vowel];
+  if(!info)return;
+  document.getElementById("modalVowel").textContent=vowel;
+  document.getElementById("modalIpa").textContent=`[${info.ipa}]`;
+  document.getElementById("modalFrontness").textContent=info.frontness;
+  document.getElementById("modalHeight").textContent=info.height+"모음";
+  document.getElementById("modalRounded").textContent=info.rounded?"원순":"비원순";
+  document.getElementById("modalDesc").textContent=info.desc;
+
+  const img=document.getElementById("modalMouth");
+  if(info.image){
+    img.classList.remove('placeholder');
+    img.src=info.image;
+    img.alt=vowel+" 입 모양";
+    img.style.display='block';
+    img.onerror=function(){
+      img.classList.add('placeholder');
+      img.style.display='flex';
+      img.onerror=null;
+    };
+  }else{
+    img.style.display='none';
+  }
+  document.getElementById("vowelModal").classList.add("open");
+}
+
+function closeVowelModal(event){
+  if(event && event.target && event.target.id!=="vowelModal" && !event.target.classList.contains("close-btn"))return;
+  document.getElementById("vowelModal").classList.remove("open");
+}
+
+// ===== 슬로우모션 조음 전환 애니메이션 =====
+function replayTransition(){
+  const item=materials[currentIndex];
+  if(!item||!item.from||!item.to)return;
+  const svg=document.querySelector(".vowel-chart");
+  if(!svg)return;
+
+  // 시작 위치에 새 노드 추가하고, 도착 위치로 부드럽게 이동
+  const W=440, H=340, pad=42;
+  const A=coord(VOWELS[item.from], W, H, pad);
+  const B=coord(VOWELS[item.to], W, H, pad);
+
+  // 기존 이동 노드 제거
+  const oldMoving=svg.querySelector(".moving-node");
+  if(oldMoving)oldMoving.remove();
+
+  const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+  c.setAttribute("class","moving-node");
+  c.setAttribute("cx", A.cx);
+  c.setAttribute("cy", A.cy);
+  c.setAttribute("r", "18");
+  svg.appendChild(c);
+
+  // 다음 프레임에 목적지로 이동 (CSS transition으로 부드럽게)
+  requestAnimationFrame(()=>{
+    c.setAttribute("cx", B.cx);
+    c.setAttribute("cy", B.cy);
+  });
+
+  // 애니메이션 끝나면 노드 제거
+  setTimeout(()=>{
+    if(c.parentNode)c.remove();
+  }, 2000);
 }
 
 function scoreCorrect(){

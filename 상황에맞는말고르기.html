@@ -70,7 +70,6 @@ textarea{min-height:74px;resize:vertical}
   <div class="setup-grid">
     <div><label for="responseMode">문제 유형</label><select id="responseMode" onchange="generateMaterials()"><option value="choice" selected>선택형</option><option value="open">개방형</option></select></div>
     <div><label for="count">문제 수</label><select id="count" onchange="generateMaterials()"><option value="5">5문제</option><option value="10" selected>10문제</option><option value="20">20문제</option></select></div>
-    <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
   </div>
   <div class="help-box">상황을 읽고 사회적으로 적절한 말을 선택하거나 직접 말하는 화용언어 훈련입니다.</div>
   <div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
@@ -128,8 +127,7 @@ function renderSubject() {
 
 function generateMaterials() {
   const count = Number(document.getElementById("count").value);
-  const orderMode = document.getElementById("orderMode").value;
-  let source = orderMode === "random" ? shuffle(SITUATION_DB) : [...SITUATION_DB];
+  let source = shuffle(SITUATION_DB);
   materials = source.slice(0, Math.min(count, source.length)).map((item, idx) => {
     const choices = shuffle([...item.choices]);
     return {...item, no: idx + 1, choices};

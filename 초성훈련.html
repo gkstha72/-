@@ -95,13 +95,6 @@
     <option value="50">50개</option>
   </select>
 </div>
-        <div>
-          <label for="orderMode">제시 방식</label>
-          <select id="orderMode" onchange="generateMaterials(); renderWordStats()">
-            <option value="order" selected>순서대로</option>
-            <option value="random">무작위</option>
-          </select>
-        </div>
       </div>
       <div class="help-box">
 제시된 초성에 해당하는 단어를 떠올리고 말하는 훈련으로, 어휘 인출 능력과 음운 인식 능력 향상을 돕습니다.
@@ -1906,8 +1899,7 @@ function renderInitialOptions() {
       return {
         initialValue: document.getElementById("initialValue").value,
         count: Number(document.getElementById("count").value) || 10,
-        syllableLength: document.getElementById("syllableLength").value,
-        orderMode: document.getElementById("orderMode").value
+        syllableLength: document.getElementById("syllableLength").value
       };
     }
 
@@ -1920,7 +1912,7 @@ const initialOK = settings.initialValue === "all" || getInitial(word) === settin
 return lengthOK && initialOK;
       });
       matched = unique(matched);
-      const source = settings.orderMode === "random" ? shuffle(matched) : matched;
+      const source = shuffle(matched);
       return source.slice(0, Math.min(settings.count, source.length)).map(word => ({
         stimulus: word,
         question: `${settings.initialValue === "all" ? "전체" : settings.initialValue} 단어를 정확하게 말해보세요.`,

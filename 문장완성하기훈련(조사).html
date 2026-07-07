@@ -73,7 +73,6 @@ textarea { min-height:74px; resize:vertical; }
 <div class="setup-grid">
 <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="40">40개</option><option value="50">50개</option><option value="100">100개</option></select></div>
 <div><label for="choiceCount">보기 개수</label><select id="choiceCount" onchange="generateMaterials()"><option value="2" selected>2개 보기</option><option value="4">4개 보기</option></select></div>
-<div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
 </div>
 <div class="help-box">조사 전용 문장 완성 훈련입니다. 빈칸에 알맞은 조사를 고르는 활동으로, 주격·목적격·장소·도구·동반·보조·소유 조사 문항을 포함했습니다.</div>
 <div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
@@ -470,7 +469,7 @@ const SENTENCE_DB = [
       "을",
       "이",
       "가",
-      "은",
+      "은"
     ]
   },
   {
@@ -490,7 +489,7 @@ const SENTENCE_DB = [
       "에서",
       "은",
       "로",
-      "가",
+      "가"
     ]
   },
   {
@@ -519,7 +518,7 @@ const SENTENCE_DB = [
       "에서",
       "으로",
       "로",
-      "을",
+      "을"
     ]
   },
   {
@@ -1168,8 +1167,7 @@ function renderSubject() {
 function getSettings() {
   return {
     count: Number(document.getElementById("count").value) || 10,
-    choiceCount: Number(document.getElementById("choiceCount").value) === 4 ? 4 : 2,
-    orderMode: document.getElementById("orderMode").value
+    choiceCount: Number(document.getElementById("choiceCount").value) === 4 ? 4 : 2
   };
 }
 
@@ -1186,7 +1184,7 @@ function makeChoices(item, settings) {
 
 function buildMaterials() {
   const settings = getSettings();
-  const source = settings.orderMode === "random" ? shuffle(SENTENCE_DB) : [...SENTENCE_DB];
+  const source = settings.shuffle(SENTENCE_DB);
   return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
     ...item,
     choices: makeChoices(item, settings),
@@ -1330,7 +1328,7 @@ function recordAnswer(result, selected, retry) {
     selected: selected || "",
     type: "문장완성하기(조사)",
     result,
-    retry: retry || 0,
+    retry: retry || 0
   });
   currentIndex++;
   if (currentIndex >= materials.length) finishTraining();

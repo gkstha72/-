@@ -96,13 +96,6 @@
             <option value="50">50개</option>
           </select>
         </div>
-        <div>
-          <label for="orderMode">제시 방식</label>
-          <select id="orderMode" onchange="generateMaterials()">
-            <option value="order" selected>순서대로</option>
-            <option value="random">무작위</option>
-          </select>
-        </div>
       </div>
 
       <div class="help-box">
@@ -202,8 +195,7 @@
     function getSettings() {
       return {
         finalValue: document.getElementById("finalValue").value,
-        count: Number(document.getElementById("count").value) || 30,
-        orderMode: document.getElementById("orderMode").value
+        count: Number(document.getElementById("count").value) || 30
       };
     }
 
@@ -216,7 +208,7 @@
 
     function buildMaterials() {
       const settings = getSettings();
-      const source = settings.orderMode === "random" ? shuffle(getWordsBySetting(settings)) : getWordsBySetting(settings);
+      const source = shuffle(getWordsBySetting(settings));
       return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
         stimulus: item.word,
         final: item.final,

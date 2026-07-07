@@ -132,13 +132,6 @@
             <option value="4">4개 보기</option>
           </select>
         </div>
-        <div>
-          <label for="orderMode">제시 방식</label>
-          <select id="orderMode" onchange="generateMaterials()">
-            <option value="random" selected>무작위</option>
-            <option value="order">순서대로</option>
-          </select>
-        </div>
       </div>
       <div class="help-box">
 제시된 단어가 어떤 범주에 속하는지 구분하는 훈련입니다. 과일, 동물, 음식, 탈것 등 다양한 생활 어휘를 활용하여 의미 이해와 어휘 분류 능력 향상을 돕습니다.
@@ -231,8 +224,7 @@
       return {
         categoryValue: document.getElementById("categoryValue").value,
         count: Number(document.getElementById("count").value) || 10,
-        choiceCount: Number(document.getElementById("choiceCount").value) || 2,
-        orderMode: document.getElementById("orderMode").value
+        choiceCount: Number(document.getElementById("choiceCount").value) || 2
       };
     }
 
@@ -252,7 +244,7 @@
     function buildMaterials() {
       const settings = getSettings();
       const list = getWordsBySetting(settings);
-      const source = settings.orderMode === "random" ? shuffle(list) : list;
+      const source = shuffle(list);
       return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
         stimulus: item.word,
         category: item.category,

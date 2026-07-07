@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>덩어리 표현 훈련 (단어)</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif;background:#f4f6fa;color:#162033}
+.app{max-width:1120px;margin:0 auto;padding:24px 22px 48px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:900}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#315cff,#37c4ff);color:white;display:grid;place-items:center;font-weight:900}
+button{border:none;border-radius:14px;padding:12px 17px;font-size:15px;font-weight:900;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.primary{background:#246bfe;color:white}
+.secondary{background:#eef3ff;color:#246bfe}
+.gray{background:#edf1f6;color:#5d687b}
+.panel{background:white;border:1px solid #e2e8f0;border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(15,30,60,.06);margin-bottom:20px}
+.panel h2{margin:0 0 16px;font-size:22px}
+.setup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+label{display:block;font-size:13px;font-weight:900;color:#475569;margin-bottom:7px}
+select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;font-size:14px;outline:none;background:white}
+.subject-box,.help-box{background:#f8faff;border:1px solid #e2e8f0;border-radius:18px;padding:16px;margin-bottom:16px;color:#475569;line-height:1.6}
+.help-box{margin-top:16px;font-size:14px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.chooser-head{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px;flex-wrap:wrap;gap:8px}
+.chooser-head h3{margin:0;font-size:16px}
+.selection-count{color:#246bfe;font-weight:900;margin-left:8px;font-size:14px}
+.chooser-actions{display:flex;gap:8px}
+.chooser-actions button{padding:9px 13px;font-size:13px;border-radius:11px}
+.category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.category-card{background:#f8faff;border:2px solid #e2e8f0;border-radius:16px;padding:14px;font-size:15px;font-weight:900;color:#334155;cursor:pointer;transition:border-color .15s,background .15s;user-select:none;text-align:center}
+.category-card:hover{border-color:#c9d6f4}
+.category-card.selected{border-color:#246bfe;background:#eef3ff;color:#162033}
+.category-card .count{display:block;color:#64748b;font-size:12.5px;font-weight:700;margin-top:4px}
+.hidden{display:none!important}
+.progress-line{height:10px;background:#edf1f7;border-radius:999px;overflow:hidden;margin-bottom:18px}
+.progress-bar{height:100%;width:0%;background:#246bfe;transition:width .3s}
+.question{color:#246bfe;font-size:22px;line-height:1.5;font-weight:900;text-align:center;margin-bottom:16px}
+.training-box{background:#f8faff;border-radius:24px;padding:36px 24px;margin-bottom:18px;min-height:220px}
+.training-title{font-size:18px;font-weight:900;color:#246bfe;margin-bottom:14px;text-align:center}
+.before-text{font-size:24px;font-weight:900;line-height:1.5;letter-spacing:-0.4px;color:#334155;text-align:center;word-break:keep-all;max-width:900px;margin:0 auto 12px}
+.arrow-icon{font-size:26px;color:#94a3b8;text-align:center;margin:8px 0 12px}
+.after-text{font-size:26px;font-weight:900;color:#162033;text-align:center;line-height:1.6;word-break:keep-all;max-width:900px;margin:0 auto}
+.after-text .blank{display:inline-block;min-width:120px;padding:4px 16px;margin:0 3px;border-bottom:3px dashed #94a3b8;color:#246bfe;font-weight:1000}
+.after-text .blank.filled{border-bottom-color:#246bfe;background:#eef3ff;border-radius:10px 10px 0 0}
+.after-text .blank.correct{border-bottom-color:#16a06f;background:#e8fff4;color:#16a06f}
+.after-text .blank.wrong{border-bottom-color:#e54848;background:#fff1f1;color:#e54848}
+.options-panel{margin-bottom:14px}
+.options-grid{display:grid;gap:12px}
+.options-grid.opts-4{grid-template-columns:repeat(2,1fr)}
+.options-grid.opts-6{grid-template-columns:repeat(3,1fr)}
+.option-btn{background:#f8faff;border:2px solid #e2e8f0;border-radius:16px;padding:18px 20px;font-size:22px;font-weight:900;color:#334155;cursor:pointer;transition:all .15s;text-align:center;line-height:1.4;word-break:keep-all}
+.option-btn:hover:not(:disabled){border-color:#246bfe;background:#eef3ff}
+.option-btn.selected{border-color:#246bfe;background:#246bfe;color:white}
+.option-btn.correct{border-color:#16a06f;background:#e8fff4;color:#16a06f}
+.option-btn.wrong{border-color:#e54848;background:#fff1f1;color:#e54848}
+.option-btn.wrong-flash{border-color:#e54848;background:#fff1f1;color:#e54848;animation:wrongFlash .6s}
+@keyframes wrongFlash{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.option-btn:disabled{cursor:not-allowed}
+.feedback{display:none;margin-top:14px;padding:16px;border-radius:16px;font-size:22px;font-weight:900;text-align:center}
+.feedback.correct{background:#e8fff4;color:#16a06f;border:1px solid #a7f3d0}
+.feedback.wrong{background:#fff1f1;color:#e54848;border:1px solid #fecaca}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.summary-card{background:white;border:1px solid #edf2f7;border-radius:20px;padding:22px 16px;text-align:center;box-shadow:0 8px 22px rgba(15,30,60,.06)}
+.summary-icon{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;margin:0 auto 10px;color:white;font-size:22px;font-weight:900}
+.summary-card strong{display:block;font-size:30px;line-height:1;margin-bottom:8px;font-weight:900}
+.summary-card span{color:#334155;font-size:15px;font-weight:800}
+.summary-card.total strong,.summary-card.rate strong{color:#246bfe}
+.summary-card.correct strong{color:#16a06f}
+.summary-card.wrong strong{color:#e54848}
+.summary-icon.total,.summary-icon.rate{background:#246bfe}
+.summary-icon.correct{background:#16a06f}
+.summary-icon.wrong{background:#e54848}
+@media(max-width:900px){.summary-grid{grid-template-columns:repeat(2,1fr)}.topbar{align-items:flex-start;flex-direction:column}.before-text{font-size:20px}.after-text{font-size:22px}.options-grid.opts-6{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.summary-grid,.setup-grid{grid-template-columns:1fr}.question{font-size:19px}.before-text{font-size:18px}.after-text{font-size:19px}.after-text .blank{min-width:90px;padding:3px 12px}.option-btn{padding:14px 12px;font-size:18px}.options-grid.opts-4,.options-grid.opts-6{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar">
+  <div class="brand"><div class="logo">덩</div><span>덩어리 표현 훈련 (단어)</span></div>
+  <button class="gray" onclick="location.href='index.html'">메인으로</button>
+</header>
+
+<section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+
+<section id="setupView" class="panel">
+<h2>훈련 설정</h2>
+<div class="setup-grid">
+  <div>
+    <label for="categoryValue">범주</label>
+    <select id="categoryValue"></select>
+  </div>
+  <div>
+    <label for="countValue">문제 수</label>
+    <select id="countValue">
+      <option value="5">5문제</option>
+      <option value="10" selected>10문제</option>
+      <option value="15">15문제</option>
+      <option value="20">20문제</option>
+      <option value="all">전체</option>
+    </select>
+  </div>
+  <div>
+    <label for="optionCount">보기 개수</label>
+    <select id="optionCount">
+      <option value="4">4개</option>
+      <option value="6" selected>6개</option>
+    </select>
+  </div>
+</div>
+<div class="help-box">
+  서술된 문장을 읽고, 아래 <b>보기</b>에서 그 내용을 한 단어로 요약할 수 있는 <b>덩어리 표현</b>을 골라 빈칸에 넣어보세요.<br/>
+  어휘를 압축하고 의미를 요약하는 능력을 키우는 훈련입니다.
+</div>
+
+<div class="actions">
+  <button class="primary" onclick="startTraining()">훈련 시작</button>
+</div>
+</section>
+
+<section id="trainingView" class="panel hidden">
+<div id="question" class="question">아래 문장을 <b>보기</b>의 낱말을 이용해 <b>덩어리 표현</b>으로 바꿔보세요.</div>
+<div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+<div class="training-box">
+  <div id="trainingTitle" class="training-title">1 / 10</div>
+  <div id="beforeText" class="before-text">원본 문장</div>
+  <div class="arrow-icon">↓</div>
+  <div id="afterText" class="after-text"></div>
+</div>
+<div class="options-panel">
+  <div id="optionsGrid" class="options-grid"></div>
+</div>
+<div id="feedbackBox" class="feedback"></div>
+<div style="text-align:center;margin-top:12px;"><button id="nextBtn" class="primary" onclick="nextQuestionManual()">다음 문제</button></div>
+</section>
+
+<section id="finishView" class="panel hidden">
+<h2>훈련 결과</h2><p id="finishText"></p><div class="summary-grid" id="summaryGrid"></div>
+<div class="actions"><button class="primary" onclick="location.href='index.html'">메인으로</button><button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button></div>
+</section>
+</main>
+
+<script>
+const TRAINING_NAME="덩어리 표현 훈련 (단어)";
+const Store={load(key,fallback){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch{return fallback}},save(key,v){localStorage.setItem(key,JSON.stringify(v))}};
+const subjects=Store.load("speech_subjects",[]);
+const selectedSubjectId=Store.load("speech_selected_subject",null);
+const selectedSubject=subjects.find(s=>s.id===selectedSubjectId)||null;
+
+// ===== 데이터 =====
+// 각 카테고리에는:
+//   - pool: 보기로 랜덤 추출될 어휘 풀 (정답 + 다른 유사 어휘)
+//   - items: 문제 목록.
+//     {before: 원래 문장, after: 덩어리 표현으로 바꾼 문장 (___가 정답 위치), answer: 정답}
+//   예) before: "이가 아파서 치과에 갔습니다.", after: "___으로 치과에 갔습니다.", answer: "치통"
+const CHUNK_DB={
+  "일상 · 생활":{
+    pool:["금일","금요일","어제","오늘","내일","공휴일","평일","주말","휴업","휴식","개업","폐업","영업","이사","방문","외출","귀가","출근","퇴근","등교","하교"],
+    items:[
+      {before:"오늘 가게가 문을 닫았습니다.",after:"오늘은 ___입니다.",answer:"휴업"},
+      {before:"오늘은 나라에서 정한 쉬는 날입니다.",after:"오늘은 ___입니다.",answer:"공휴일"},
+      {before:"월요일부터 금요일까지 학교에 갑니다.",after:"___에 학교에 갑니다.",answer:"평일"},
+      {before:"토요일과 일요일에는 회사에 안 갑니다.",after:"___에는 회사에 안 갑니다.",answer:"주말"},
+      {before:"가게 문을 새로 열었습니다.",after:"어제 새로 ___을 했습니다.",answer:"개업"},
+      {before:"다른 집으로 짐을 옮겨 갑니다.",after:"다음 주에 ___를 갑니다.",answer:"이사"},
+      {before:"집에서 나와 밖으로 나갔습니다.",after:"오늘 낮에 ___을 했습니다.",answer:"외출"},
+      {before:"밖에 있다가 집으로 돌아왔습니다.",after:"밤 늦게 ___했습니다.",answer:"귀가"},
+      {before:"아침에 회사에 일하러 갑니다.",after:"매일 아침 ___을 합니다.",answer:"출근"},
+      {before:"일을 마치고 회사에서 나왔습니다.",after:"저녁 여섯 시에 ___했습니다.",answer:"퇴근"},
+    ]
+  },
+  "감정 · 상태":{
+    pool:["기쁨","슬픔","분노","놀람","불안","안심","후회","만족","걱정","감사","사과","축하","반가움","외로움","답답함","억울함"],
+    items:[
+      {before:"오랜만에 친구를 만나서 매우 좋았습니다.",after:"친구를 만나 큰 ___을 느꼈습니다.",answer:"반가움"},
+      {before:"시험 결과가 나쁠까 봐 잠을 못 잤습니다.",after:"시험 결과에 대한 ___으로 잠을 못 잤습니다.",answer:"걱정"},
+      {before:"약속에 늦어서 미안하다고 말했습니다.",after:"약속에 늦어 정중히 ___를 했습니다.",answer:"사과"},
+      {before:"선물을 받고 고맙다는 마음을 전했습니다.",after:"선물에 대한 ___를 표했습니다.",answer:"감사"},
+      {before:"친구의 생일을 진심으로 기뻐하며 응원했습니다.",after:"친구의 생일을 진심으로 ___했습니다.",answer:"축하"},
+      {before:"결과가 마음에 들어 흡족했습니다.",after:"결과에 매우 ___했습니다.",answer:"만족"},
+      {before:"예상하지 못한 일에 매우 깜짝 놀랐습니다.",after:"예상 못한 일에 큰 ___을 느꼈습니다.",answer:"놀람"},
+      {before:"지난 일이 아쉽고 미안하게 느껴집니다.",after:"지난 일이 큰 ___로 남았습니다.",answer:"후회"},
+      {before:"혼자 있어서 쓸쓸한 마음이 들었습니다.",after:"혼자 있어 ___을 느꼈습니다.",answer:"외로움"},
+      {before:"말이 통하지 않아 속이 답답했습니다.",after:"말이 통하지 않아 ___을 느꼈습니다.",answer:"답답함"},
+    ]
+  },
+  "가족 · 관계":{
+    pool:["부부","결혼","이혼","형제자매","이웃","동료","친척","조카","매형","형수","시부모","장인","장모","제부","처남","사위","며느리"],
+    items:[
+      {before:"결혼한 남자와 여자가 함께 살고 있습니다.",after:"저 두 사람은 ___입니다.",answer:"부부"},
+      {before:"다음 달에 결혼식을 올리기로 했습니다.",after:"다음 달에 ___을 하기로 했습니다.",answer:"결혼"},
+      {before:"부부가 헤어지기로 결정했습니다.",after:"두 사람은 ___을 하기로 했습니다.",answer:"이혼"},
+      {before:"언니와 오빠가 저와 함께 자랐습니다.",after:"___가 저와 함께 자랐습니다.",answer:"형제자매"},
+      {before:"옆집에 사는 사람과 인사를 나눴습니다.",after:"___과 인사를 나눴습니다.",answer:"이웃"},
+      {before:"회사에서 같이 일하는 사람과 점심을 먹었습니다.",after:"회사 ___와 점심을 먹었습니다.",answer:"동료"},
+      {before:"누나의 남편이 오늘 우리 집에 왔습니다.",after:"___이 오늘 우리 집에 왔습니다.",answer:"매형"},
+      {before:"형의 아내가 저녁을 차려주었습니다.",after:"___가 저녁을 차려주었습니다.",answer:"형수"},
+      {before:"딸의 남편이 처가에 방문했습니다.",after:"___가 처가에 방문했습니다.",answer:"사위"},
+      {before:"아들의 아내가 시어머니를 뵈러 왔습니다.",after:"___가 시어머니를 뵈러 왔습니다.",answer:"며느리"},
+    ]
+  },
+  "자연 · 날씨":{
+    pool:["폭우","폭설","폭염","태풍","지진","가뭄","홍수","화창","안개","서리","벼락","우박","이슬","무지개","해일","한파"],
+    items:[
+      {before:"비가 아주 많이 와서 길이 잠겼습니다.",after:"___로 길이 잠겼습니다.",answer:"폭우"},
+      {before:"눈이 많이 내려 도로가 막혔습니다.",after:"___로 도로가 막혔습니다.",answer:"폭설"},
+      {before:"매우 심한 더위에 사람들이 힘들어합니다.",after:"___으로 사람들이 힘들어합니다.",answer:"폭염"},
+      {before:"센 바람과 비를 몰고 오는 큰 자연현상이 다가옵니다.",after:"큰 ___이 다가옵니다.",answer:"태풍"},
+      {before:"땅이 크게 흔들려서 집이 무너졌습니다.",after:"___으로 집이 무너졌습니다.",answer:"지진"},
+      {before:"비가 오래 안 와서 논에 물이 부족합니다.",after:"___으로 논에 물이 부족합니다.",answer:"가뭄"},
+      {before:"물이 넘쳐 마을이 잠겼습니다.",after:"___로 마을이 잠겼습니다.",answer:"홍수"},
+      {before:"하늘이 맑고 해가 잘 비칩니다.",after:"오늘 날씨가 매우 ___합니다.",answer:"화창"},
+      {before:"공기 중 물방울이 짙어 앞이 잘 안 보입니다.",after:"___가 짙게 끼었습니다.",answer:"안개"},
+      {before:"매우 추운 날씨가 계속되고 있습니다.",after:"___가 이어지고 있습니다.",answer:"한파"},
+    ]
+  },
+  "음식 · 먹거리":{
+    pool:["반찬","야식","간식","디저트","음료","국물","식사","후식","밑반찬","안주","별미","한식","양식","분식","해산물","보양식"],
+    items:[
+      {before:"밥과 함께 여러 가지 요리를 먹습니다.",after:"밥과 함께 ___을 먹습니다.",answer:"반찬"},
+      {before:"밤늦게 라면을 먹었습니다.",after:"밤에 ___으로 라면을 먹었습니다.",answer:"야식"},
+      {before:"오후 세 시에 과자를 조금 먹었습니다.",after:"___으로 과자를 먹었습니다.",answer:"간식"},
+      {before:"저녁 식사 후에 케이크를 먹었습니다.",after:"저녁 식사 후 ___로 케이크를 먹었습니다.",answer:"디저트"},
+      {before:"목이 말라 시원한 주스를 마셨습니다.",after:"시원한 ___를 마셨습니다.",answer:"음료"},
+      {before:"찌개에 있는 물이 뜨겁습니다.",after:"찌개 ___이 뜨겁습니다.",answer:"국물"},
+      {before:"점심에 밥을 잘 챙겨 먹었습니다.",after:"점심 ___를 잘 했습니다.",answer:"식사"},
+      {before:"술과 함께 먹을 마른 오징어를 준비했습니다.",after:"___로 마른 오징어를 준비했습니다.",answer:"안주"},
+      {before:"김치와 된장찌개를 좋아합니다.",after:"저는 ___을 좋아합니다.",answer:"한식"},
+      {before:"몸에 좋은 삼계탕을 먹었습니다.",after:"___으로 삼계탕을 먹었습니다.",answer:"보양식"},
+    ]
+  },
+  "건강 · 몸":{
+    pool:["감기","몸살","두통","복통","치통","근육통","소화불량","불면증","고열","기침","콧물","재채기","골절","화상","알레르기","현기증"],
+    items:[
+      {before:"이가 아파서 치과에 갔습니다.",after:"___으로 치과에 갔습니다.",answer:"치통"},
+      {before:"머리가 아파서 두통약을 먹었습니다.",after:"___으로 두통약을 먹었습니다.",answer:"두통"},
+      {before:"배가 아파서 화장실에 자주 갔습니다.",after:"___으로 자주 화장실에 갔습니다.",answer:"복통"},
+      {before:"콧물이 나고 목이 아파 병원에 갔습니다.",after:"___에 걸려 병원에 갔습니다.",answer:"감기"},
+      {before:"몸이 아프고 힘이 없어 하루 종일 누웠습니다.",after:"심한 ___으로 하루 종일 누웠습니다.",answer:"몸살"},
+      {before:"밤에 잠이 잘 오지 않아 힘듭니다.",after:"___으로 밤이 힘듭니다.",answer:"불면증"},
+      {before:"체온이 매우 높아 병원에 갔습니다.",after:"___로 병원에 갔습니다.",answer:"고열"},
+      {before:"뼈가 부러져 깁스를 했습니다.",after:"___으로 깁스를 했습니다.",answer:"골절"},
+      {before:"뜨거운 냄비에 데어 병원에 갔습니다.",after:"___으로 병원에 갔습니다.",answer:"화상"},
+      {before:"어지러워서 잠깐 앉아 쉬었습니다.",after:"___으로 잠깐 앉아 쉬었습니다.",answer:"현기증"},
+    ]
+  },
+};
+
+let materials=[],currentIndex=0,answers=[],choiceLocked=false,retryCount=0;
+let autoNextTimer=null;
+
+// ===== 유틸 =====
+function shuffle(arr){const c=[...arr];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]]}return c}
+
+function renderSubject(){
+  const box=document.getElementById("subjectBox");
+  if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`;return}
+  box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`;
+}
+
+function renderCategoryOptions(){
+  const sel=document.getElementById("categoryValue");
+  const cats=Object.keys(CHUNK_DB);
+  const total=cats.reduce((sum,c)=>sum+CHUNK_DB[c].items.length,0);
+  let html=`<option value="__all__">전체 (${total}문제)</option>`;
+  for(const cat of cats){
+    html+=`<option value="${cat}">${cat} (${CHUNK_DB[cat].items.length}문제)</option>`;
+  }
+  sel.innerHTML=html;
+}
+
+function startTraining(){
+  const selectedCat=document.getElementById("categoryValue").value;
+  let allItems=[];
+  if(selectedCat==="__all__"){
+    for(const cat of Object.keys(CHUNK_DB)){
+      for(const item of CHUNK_DB[cat].items){
+        allItems.push({...item, category:cat, pool:CHUNK_DB[cat].pool});
+      }
+    }
+  }else{
+    for(const item of CHUNK_DB[selectedCat].items){
+      allItems.push({...item, category:selectedCat, pool:CHUNK_DB[selectedCat].pool});
+    }
+  }
+  allItems=shuffle(allItems);
+
+  const countVal=document.getElementById("countValue").value;
+  if(countVal!=="all"){
+    const n=parseInt(countVal);
+    allItems=allItems.slice(0,n);
+  }
+
+  materials=allItems;
+  currentIndex=0;answers=[];
+  document.getElementById("setupView").classList.add("hidden");
+  document.getElementById("trainingView").classList.remove("hidden");
+  document.getElementById("finishView").classList.add("hidden");
+  showItem();
+}
+
+function showItem(){
+  clearAutoNext();
+  choiceLocked=false;
+  retryCount=0;
+  const item=materials[currentIndex];
+  document.getElementById("trainingTitle").textContent=`${item.category} · ${currentIndex+1} / ${materials.length}`;
+  document.getElementById("beforeText").textContent=item.before;
+
+  // after 문장에서 ___ 자리를 blank 스팬으로 대체
+  const afterHtml=item.after.replace(/___+/, `<span class="blank" id="blankSlot">&nbsp;&nbsp;&nbsp;</span>`);
+  document.getElementById("afterText").innerHTML=afterHtml;
+
+  // 사용자가 선택한 보기 개수 (4 or 6)
+  const totalOptions=parseInt(document.getElementById("optionCount").value)||6;
+  const numDistractors=Math.min(totalOptions-1, item.pool.length-1);
+  const distractors=item.pool.filter(w=>w!==item.answer);
+  const shuffledDistractors=shuffle(distractors);
+  const options=shuffle([item.answer, ...shuffledDistractors.slice(0,numDistractors)]);
+
+  const grid=document.getElementById("optionsGrid");
+  grid.className="options-grid opts-"+totalOptions;
+  grid.innerHTML=options.map(w=>`<button class="option-btn" onclick="selectOption(this,'${w.replace(/'/g,"\\'")}')">${w}</button>`).join("");
+
+  document.getElementById("progressBar").style.width=`${(currentIndex/materials.length)*100}%`;
+  document.getElementById("feedbackBox").style.display="none";
+  document.getElementById("feedbackBox").textContent="";
+  document.getElementById("feedbackBox").className="feedback";
+  const nb=document.getElementById("nextBtn");
+  nb.style.display="inline-block";
+  nb.textContent="다음 문제";
+}
+
+function selectOption(btn, chosen){
+  if(choiceLocked)return;
+  const item=materials[currentIndex];
+  const isCorrect=chosen===item.answer;
+
+  if(isCorrect){
+    // 정답 처리
+    choiceLocked=true;
+    const blank=document.getElementById("blankSlot");
+    blank.textContent=chosen;
+    blank.classList.add("filled","correct");
+    document.querySelectorAll(".option-btn").forEach(b=>{
+      b.disabled=true;
+      if(b.textContent===chosen)b.classList.add("correct");
+    });
+    const countedCorrect=retryCount===0;
+    showFeedback(countedCorrect?"정답입니다!":"정답입니다! (두 번째 시도)",true);
+    answers.push({situation:item.before,answer:item.answer,response:chosen,correct:countedCorrect,retry:retryCount,category:item.category});
+    scheduleAutoNext(1600);
+    return;
+  }
+
+  retryCount+=1;
+
+  if(retryCount===1){
+    // 첫 오답 → 다시 도전
+    btn.classList.add("wrong-flash");
+    btn.disabled=true;
+    showFeedback("다시 생각해보세요.",false);
+    setTimeout(()=>{
+      btn.classList.remove("wrong-flash");
+      // 오답 표시는 남기지만 클릭은 못하게
+      btn.classList.add("wrong");
+    },600);
+    return;
+  }
+
+  // 두 번째 오답 → 정답 공개 후 진행
+  choiceLocked=true;
+  const blank=document.getElementById("blankSlot");
+  blank.textContent=chosen;
+  blank.classList.add("filled","wrong");
+  document.querySelectorAll(".option-btn").forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===chosen)b.classList.add("wrong");
+    else if(b.textContent===item.answer)b.classList.add("correct");
+  });
+  showFeedback(`정답은 "${item.answer}" 입니다.`,false);
+  answers.push({situation:item.before,answer:item.answer,response:chosen,correct:false,retry:retryCount,category:item.category});
+  scheduleAutoNext(2600);
+}
+
+function showFeedback(msg,ok){
+  const box=document.getElementById("feedbackBox");
+  box.style.display="block";box.textContent=msg;box.className="feedback "+(ok?"correct":"wrong");
+}
+
+function scheduleAutoNext(delay){
+  clearAutoNext();
+  autoNextTimer=setTimeout(()=>{autoNextTimer=null;nextItem();},delay);
+}
+function clearAutoNext(){if(autoNextTimer){clearTimeout(autoNextTimer);autoNextTimer=null;}}
+
+function nextQuestionManual(){
+  clearAutoNext();
+  if(!choiceLocked){
+    const item=materials[currentIndex];
+    if(item)answers.push({before:item.before,answer:item.answer,response:"(응답 없음)",correct:false,skipped:true,retry:retryCount,category:item.category});
+    choiceLocked=true;
+  }
+  nextItem();
+}
+
+function nextItem(){
+  clearAutoNext();
+  currentIndex++;
+  if(currentIndex>=materials.length)finishTraining();else showItem();
+}
+
+function finishTraining(){
+  document.getElementById("progressBar").style.width="100%";
+  document.getElementById("trainingView").classList.add("hidden");
+  document.getElementById("finishView").classList.remove("hidden");
+  const total=answers.length;
+  const correct=answers.filter(a=>a.correct).length;
+  const wrong=total-correct;
+  const rate=total?Math.round((correct/total)*100):0;
+  const subjectName=selectedSubject?selectedSubject.name:"대상자";
+  document.getElementById("finishText").textContent=`${subjectName}님의 ${TRAINING_NAME} 결과입니다.`;
+  document.getElementById("summaryGrid").innerHTML=`<div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div><div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>정답</span></div><div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>오답</span></div><div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+  const history=Store.load("speech_training_history",[]);
+  history.push({id:Date.now(),subjectId:selectedSubjectId,subjectName,training:TRAINING_NAME,date:new Date().toISOString(),total,correct,wrong,rate,answers});
+  Store.save("speech_training_history",history);
+}
+
+// 초기 렌더
+renderSubject();renderCategoryOptions();
+</script>
+</body>
+</html>

@@ -93,13 +93,6 @@
             <option value="all">전체</option>
           </select>
         </div>
-        <div>
-          <label for="orderMode">제시 방식</label>
-          <select id="orderMode" onchange="generateMaterials()">
-            <option value="random" selected>무작위</option>
-            <option value="order">순서대로</option>
-          </select>
-        </div>
       </div>
       <div class="help-box">
         조음기관의 빠르고 정확한 움직임을 연습하는 훈련입니다. 동일 음절 반복(AMR), 연속 음절 반복(SMR), 문장 반복 훈련을 선택할 수 있습니다.
@@ -926,9 +919,8 @@
 
     function generateMaterials() {
       const countValue = document.getElementById("count").value;
-      const orderMode = document.getElementById("orderMode").value;
       let source = filteredDB();
-      source = orderMode === "random" ? shuffle(source) : [...source];
+      source = shuffle(source);
       const limit = countValue === "all" ? source.length : Number(countValue);
       materials = source.slice(0, Math.min(limit, source.length)).map((item, idx) => ({...item, no:idx+1}));
       currentIndex = 0;

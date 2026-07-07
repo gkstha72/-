@@ -81,7 +81,6 @@ textarea{min-height:74px;resize:vertical}
 <div class="setup-grid">
   <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="all">전체</option></select></div>
   <div><label for="choiceCount">보기 개수</label><select id="choiceCount" onchange="generateMaterials()"><option value="2">2개 보기</option><option value="4" selected>4개 보기</option></select></div>
-  <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
   <div><label for="meaningMode">뜻 표시</label><select id="meaningMode"><option value="after" selected>정답 후 표시</option><option value="hide">표시 안 함</option></select></div>
 </div>
 <div class="help-box">속담의 빈칸에 들어갈 알맞은 단어를 고르는 훈련입니다. 1회 오답 시 다시 풀어보고, 2회 오답 시 정답을 보여준 뒤 다음 문제로 넘어갑니다. 1번 틀리고 두 번째에 맞춘 경우도 오답으로 기록됩니다.</div>
@@ -834,8 +833,7 @@ function buildOptions(item){
 
 function generateMaterials(){
   const countValue=document.getElementById("count").value;
-  const orderMode=document.getElementById("orderMode").value;
-  let source=orderMode==="random"?shuffle(PROVERBS):[...PROVERBS];
+  let source=shuffle(PROVERBS);
   const limit=countValue==="all"?source.length:Number(countValue);
   materials=source.slice(0,Math.min(limit,source.length)).map((item,idx)=>({...item,no:idx+1,options:buildOptions(item)}));
   currentIndex=0;answers=[];renderPreview();

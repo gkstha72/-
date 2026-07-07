@@ -538,7 +538,7 @@ function setupSpeechRecognition(){
     isRecognizing=true;
     iosFinalCandidates=[];
     setMicState("listening");
-    document.getElementById("speechSupportMsg").textContent="듣고 있어요. 따라 말해보세요.";
+    document.getElementById("speechSupportMsg").textContent="듣고 있어요. 말 끝나고 2초 뒤에 자동으로 채점돼요.";
     startRecognitionSafetyTimer();
   };
 
@@ -596,14 +596,14 @@ function setupSpeechRecognition(){
     }
   };
 
-  // 사용자가 말을 마친 것 같으면 잠시 후 강제 stop → onend 트리거
-  // (iOS Safari가 자동으로 stop을 잘 못하는 경우 대비)
+  // 사용자가 말을 마친 것 같으면 침묵 2초 후 강제 stop → onend 트리거
+  // 사용자 요청: 말이 끝나고 2초 뒤에 채점
   recognition.onspeechend=function(){
     setTimeout(()=>{
       if(isRecognizing&&!choiceLocked){
         try{recognition.stop();}catch(e){}
       }
-    },700);
+    },2000);
   };
 }
 
@@ -623,10 +623,9 @@ function clearRecognitionSafetyTimer(){
   if(recognitionSafetyTimer){clearTimeout(recognitionSafetyTimer);recognitionSafetyTimer=null;}
 }
 
-// 디바운스 자동 채점: 인식 결과가 들어온 뒤 일정 시간 동안 새 결과가 없으면
-// = 사용자가 말을 마쳤다고 보고 강제로 stop → 강제 채점 실행
-// (iOS Safari에서 isFinal 이벤트가 오지 않는 문제를 확실하게 커버)
-// 노래 등 긴 발화는 문구 사이 공백이 길 수 있어 1.4초로 설정
+// 디바운스 자동 채점: 인식 결과가 들어온 뒤 침묵 2초 동안 새 결과가 없으면
+// = 사용자가 말을 마쳤다고 보고 강제로 stop → 채점 실행
+// (onspeechend가 안 오는 경우 대비 백업 로직)
 let debounceCheckTimer=null;
 function scheduleDebounceCheck(){
   clearDebounceCheck();
@@ -635,7 +634,7 @@ function scheduleDebounceCheck(){
     if(isRecognizing&&!choiceLocked){
       stopSpeechRecognition();
     }
-  },1400);
+  },2000);
 }
 function clearDebounceCheck(){
   if(debounceCheckTimer){clearTimeout(debounceCheckTimer);debounceCheckTimer=null;}

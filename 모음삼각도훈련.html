@@ -47,7 +47,8 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 
 /* 문제 표시 */
 .problem-box{background:#f8faff;border-radius:20px;padding:24px 20px;display:flex;flex-direction:column;justify-content:center;min-height:340px;text-align:center}
-.step-badge{display:inline-block;background:#246bfe;color:white;font-size:12px;font-weight:900;padding:5px 14px;border-radius:999px;margin-bottom:14px}
+.step-badge{display:inline-block;background:#246bfe;color:white;font-size:12px;font-weight:900;padding:5px 14px;border-radius:999px;margin-bottom:8px}
+.transition-info{font-size:24px;font-weight:900;color:#246bfe;letter-spacing:8px;margin-bottom:18px;text-align:center;word-break:keep-all}
 .syllable-display{font-size:62px;font-weight:1000;letter-spacing:14px;color:#162033;line-height:1.2;margin-bottom:16px;word-break:keep-all}
 .hint-image{width:180px;height:180px;object-fit:contain;border-radius:16px;margin:0 auto 14px;background:#fff;border:2px solid #e2e8f0;display:block}
 .hint-image.placeholder{background:linear-gradient(135deg,#eef3ff,#eef3ff);display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;font-weight:900;padding:12px;text-align:center}
@@ -163,11 +164,11 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 
   <div class="problem-box">
     <div><span class="step-badge" id="stepBadge">2단계</span></div>
+    <div class="transition-info" id="transitionInfo">이 우</div>
     <div class="syllable-display" id="syllableDisplay">이 우</div>
     <div id="hintArea">
       <img class="hint-image placeholder" id="hintImage" alt="" style="display:none">
       <div class="answer-word hidden-word" id="answerWord">비누</div>
-      <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">그림·정답 보기</button>
     </div>
   </div>
 </div>
@@ -468,16 +469,15 @@ const subjects=Store.load("speech_subjects",[]);
 const selectedSubjectId=Store.load("speech_selected_subject",null);
 const selectedSubject=subjects.find(s=>s.id===selectedSubjectId)||null;
 
-// 표준 사다리꼴 모음 사각도 좌표 (IPA 참조)
-// 위가 넓고 아래로 좁아지는 사다리꼴 형태
+// 표준 사다리꼴 모음 사각도 좌표
 const VOWELS = {
-  'ㅣ': {x:0.02, y:0.08, num:1},
-  'ㅜ': {x:0.98, y:0.08, num:7},
-  'ㅔ': {x:0.14, y:0.34, num:2},
-  'ㅗ': {x:0.86, y:0.34, num:6},
-  'ㅐ': {x:0.28, y:0.60, num:3},
-  'ㅓ': {x:0.72, y:0.60, num:5},
-  'ㅏ': {x:0.50, y:0.92, num:4},
+  'ㅣ': {x:0.05, y:0.10, num:1},
+  'ㅜ': {x:0.95, y:0.10, num:7},
+  'ㅔ': {x:0.18, y:0.40, num:2},
+  'ㅗ': {x:0.82, y:0.40, num:6},
+  'ㅐ': {x:0.32, y:0.70, num:3},
+  'ㅓ': {x:0.68, y:0.70, num:5},
+  'ㅏ': {x:0.50, y:0.95, num:4},
 };
 
 let materials=[],currentIndex=0,answers=[],choiceLocked=false;
@@ -491,7 +491,7 @@ function renderSubject(){
 }
 
 function renderVowelChart(activeVowels=[], arrow=null){
-  const W=440, H=340, pad=30;
+  const W=440, H=340, pad=42;
   return `
     <svg class="vowel-chart" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -636,47 +636,42 @@ function showItem(){
 
   const levelLabels={"1":"1단계 · 기초","2":"2단계 · 전환","3":"3단계 · 실제 단어","4":"4단계 · 확장"};
   document.getElementById("stepBadge").textContent=levelLabels[item.level]||`Level ${item.level}`;
-  document.getElementById("syllableDisplay").textContent=item.syllables;
 
+  // 조음 전환 정보 (배지 아래에 항상 표시)
+  document.getElementById("transitionInfo").textContent=item.syllables;
+
+  const syllableDisplay=document.getElementById("syllableDisplay");
   const hintImage=document.getElementById("hintImage");
   const answerEl=document.getElementById("answerWord");
-  const revealBtn=document.getElementById("revealBtn");
 
   if(item.word){
+    // Level 1, 3, 4 → 큰 syllable 숨김, 그림+낱말이 메인
+    syllableDisplay.style.display='none';
     answerEl.textContent=item.word;
-    answerEl.classList.add('hidden-word');
-    hintImage.style.display='none';
-    revealBtn.style.display='block';
+    answerEl.classList.remove('hidden-word');
+    if(item.image){
+      hintImage.classList.remove('placeholder');
+      hintImage.src=item.image;
+      hintImage.alt=item.word;
+      hintImage.style.display='block';
+      hintImage.onerror=function(){
+        hintImage.style.display='none';
+        hintImage.onerror=null;
+      };
+    }else{
+      hintImage.style.display='none';
+    }
   }else{
+    // Level 2 무의미 → 큰 syllable이 메인
+    syllableDisplay.style.display='block';
+    syllableDisplay.textContent=item.syllables;
     answerEl.textContent='';
     answerEl.classList.add('hidden-word');
     hintImage.style.display='none';
-    revealBtn.style.display='none';
   }
 
   document.getElementById("trainingTitle").textContent=`${currentIndex+1} / ${materials.length}`;
   document.getElementById("progressBar").style.width=`${(currentIndex/materials.length)*100}%`;
-}
-
-function revealAnswer(){
-  const item=materials[currentIndex];
-  const hintImage=document.getElementById("hintImage");
-  const answerEl=document.getElementById("answerWord");
-  const revealBtn=document.getElementById("revealBtn");
-
-  if(item.image){
-    hintImage.classList.remove('placeholder');
-    hintImage.src=item.image;
-    hintImage.alt=item.word;
-    hintImage.style.display='block';
-    hintImage.onerror=function(){
-      hintImage.classList.add('placeholder');
-      hintImage.style.display='none';
-      hintImage.onerror=null;
-    };
-  }
-  answerEl.classList.remove('hidden-word');
-  revealBtn.style.display='none';
 }
 
 function scoreCorrect(){

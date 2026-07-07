@@ -188,7 +188,278 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 </section>
 </main>
 
-<script src="모음삼각도단어.js"></script>
+<script>
+/**
+ * 모음 삼각도 조음 훈련 - 단어 데이터
+ * ===================================
+ *
+ * 이 파일만 편집하면 훈련 문항이 바뀝니다.
+ * HTML 파일은 건드리지 않아도 돼요.
+ *
+ * 항목 구조:
+ *   {syllables: "이 우", word: "비누", image: "이미지모음삼각도/비누.png"}
+ *   - syllables: 대상자에게 보여줄 무의미 음절 (공백으로 구분)
+ *   - word: 정답 단어 (그림 힌트 후 노출)
+ *   - image: 이미지 경로. 없으면 자동 텍스트만 표시
+ *
+ * type 필드 (Level 2, 3):
+ *   - horizontal: 수평 전환 (같은 조음 높이)
+ *   - vertical: 수직 전환 (같은 쪽 상하)
+ *   - diagonal: 대각 전환 (하단 ㅏ 결합 등)
+ *
+ * ⚠️ 참고: 종성이 있는 단어도 포함되어 있어요.
+ *    조음 훈련 관점에서는 첫 두 음절의 모음 이동이 핵심이므로
+ *    종성이 있어도 훈련 효과에 문제 없어요.
+ */
+
+window.TRIANGLE_DB = {
+
+  // ═══════════════════════════════════════════
+  // Level 1 · 1음절 기초 (각 모음 조음 위치)
+  // ═══════════════════════════════════════════
+  level1: [
+    // ㅣ (고모음 전설)
+    {vowel:'ㅣ', syllables:'이', word:'이빨', image:'이미지모음삼각도/이빨.png'},
+    {vowel:'ㅣ', syllables:'이', word:'이슬', image:'이미지모음삼각도/이슬.png'},
+    {vowel:'ㅣ', syllables:'이', word:'이불', image:'이미지모음삼각도/이불.png'},
+    {vowel:'ㅣ', syllables:'이', word:'이마', image:'이미지모음삼각도/이마.png'},
+    {vowel:'ㅣ', syllables:'이', word:'잎', image:'이미지모음삼각도/잎.png'},
+    // ㅔ (중모음 전설) — 순수 1음절 드묾
+    {vowel:'ㅔ', syllables:'에', word:'에어컨', image:'이미지모음삼각도/에어컨.png'},
+
+    // ㅐ (저모음 전설)
+    {vowel:'ㅐ', syllables:'애', word:'애기', image:'이미지모음삼각도/애기.png'},
+    {vowel:'ㅐ', syllables:'애', word:'애플', image:'이미지모음삼각도/애플.png'},
+    {vowel:'ㅐ', syllables:'애', word:'애벌레', image:'이미지모음삼각도/애벌레.png'},
+
+    // ㅏ (저모음 후설)
+    {vowel:'ㅏ', syllables:'아', word:'아기', image:'이미지모음삼각도/아기.png'},
+    {vowel:'ㅏ', syllables:'아', word:'아빠', image:'이미지모음삼각도/아빠.png'},
+    {vowel:'ㅏ', syllables:'아', word:'아이', image:'이미지모음삼각도/아이.png'},
+    {vowel:'ㅏ', syllables:'아', word:'알', image:'이미지모음삼각도/알.png'},
+    {vowel:'ㅏ', syllables:'아', word:'안개', image:'이미지모음삼각도/안개.png'},
+    {vowel:'ㅏ', syllables:'아', word:'앞치마', image:'이미지모음삼각도/앞치마.png'},
+    {vowel:'ㅏ', syllables:'아', word:'아침', image:'이미지모음삼각도/아침.png'},
+
+    // ㅓ (중모음 후설)
+    {vowel:'ㅓ', syllables:'어', word:'어른', image:'이미지모음삼각도/어른.png'},
+    {vowel:'ㅓ', syllables:'어', word:'얼음', image:'이미지모음삼각도/얼음.png'},
+    {vowel:'ㅓ', syllables:'어', word:'얼굴', image:'이미지모음삼각도/얼굴.png'},    {vowel:'ㅓ', syllables:'어', word:'어깨', image:'이미지모음삼각도/어깨.png'},
+    {vowel:'ㅓ', syllables:'어', word:'엄마', image:'이미지모음삼각도/엄마.png'},
+    {vowel:'ㅓ', syllables:'어', word:'언덕', image:'이미지모음삼각도/언덕.png'},
+
+    // ㅗ (중모음 후설 원순)
+    {vowel:'ㅗ', syllables:'오', word:'오이', image:'이미지모음삼각도/오이.png'},
+    {vowel:'ㅗ', syllables:'오', word:'오리', image:'이미지모음삼각도/오리.png'},
+    {vowel:'ㅗ', syllables:'오', word:'옷', image:'이미지모음삼각도/옷.png'},
+    {vowel:'ㅗ', syllables:'오', word:'오빠', image:'이미지모음삼각도/오빠.png'},    {vowel:'ㅗ', syllables:'오', word:'오전', image:'이미지모음삼각도/오전.png'},
+    {vowel:'ㅗ', syllables:'오', word:'오징어', image:'이미지모음삼각도/오징어.png'},
+
+    // ㅜ (고모음 후설 원순)
+    {vowel:'ㅜ', syllables:'우', word:'우유', image:'이미지모음삼각도/우유.png'},
+    {vowel:'ㅜ', syllables:'우', word:'우비', image:'이미지모음삼각도/우비.png'},
+    {vowel:'ㅜ', syllables:'우', word:'우산', image:'이미지모음삼각도/우산.png'},
+    {vowel:'ㅜ', syllables:'우', word:'우주', image:'이미지모음삼각도/우주.png'},
+    {vowel:'ㅜ', syllables:'우', word:'우체국', image:'이미지모음삼각도/우체국.png'},
+    {vowel:'ㅜ', syllables:'우', word:'우표', image:'이미지모음삼각도/우표.png'},
+    {vowel:'ㅜ', syllables:'우', word:'운동', image:'이미지모음삼각도/운동.png'},
+    {vowel:'ㅜ', syllables:'우', word:'웃음', image:'이미지모음삼각도/웃음.png'},
+  ],
+
+  // ═══════════════════════════════════════════
+  // Level 2 · 2음절 무의미 (그림 없음)
+  // ═══════════════════════════════════════════
+  level2: [
+    // 수평 전환 (같은 조음 높이)
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우'},
+    {type:'horizontal', from:'ㅜ', to:'ㅣ', syllables:'우 이'},
+    {type:'horizontal', from:'ㅔ', to:'ㅗ', syllables:'에 오'},
+    {type:'horizontal', from:'ㅗ', to:'ㅔ', syllables:'오 에'},
+    {type:'horizontal', from:'ㅐ', to:'ㅓ', syllables:'애 어'},
+    {type:'horizontal', from:'ㅓ', to:'ㅐ', syllables:'어 애'},
+
+    // 수직 전환 (같은 쪽 상하)
+    {type:'vertical', from:'ㅣ', to:'ㅔ', syllables:'이 에'},
+    {type:'vertical', from:'ㅔ', to:'ㅐ', syllables:'에 애'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애'},
+    {type:'vertical', from:'ㅜ', to:'ㅗ', syllables:'우 오'},
+    {type:'vertical', from:'ㅗ', to:'ㅓ', syllables:'오 어'},
+    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어'},
+
+    // 대각 전환 (하단 ㅏ 결합)
+    {type:'diagonal', from:'ㅣ', to:'ㅏ', syllables:'이 아'},
+    {type:'diagonal', from:'ㅔ', to:'ㅏ', syllables:'에 아'},
+    {type:'diagonal', from:'ㅐ', to:'ㅏ', syllables:'애 아'},
+    {type:'diagonal', from:'ㅜ', to:'ㅏ', syllables:'우 아'},
+    {type:'diagonal', from:'ㅗ', to:'ㅏ', syllables:'오 아'},
+    {type:'diagonal', from:'ㅓ', to:'ㅏ', syllables:'어 아'},
+  ],
+
+  // ═══════════════════════════════════════════
+  // Level 3 · 2음절 실제 단어 (⭐ 이미지 필요)
+  // ═══════════════════════════════════════════
+  level3: [
+
+    // ─── 🔄 수평: ㅣ + ㅜ (이 우) — 10개 ───
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우', word:'비누', image:'이미지모음삼각도/비누.png'},
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우', word:'지구', image:'이미지모음삼각도/지구.png'},
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우', word:'이유', image:'이미지모음삼각도/이유.png'},
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우', word:'이불', image:'이미지모음삼각도/이불.png'},
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우', word:'지붕', image:'이미지모음삼각도/지붕.png'},
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우', word:'시구', image:'이미지모음삼각도/시구.png'},
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우', word:'미술', image:'이미지모음삼각도/미술.png'},
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우', word:'신부', image:'이미지모음삼각도/신부.png'},
+    {type:'horizontal', from:'ㅣ', to:'ㅜ', syllables:'이 우', word:'지출', image:'이미지모음삼각도/지출.png'},
+    // ─── 🔄 수평: ㅜ + ㅣ (우 이) — 9개 ───
+    {type:'horizontal', from:'ㅜ', to:'ㅣ', syllables:'우 이', word:'뿌리', image:'이미지모음삼각도/뿌리.png'},
+    {type:'horizontal', from:'ㅜ', to:'ㅣ', syllables:'우 이', word:'수리', image:'이미지모음삼각도/수리.png'},
+    {type:'horizontal', from:'ㅜ', to:'ㅣ', syllables:'우 이', word:'구이', image:'이미지모음삼각도/구이.png'},
+    {type:'horizontal', from:'ㅜ', to:'ㅣ', syllables:'우 이', word:'우리', image:'이미지모음삼각도/우리.png'},
+    {type:'horizontal', from:'ㅜ', to:'ㅣ', syllables:'우 이', word:'우비', image:'이미지모음삼각도/우비.png'},    {type:'horizontal', from:'ㅜ', to:'ㅣ', syllables:'우 이', word:'두피', image:'이미지모음삼각도/두피.png'},
+    {type:'horizontal', from:'ㅜ', to:'ㅣ', syllables:'우 이', word:'부리', image:'이미지모음삼각도/부리.png'},
+    {type:'horizontal', from:'ㅜ', to:'ㅣ', syllables:'우 이', word:'무기', image:'이미지모음삼각도/무기.png'},
+
+    // ─── 🔄 수평: ㅔ + ㅗ (에 오) — 4개 (조합 자체가 드묾) ───    {type:'horizontal', from:'ㅔ', to:'ㅗ', syllables:'에 오', word:'세로', image:'이미지모음삼각도/세로.png'},
+    // ─── 🔄 수평: ㅐ + ㅓ (애 어) — 10개 (종성 포함) ───    {type:'horizontal', from:'ㅐ', to:'ㅓ', syllables:'애 어', word:'재정', image:'이미지모음삼각도/재정.png'},
+    {type:'horizontal', from:'ㅐ', to:'ㅓ', syllables:'애 어', word:'배설', image:'이미지모음삼각도/배설.png'},    {type:'horizontal', from:'ㅐ', to:'ㅓ', syllables:'애 어', word:'개선', image:'이미지모음삼각도/개선.png'},
+    {type:'horizontal', from:'ㅐ', to:'ㅓ', syllables:'애 어', word:'냉전', image:'이미지모음삼각도/냉전.png'},
+    {type:'horizontal', from:'ㅐ', to:'ㅓ', syllables:'애 어', word:'개혁', image:'이미지모음삼각도/개혁.png'},
+    {type:'horizontal', from:'ㅐ', to:'ㅓ', syllables:'애 어', word:'배려', image:'이미지모음삼각도/배려.png'},
+    {type:'horizontal', from:'ㅐ', to:'ㅓ', syllables:'애 어', word:'개설', image:'이미지모음삼각도/개설.png'},
+
+    // ─── ⬇️ 수직 좌측: ㅣ + ㅔ (이 에) — 7개 ───
+    {type:'vertical', from:'ㅣ', to:'ㅔ', syllables:'이 에', word:'이제', image:'이미지모음삼각도/이제.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅔ', syllables:'이 에', word:'지혜', image:'이미지모음삼각도/지혜.png'},    {type:'vertical', from:'ㅣ', to:'ㅔ', syllables:'이 에', word:'시세', image:'이미지모음삼각도/시세.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅔ', syllables:'이 에', word:'예제', image:'이미지모음삼각도/예제.png'},
+
+    // ─── ⬇️ 수직 좌측: ㅔ + ㅐ (에 애) — 5개 ───
+    {type:'vertical', from:'ㅔ', to:'ㅐ', syllables:'에 애', word:'세대', image:'이미지모음삼각도/세대.png'},
+    {type:'vertical', from:'ㅔ', to:'ㅐ', syllables:'에 애', word:'예매', image:'이미지모음삼각도/예매.png'},
+    {type:'vertical', from:'ㅔ', to:'ㅐ', syllables:'에 애', word:'게재', image:'이미지모음삼각도/게재.png'},
+    {type:'vertical', from:'ㅔ', to:'ㅐ', syllables:'에 애', word:'제재', image:'이미지모음삼각도/제재.png'},
+    // ─── ⬇️ 수직 좌측: ㅣ + ㅐ (이 애) — 10개 ───
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'시대', image:'이미지모음삼각도/시대.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'미래', image:'이미지모음삼각도/미래.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'이내', image:'이미지모음삼각도/이내.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'지대', image:'이미지모음삼각도/지대.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'기대', image:'이미지모음삼각도/기대.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'지배', image:'이미지모음삼각도/지배.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'미대', image:'이미지모음삼각도/미대.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'시내', image:'이미지모음삼각도/시내.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'이해', image:'이미지모음삼각도/이해.png'},
+    {type:'vertical', from:'ㅣ', to:'ㅐ', syllables:'이 애', word:'침대', image:'이미지모음삼각도/침대.png'},
+
+    // ─── ⬇️ 수직 우측: ㅜ + ㅗ (우 오) — 8개 ───    {type:'vertical', from:'ㅜ', to:'ㅗ', syllables:'우 오', word:'무도', image:'이미지모음삼각도/무도.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅗ', syllables:'우 오', word:'부도', image:'이미지모음삼각도/부도.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅗ', syllables:'우 오', word:'구도', image:'이미지모음삼각도/구도.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅗ', syllables:'우 오', word:'국도', image:'이미지모음삼각도/국도.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅗ', syllables:'우 오', word:'두목', image:'이미지모음삼각도/두목.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅗ', syllables:'우 오', word:'순도', image:'이미지모음삼각도/순도.png'},
+    // ─── ⬇️ 수직 우측: ㅗ + ㅓ (오 어) — 10개 ───
+    {type:'vertical', from:'ㅗ', to:'ㅓ', syllables:'오 어', word:'도서', image:'이미지모음삼각도/도서.png'},
+    {type:'vertical', from:'ㅗ', to:'ㅓ', syllables:'오 어', word:'조서', image:'이미지모음삼각도/조서.png'},
+    {type:'vertical', from:'ㅗ', to:'ㅓ', syllables:'오 어', word:'소설', image:'이미지모음삼각도/소설.png'},    {type:'vertical', from:'ㅗ', to:'ㅓ', syllables:'오 어', word:'노선', image:'이미지모음삼각도/노선.png'},
+    {type:'vertical', from:'ㅗ', to:'ㅓ', syllables:'오 어', word:'조선', image:'이미지모음삼각도/조선.png'},
+    {type:'vertical', from:'ㅗ', to:'ㅓ', syllables:'오 어', word:'오전', image:'이미지모음삼각도/오전.png'},
+    // ─── ⬇️ 수직 우측: ㅜ + ㅓ (우 어) — 10개 ───
+    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어', word:'수건', image:'이미지모음삼각도/수건.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어', word:'부엌', image:'이미지모음삼각도/부엌.png'},    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어', word:'무선', image:'이미지모음삼각도/무선.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어', word:'수업', image:'이미지모음삼각도/수업.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어', word:'무엇', image:'이미지모음삼각도/무엇.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어', word:'부정', image:'이미지모음삼각도/부정.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어', word:'수정', image:'이미지모음삼각도/수정.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어', word:'궁전', image:'이미지모음삼각도/궁전.png'},
+    {type:'vertical', from:'ㅜ', to:'ㅓ', syllables:'우 어', word:'우정', image:'이미지모음삼각도/우정.png'},
+
+    // ─── ↘️ 대각: ㅣ + ㅗ (이 오) — 10개 ───
+    {type:'diagonal', from:'ㅣ', to:'ㅗ', syllables:'이 오', word:'이모', image:'이미지모음삼각도/이모.png'},
+    {type:'diagonal', from:'ㅣ', to:'ㅗ', syllables:'이 오', word:'지도', image:'이미지모음삼각도/지도.png'},
+    {type:'diagonal', from:'ㅣ', to:'ㅗ', syllables:'이 오', word:'미로', image:'이미지모음삼각도/미로.png'},
+    {type:'diagonal', from:'ㅣ', to:'ㅗ', syllables:'이 오', word:'시조', image:'이미지모음삼각도/시조.png'},
+    {type:'diagonal', from:'ㅣ', to:'ㅗ', syllables:'이 오', word:'미소', image:'이미지모음삼각도/미소.png'},    {type:'diagonal', from:'ㅣ', to:'ㅗ', syllables:'이 오', word:'기도', image:'이미지모음삼각도/기도.png'},    {type:'diagonal', from:'ㅣ', to:'ㅗ', syllables:'이 오', word:'신호', image:'이미지모음삼각도/신호.png'},
+    {type:'diagonal', from:'ㅣ', to:'ㅗ', syllables:'이 오', word:'미모', image:'이미지모음삼각도/미모.png'},
+
+    // ─── ↘️ 대각: ㅗ + ㅣ (오 이) — 8개 ───
+    {type:'diagonal', from:'ㅗ', to:'ㅣ', syllables:'오 이', word:'오이', image:'이미지모음삼각도/오이.png'},
+    {type:'diagonal', from:'ㅗ', to:'ㅣ', syllables:'오 이', word:'소리', image:'이미지모음삼각도/소리.png'},
+    {type:'diagonal', from:'ㅗ', to:'ㅣ', syllables:'오 이', word:'오리', image:'이미지모음삼각도/오리.png'},
+    {type:'diagonal', from:'ㅗ', to:'ㅣ', syllables:'오 이', word:'조리', image:'이미지모음삼각도/조리.png'},    {type:'diagonal', from:'ㅗ', to:'ㅣ', syllables:'오 이', word:'고리', image:'이미지모음삼각도/고리.png'},
+    {type:'diagonal', from:'ㅗ', to:'ㅣ', syllables:'오 이', word:'보리', image:'이미지모음삼각도/보리.png'},
+    {type:'diagonal', from:'ㅗ', to:'ㅣ', syllables:'오 이', word:'도시', image:'이미지모음삼각도/도시.png'},
+
+    // ─── ↘️ 대각: ㅣ + ㅏ (이 아) — 10개 (종성 포함) ───    {type:'diagonal', from:'ㅣ', to:'ㅏ', syllables:'이 아', word:'이자', image:'이미지모음삼각도/이자.png'},
+    {type:'diagonal', from:'ㅣ', to:'ㅏ', syllables:'이 아', word:'기자', image:'이미지모음삼각도/기자.png'},
+    {type:'diagonal', from:'ㅣ', to:'ㅏ', syllables:'이 아', word:'지방', image:'이미지모음삼각도/지방.png'},
+    {type:'diagonal', from:'ㅣ', to:'ㅏ', syllables:'이 아', word:'신발', image:'이미지모음삼각도/신발.png'},
+    {type:'diagonal', from:'ㅣ', to:'ㅏ', syllables:'이 아', word:'시장', image:'이미지모음삼각도/시장.png'},    {type:'diagonal', from:'ㅣ', to:'ㅏ', syllables:'이 아', word:'이상', image:'이미지모음삼각도/이상.png'},    {type:'diagonal', from:'ㅣ', to:'ㅏ', syllables:'이 아', word:'심장', image:'이미지모음삼각도/심장.png'},
+
+    // ─── ↘️ 대각: ㅏ + ㅣ (아 이) — 10개 ───
+    {type:'diagonal', from:'ㅏ', to:'ㅣ', syllables:'아 이', word:'아이', image:'이미지모음삼각도/아이.png'},
+    {type:'diagonal', from:'ㅏ', to:'ㅣ', syllables:'아 이', word:'나비', image:'이미지모음삼각도/나비.png'},
+    {type:'diagonal', from:'ㅏ', to:'ㅣ', syllables:'아 이', word:'바지', image:'이미지모음삼각도/바지.png'},
+    {type:'diagonal', from:'ㅏ', to:'ㅣ', syllables:'아 이', word:'가지', image:'이미지모음삼각도/가지.png'},
+    {type:'diagonal', from:'ㅏ', to:'ㅣ', syllables:'아 이', word:'사이', image:'이미지모음삼각도/사이.png'},    {type:'diagonal', from:'ㅏ', to:'ㅣ', syllables:'아 이', word:'아기', image:'이미지모음삼각도/아기.png'},
+    // ─── ↘️ 대각: ㅜ + ㅏ (우 아) — 10개 (종성 포함) ───    {type:'diagonal', from:'ㅜ', to:'ㅏ', syllables:'우 아', word:'부자', image:'이미지모음삼각도/부자.png'},
+    {type:'diagonal', from:'ㅜ', to:'ㅏ', syllables:'우 아', word:'우산', image:'이미지모음삼각도/우산.png'},
+    {type:'diagonal', from:'ㅜ', to:'ㅏ', syllables:'우 아', word:'수학', image:'이미지모음삼각도/수학.png'},
+    {type:'diagonal', from:'ㅜ', to:'ㅏ', syllables:'우 아', word:'문학', image:'이미지모음삼각도/문학.png'},
+    {type:'diagonal', from:'ㅜ', to:'ㅏ', syllables:'우 아', word:'국가', image:'이미지모음삼각도/국가.png'},
+    {type:'diagonal', from:'ㅜ', to:'ㅏ', syllables:'우 아', word:'부탁', image:'이미지모음삼각도/부탁.png'},
+    {type:'diagonal', from:'ㅜ', to:'ㅏ', syllables:'우 아', word:'무한', image:'이미지모음삼각도/무한.png'},
+    {type:'diagonal', from:'ㅜ', to:'ㅏ', syllables:'우 아', word:'순간', image:'이미지모음삼각도/순간.png'},
+    // ─── ↘️ 대각: ㅏ + ㅜ (아 우) — 10개 ───
+    {type:'diagonal', from:'ㅏ', to:'ㅜ', syllables:'아 우', word:'나무', image:'이미지모음삼각도/나무.png'},
+    {type:'diagonal', from:'ㅏ', to:'ㅜ', syllables:'아 우', word:'가루', image:'이미지모음삼각도/가루.png'},
+    {type:'diagonal', from:'ㅏ', to:'ㅜ', syllables:'아 우', word:'마루', image:'이미지모음삼각도/마루.png'},
+    {type:'diagonal', from:'ㅏ', to:'ㅜ', syllables:'아 우', word:'하루', image:'이미지모음삼각도/하루.png'},
+    {type:'diagonal', from:'ㅏ', to:'ㅜ', syllables:'아 우', word:'나루', image:'이미지모음삼각도/나루.png'},    {type:'diagonal', from:'ㅏ', to:'ㅜ', syllables:'아 우', word:'자수', image:'이미지모음삼각도/자수.png'},    {type:'diagonal', from:'ㅏ', to:'ㅜ', syllables:'아 우', word:'상추', image:'이미지모음삼각도/상추.png'},
+    {type:'diagonal', from:'ㅏ', to:'ㅜ', syllables:'아 우', word:'감기', image:'이미지모음삼각도/감기.png'},
+
+    // ─── ↘️ 대각: ㅗ + ㅏ (오 아) — 10개 ───
+    {type:'diagonal', from:'ㅗ', to:'ㅏ', syllables:'오 아', word:'오빠', image:'이미지모음삼각도/오빠.png'},    {type:'diagonal', from:'ㅗ', to:'ㅏ', syllables:'오 아', word:'노아', image:'이미지모음삼각도/노아.png'},
+    {type:'diagonal', from:'ㅗ', to:'ㅏ', syllables:'오 아', word:'조사', image:'이미지모음삼각도/조사.png'},
+    {type:'diagonal', from:'ㅗ', to:'ㅏ', syllables:'오 아', word:'도자', image:'이미지모음삼각도/도자.png'},
+    {type:'diagonal', from:'ㅗ', to:'ㅏ', syllables:'오 아', word:'소파', image:'이미지모음삼각도/소파.png'},    {type:'diagonal', from:'ㅗ', to:'ㅏ', syllables:'오 아', word:'노파', image:'이미지모음삼각도/노파.png'},
+    // ─── ↘️ 대각: ㅓ + ㅣ (어 이) — 10개 ───
+    {type:'diagonal', from:'ㅓ', to:'ㅣ', syllables:'어 이', word:'서리', image:'이미지모음삼각도/서리.png'},
+    {type:'diagonal', from:'ㅓ', to:'ㅣ', syllables:'어 이', word:'거리', image:'이미지모음삼각도/거리.png'},
+    {type:'diagonal', from:'ㅓ', to:'ㅣ', syllables:'어 이', word:'머리', image:'이미지모음삼각도/머리.png'},    {type:'diagonal', from:'ㅓ', to:'ㅣ', syllables:'어 이', word:'허리', image:'이미지모음삼각도/허리.png'},
+    // ─── ↘️ 대각: ㅓ + ㅏ (어 아) — 6개 ───
+    {type:'diagonal', from:'ㅓ', to:'ㅏ', syllables:'어 아', word:'엄마', image:'이미지모음삼각도/엄마.png'},
+    // ─── ↘️ 대각: ㅐ + ㅣ (애 이) — 7개 ───
+    {type:'diagonal', from:'ㅐ', to:'ㅣ', syllables:'애 이', word:'애기', image:'이미지모음삼각도/애기.png'},
+    {type:'diagonal', from:'ㅐ', to:'ㅣ', syllables:'애 이', word:'매기', image:'이미지모음삼각도/매기.png'},    {type:'diagonal', from:'ㅐ', to:'ㅣ', syllables:'애 이', word:'개미', image:'이미지모음삼각도/개미.png'},
+    {type:'diagonal', from:'ㅐ', to:'ㅣ', syllables:'애 이', word:'새끼', image:'이미지모음삼각도/새끼.png'},
+  ],
+
+  // ═══════════════════════════════════════════
+  // Level 4 · 3~4음절 확장
+  // ═══════════════════════════════════════════
+  level4: [
+    {syllables:'이 어 폰', word:'이어폰', image:'이미지모음삼각도/이어폰.png'},
+    {syllables:'요 리 사', word:'요리사', image:'이미지모음삼각도/요리사.png'},
+    {syllables:'수 의 사', word:'수의사', image:'이미지모음삼각도/수의사.png'},
+    {syllables:'어 머 니', word:'어머니', image:'이미지모음삼각도/어머니.png'},
+    {syllables:'아 버 지', word:'아버지', image:'이미지모음삼각도/아버지.png'},
+    {syllables:'비 행 기', word:'비행기', image:'이미지모음삼각도/비행기.png'},
+    {syllables:'자 동 차', word:'자동차', image:'이미지모음삼각도/자동차.png'},
+    {syllables:'바 다', word:'바다', image:'이미지모음삼각도/바다.png'},
+    {syllables:'오 리 배', word:'오리배', image:'이미지모음삼각도/오리배.png'},
+    {syllables:'소 나 기', word:'소나기', image:'이미지모음삼각도/소나기.png'},
+    {syllables:'파 도', word:'파도', image:'이미지모음삼각도/파도.png'},
+    {syllables:'강 아 지', word:'강아지', image:'이미지모음삼각도/강아지.png'},
+    {syllables:'소 방 차', word:'소방차', image:'이미지모음삼각도/소방차.png'},
+    {syllables:'병 아 리', word:'병아리', image:'이미지모음삼각도/병아리.png'},
+    {syllables:'무 지 개', word:'무지개', image:'이미지모음삼각도/무지개.png'},
+    {syllables:'미 끄 럼 틀', word:'미끄럼틀', image:'이미지모음삼각도/미끄럼틀.png'},
+    {syllables:'자 전 거', word:'자전거', image:'이미지모음삼각도/자전거.png'},
+    {syllables:'도 서 관', word:'도서관', image:'이미지모음삼각도/도서관.png'},
+    {syllables:'미 용 실', word:'미용실', image:'이미지모음삼각도/미용실.png'},
+    {syllables:'우 체 국', word:'우체국', image:'이미지모음삼각도/우체국.png'},
+  ],
+};
+
+</script>
 
 <script>
 const TRAINING_NAME="모음 삼각도 조음 훈련";
@@ -197,15 +468,16 @@ const subjects=Store.load("speech_subjects",[]);
 const selectedSubjectId=Store.load("speech_selected_subject",null);
 const selectedSubject=subjects.find(s=>s.id===selectedSubjectId)||null;
 
-// 표준 사다리꼴 모음 사각도 좌표
+// 표준 사다리꼴 모음 사각도 좌표 (IPA 참조)
+// 위가 넓고 아래로 좁아지는 사다리꼴 형태
 const VOWELS = {
-  'ㅣ': {x:0.05, y:0.10, num:1},
-  'ㅜ': {x:0.95, y:0.10, num:7},
-  'ㅔ': {x:0.18, y:0.40, num:2},
-  'ㅗ': {x:0.82, y:0.40, num:6},
-  'ㅐ': {x:0.32, y:0.70, num:3},
-  'ㅓ': {x:0.68, y:0.70, num:5},
-  'ㅏ': {x:0.50, y:0.95, num:4},
+  'ㅣ': {x:0.02, y:0.08, num:1},
+  'ㅜ': {x:0.98, y:0.08, num:7},
+  'ㅔ': {x:0.14, y:0.34, num:2},
+  'ㅗ': {x:0.86, y:0.34, num:6},
+  'ㅐ': {x:0.28, y:0.60, num:3},
+  'ㅓ': {x:0.72, y:0.60, num:5},
+  'ㅏ': {x:0.50, y:0.92, num:4},
 };
 
 let materials=[],currentIndex=0,answers=[],choiceLocked=false;
@@ -219,7 +491,7 @@ function renderSubject(){
 }
 
 function renderVowelChart(activeVowels=[], arrow=null){
-  const W=440, H=340, pad=42;
+  const W=440, H=340, pad=30;
   return `
     <svg class="vowel-chart" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -241,6 +513,7 @@ function coord(v, W, H, pad){
 }
 
 function drawGridLines(W, H, pad){
+  // 각 모음 높이에서 좌우 끝까지 점선 (chart의 어깨선 역할)
   const lines=[];
   ['ㅣ','ㅔ','ㅐ','ㅏ'].forEach(vk=>{
     const v=VOWELS[vk];
@@ -251,17 +524,15 @@ function drawGridLines(W, H, pad){
 }
 
 function drawTrapezoid(W, H, pad){
-  const path=[
-    coord(VOWELS['ㅣ'], W, H, pad),
-    coord(VOWELS['ㅜ'], W, H, pad),
-    coord(VOWELS['ㅗ'], W, H, pad),
-    coord(VOWELS['ㅓ'], W, H, pad),
-    coord(VOWELS['ㅏ'], W, H, pad),
-    coord(VOWELS['ㅐ'], W, H, pad),
-    coord(VOWELS['ㅔ'], W, H, pad),
-  ];
+  // 외곽 사다리꼴: ㅣ→ㅜ→ㅗ→ㅓ→ㅏ→ㅐ→ㅔ→ㅣ
+  const l = k => coord(VOWELS[k], W, H, pad);
+  const path=[l('ㅣ'), l('ㅜ'), l('ㅗ'), l('ㅓ'), l('ㅏ'), l('ㅐ'), l('ㅔ')];
   const d=path.map((p,i)=>`${i===0?'M':'L'} ${p.cx} ${p.cy}`).join(' ')+' Z';
-  return `<path class="trapezoid" d="${d}"/>`;
+  // 중간 수평선 (사다리꼴 3단 명확화)
+  const A=l('ㅔ'), B=l('ㅗ'), C=l('ㅐ'), D=l('ㅓ');
+  const mid1 = `<line class="trapezoid" x1="${A.cx}" y1="${A.cy}" x2="${B.cx}" y2="${B.cy}"/>`;
+  const mid2 = `<line class="trapezoid" x1="${C.cx}" y1="${C.cy}" x2="${D.cx}" y2="${D.cy}"/>`;
+  return `<path class="trapezoid" d="${d}"/>${mid1}${mid2}`;
 }
 
 function drawArrow(pair, W, H, pad){
@@ -297,8 +568,6 @@ function onLevelChange(){
 }
 
 function buildMaterials(){
-  if(!window.TRIANGLE_DB){alert("모음삼각도단어.js 파일을 불러올 수 없어요. 같은 폴더에 있는지 확인해주세요.");return []}
-
   const level=parseInt(document.getElementById("levelValue").value);
   const transition=document.getElementById("transitionValue").value;
   const DB=window.TRIANGLE_DB;

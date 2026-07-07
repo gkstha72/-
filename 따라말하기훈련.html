@@ -94,13 +94,6 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
     <label for="categoryValue">범주</label>
     <select id="categoryValue" onchange="renderActivityList()"></select>
   </div>
-  <div>
-    <label for="orderMode">제시 방식</label>
-    <select id="orderMode">
-      <option value="order" selected>순서대로</option>
-      <option value="random">무작위</option>
-    </select>
-  </div>
 </div>
 
 <div class="help-box">
@@ -399,8 +392,7 @@ function clearSelection(){
 function startTraining(){
   if(!selectedActivityIds.size){alert("훈련할 활동을 하나 이상 선택해주세요.");return;}
   let selected=AUTOMATIC_SPEECH_DB.filter(item=>selectedActivityIds.has(item.id));
-  const orderMode=document.getElementById("orderMode").value;
-  if(orderMode==="random")selected=shuffle(selected);
+  selected=shuffle(selected);
   materials=selected;
   currentIndex=0;answers=[];
   document.getElementById("setupView").classList.add("hidden");

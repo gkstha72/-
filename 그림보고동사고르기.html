@@ -102,13 +102,6 @@
             <option value="4">4개 보기</option>
           </select>
         </div>
-        <div>
-          <label for="orderMode">제시 방식</label>
-          <select id="orderMode" onchange="generateMaterials()">
-            <option value="random" selected>무작위</option>
-            <option value="order">순서대로</option>
-          </select>
-        </div>
       </div>
       <div class="help-box">
         그림을 보고 알맞은 동사를 고르는 훈련입니다.
@@ -228,8 +221,7 @@
 
     function generateMaterials() {
       const countValue = document.getElementById("count").value;
-      const orderMode = document.getElementById("orderMode").value;
-      let source = orderMode === "random" ? shuffle(imageDB) : [...imageDB];
+      let source = shuffle(imageDB);
       const limit = countValue === "all" ? source.length : Number(countValue);
       materials = source.slice(0, Math.min(limit, source.length)).map((item, idx) => ({ ...item, no: idx + 1, choices: buildOptions(item) }));
       currentIndex = 0;

@@ -68,7 +68,6 @@ textarea{min-height:74px;resize:vertical}
 <div class="setup-grid">
   <div><label for="itemType">훈련 유형</label><select id="itemType" onchange="generateMaterials()"><option value="word" selected>단어형</option><option value="conjugation">활용형</option><option value="all">전체</option></select></div>
   <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="all">전체</option></select></div>
-  <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
   <div><label for="explainMode">설명 표시</label><select id="explainMode"><option value="after" selected>정답 후 표시</option><option value="hide">표시 안 함</option></select></div>
 </div>
 <div class="help-box">같은 단어가 다른 뜻으로 쓰인 문장을 고르는 훈련입니다. 단어형과 활용형을 선택해서 훈련할 수 있습니다. 문장 안의 목표 단어 또는 활용형은 빨간색으로 표시됩니다. 정답 또는 2회 오답 후에는 설명을 확인하고 다음 문제로 넘어갑니다. 1번 틀리고 두 번째에 맞춘 경우도 오답으로 기록됩니다.</div>
@@ -2751,13 +2750,12 @@ function renderSubject(){
 function generateMaterials(){
   const typeValue=document.getElementById("itemType").value;
   const countValue=document.getElementById("count").value;
-  const orderMode=document.getElementById("orderMode").value;
   let source=POLYSEMY_ITEMS.filter(item=>{
     if(typeValue==="all") return true;
     if(typeValue==="conjugation") return isConjugationItem(item);
     return !isConjugationItem(item);
   });
-  source=orderMode==="random"?shuffle(source):[...source];
+  source=shuffle(source);
   const limit=countValue==="all"?source.length:Number(countValue);
   materials=source.slice(0,Math.min(limit,source.length)).map((item,idx)=>({...item,no:idx+1, choices:shuffle(item.choices)}));
   currentIndex=0;answers=[];renderPreview();

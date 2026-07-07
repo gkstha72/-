@@ -46,7 +46,6 @@ textarea{min-height:74px;resize:vertical}
 <div><label for="categoryValue">범주</label><select id="categoryValue" onchange="generateMaterials();renderStats();renderPreview()"><option value="all">전체</option></select></div>
 <div><label for="count">개수</label><select id="count" onchange="generateMaterials();renderStats();renderPreview()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="40">40개</option><option value="50">50개</option><option value="100">100개</option></select></div>
 <div><label for="choiceCount">보기 개수</label><select id="choiceCount" onchange="generateMaterials();renderStats();renderPreview()"><option value="2">2개</option><option value="4" selected>4개</option></select></div>
-<div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials();renderStats();renderPreview()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
 </div>
 <div class="help-box">그림을 보고 알맞은 단어를 보기에서 고르는 수용언어·어휘 이해 훈련입니다.<br></div>
 <div class="actions"><button class="primary" onclick="generateMaterials();renderPreview();renderStats()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button><button class="gray" onclick="autoLoadImages()">이미지 다시 불러오기</button></div>
@@ -188,7 +187,7 @@ function renderStats(){
  const cats=unique(imageDB.map(x=>x.category));
  const choiceCountEl=document.getElementById("choiceCount");
  const choiceCountText=choiceCountEl ? choiceCountEl.value+"개" : "4개";
- document.getElementById("statsBox").innerHTML=`<div class="stats-mini"><div><span>전체</span><b>${imageDB.length}</b></div><div><span>범주 수</span><b>${cats.length}</b></div><div><span>선택 자료</span><b>${materials.length}</b></div><div><span>현재 범주</span><b>${document.getElementById("categoryValue").value}</b></div><div><span>보기</span><b>${choiceCountText}</b></div><div><span>방식</span><b>${document.getElementById("orderMode").value==="random"?"무작위":"순서"}</b></div></div>`;
+ document.getElementById("statsBox").innerHTML=`<div class="stats-mini"><div><span>전체</span><b>${imageDB.length}</b></div><div><span>범주 수</span><b>${cats.length}</b></div><div><span>선택 자료</span><b>${materials.length}</b></div><div><span>현재 범주</span><b>${document.getElementById("categoryValue").value}</b></div><div><span>보기</span><b>${choiceCountText}</b></div><div><span>방식</span><b>${"random"==="random"?"무작위":"순서"}</b></div></div>`;
 }
 function saveMemo(){}
 function nextItem(){currentIndex++; if(currentIndex>=materials.length)finishTraining(); else showItem();}
@@ -226,7 +225,7 @@ function buildChoices(item){
 function generateMaterials(){
  const count=Number(document.getElementById("count").value);
  let source=filteredImages();
- if(document.getElementById("orderMode").value==="random")source=shuffle(source);
+ if("random"==="random")source=shuffle(source);
  materials=source.slice(0,Math.min(count,source.length)).map((item,idx)=>({...item,no:idx+1,choices:buildChoices(item)}));
  currentIndex=0;answers=[];renderPreview();renderStats();
 }

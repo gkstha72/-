@@ -79,7 +79,6 @@ textarea{min-height:74px;resize:vertical}
   <div><label for="syllableLength">음절 수</label><select id="syllableLength" onchange="generateMaterials()"><option value="all" selected>전체</option><option value="2">2음절</option><option value="3">3음절</option><option value="4">4음절</option></select></div>
   <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="50">50개</option><option value="all">전체</option></select></div>
   <div><label for="playLimit">재생 횟수</label><select id="playLimit" onchange="generateMaterials()"><option value="1">1회</option><option value="2" selected>2회</option><option value="0">무제한</option></select></div>
-  <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
 </div>
 <div class="help-box">단어 음성을 듣고 음절 조각을 순서대로 배열하는 훈련입니다.</div>
 <div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
@@ -173,9 +172,8 @@ function makeChoices(word){
 
 function generateMaterials(){
   const countValue=document.getElementById("count").value;
-  const orderMode=document.getElementById("orderMode").value;
   let source=filteredDB();
-  source=orderMode==="random"?shuffle(source):[...source];
+  source=shuffle(source);
   const limit=countValue==="all"?source.length:Number(countValue);
   materials=source.slice(0,Math.min(limit,source.length)).map((item,idx)=>({...item,no:idx+1,choices:makeChoices(item.word)}));
   currentIndex=0;answers=[];renderPreview();

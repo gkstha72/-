@@ -75,7 +75,6 @@ textarea{min-height:74px;resize:vertical}
   <div><label for="categoryValue">범주</label><select id="categoryValue" onchange="generateMaterials();renderStats();"></select></div>
   <div><label for="syllableLength">글자 수</label><select id="syllableLength" onchange="generateMaterials()"><option value="all" selected>전체</option><option value="1">1글자</option><option value="2">2글자</option><option value="3">3글자</option><option value="4">4글자 이상</option></select></div>
   <div><label for="count">개수</label><select id="count" onchange="generateMaterials()"><option value="10" selected>10개</option><option value="20">20개</option><option value="30">30개</option><option value="50">50개</option><option value="all">전체</option></select></div>
-  <div><label for="orderMode">제시 방식</label><select id="orderMode" onchange="generateMaterials()"><option value="random" selected>무작위</option><option value="order">순서대로</option></select></div>
 </div>
 <div class="help-box">위에 제시된 단어를 보고 아래 쓰기판에 손가락, 터치펜, 마우스로 따라 쓰는 훈련입니다. 1회 부정확 시 다시 써보고, 2회 부정확 시 다음 문제로 넘어갑니다. 1번 틀리고 두 번째에 맞춘 경우도 오답으로 기록됩니다.</div>
 <div class="actions"><button class="primary" onclick="generateMaterials()">자료 생성</button><button class="secondary" onclick="startTraining()">훈련 시작</button></div>
@@ -153,9 +152,8 @@ function filteredDB(){
 
 function generateMaterials(){
   const countValue=document.getElementById("count").value;
-  const orderMode=document.getElementById("orderMode").value;
   let source=filteredDB();
-  source=orderMode==="random"?shuffle(source):[...source];
+  source=shuffle(source);
   const limit=countValue==="all"?source.length:Number(countValue);
   materials=source.slice(0,Math.min(limit,source.length)).map((item,idx)=>({...item,no:idx+1}));
   currentIndex=0;answers=[];renderPreview();

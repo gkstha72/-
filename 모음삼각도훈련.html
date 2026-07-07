@@ -637,8 +637,15 @@ function showItem(){
   const levelLabels={"1":"1단계 · 기초","2":"2단계 · 전환","3":"3단계 · 실제 단어","4":"4단계 · 확장"};
   document.getElementById("stepBadge").textContent=levelLabels[item.level]||`Level ${item.level}`;
 
-  // 조음 전환 정보 (배지 아래에 항상 표시)
-  document.getElementById("transitionInfo").textContent=item.syllables;
+  // 조음 전환 정보 (syllables가 word와 사실상 같으면 중복이라 숨김)
+  const transitionInfo=document.getElementById("transitionInfo");
+  const syllablesNoSpace=item.syllables.replace(/\s/g,'');
+  if(item.word && syllablesNoSpace===item.word){
+    transitionInfo.style.display='none';
+  }else{
+    transitionInfo.textContent=item.syllables;
+    transitionInfo.style.display='block';
+  }
 
   const syllableDisplay=document.getElementById("syllableDisplay");
   const hintImage=document.getElementById("hintImage");

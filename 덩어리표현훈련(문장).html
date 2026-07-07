@@ -18,7 +18,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .gray{background:#edf1f6;color:#5d687b}
 .panel{background:white;border:1px solid #e2e8f0;border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(15,30,60,.06);margin-bottom:20px}
 .panel h2{margin:0 0 16px;font-size:22px}
-.setup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.setup-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px}
 label{display:block;font-size:13px;font-weight:900;color:#475569;margin-bottom:7px}
 select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;font-size:14px;outline:none;background:white}
 .subject-box,.help-box{background:#f8faff;border:1px solid #e2e8f0;border-radius:18px;padding:16px;margin-bottom:16px;color:#475569;line-height:1.6}
@@ -35,6 +35,12 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 .category-card.selected{border-color:#246bfe;background:#eef3ff;color:#162033}
 .category-card .count{display:block;color:#64748b;font-size:12.5px;font-weight:700;margin-top:4px}
 .hidden{display:none!important}
+.word-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.item-card{background:#f8faff;border:1px solid #e2e8f0;border-radius:15px;padding:14px;font-size:14.5px;line-height:1.5}
+.item-card strong{color:#246bfe;margin-right:5px}
+.item-card .arrow{color:#94a3b8;margin:0 6px}
+.item-card .ans{color:#246bfe;font-weight:900}
+.tag{display:inline-block;margin-left:6px;padding:3px 8px;border-radius:999px;background:#eef3ff;color:#246bfe;font-size:12px;font-weight:900}
 .progress-line{height:10px;background:#edf1f7;border-radius:999px;overflow:hidden;margin-bottom:18px}
 .progress-bar{height:100%;width:0%;background:#246bfe;transition:width .3s}
 .question{color:#246bfe;font-size:22px;line-height:1.5;font-weight:900;text-align:center;margin-bottom:16px}
@@ -86,11 +92,11 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 <div class="setup-grid">
   <div>
     <label for="categoryValue">범주</label>
-    <select id="categoryValue"></select>
+    <select id="categoryValue" onchange="generateMaterials()"></select>
   </div>
   <div>
     <label for="countValue">문제 수</label>
-    <select id="countValue">
+    <select id="countValue" onchange="generateMaterials()">
       <option value="5">5문제</option>
       <option value="10" selected>10문제</option>
       <option value="15">15문제</option>
@@ -100,7 +106,7 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
   </div>
   <div>
     <label for="optionCount">보기 개수</label>
-    <select id="optionCount">
+    <select id="optionCount" onchange="generateMaterials()">
       <option value="2">2개</option>
       <option value="4" selected>4개</option>
     </select>
@@ -112,8 +118,14 @@ select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;
 </div>
 
 <div class="actions">
-  <button class="primary" onclick="startTraining()">훈련 시작</button>
+  <button class="primary" onclick="generateMaterials()">자료 생성</button>
+  <button class="secondary" onclick="startTraining()">훈련 시작</button>
 </div>
+</section>
+
+<section id="previewView" class="panel">
+<h2 id="previewTitle">생성 자료</h2>
+<div id="previewList" class="word-grid"></div>
 </section>
 
 <section id="trainingView" class="panel hidden">
@@ -283,7 +295,7 @@ function renderCategoryOptions(){
   sel.innerHTML=html;
 }
 
-function startTraining(){
+function buildMaterials(){
   const selectedCat=document.getElementById("categoryValue").value;
   let allItems=[];
   if(selectedCat==="__all__"){
@@ -300,9 +312,33 @@ function startTraining(){
   allItems=shuffle(allItems);
   const countVal=document.getElementById("countValue").value;
   if(countVal!=="all"){allItems=allItems.slice(0,parseInt(countVal));}
-  materials=allItems;
+  return allItems;
+}
+
+function generateMaterials(){
+  materials=buildMaterials();
+  renderPreview();
+}
+
+function renderPreview(){
+  const selectedCat=document.getElementById("categoryValue").value;
+  const catLabel=selectedCat==="__all__"?"전체":selectedCat;
+  const optionCount=document.getElementById("optionCount").value;
+  document.getElementById("previewTitle").textContent=`생성 자료 (${catLabel} · 보기 ${optionCount}개 · 총 ${materials.length}문제)`;
+  const list=document.getElementById("previewList");
+  if(!materials.length){
+    list.innerHTML=`<div class="item-card">해당 조건의 문항이 없습니다.</div>`;
+    return;
+  }
+  list.innerHTML=materials.map((item,i)=>`<div class="item-card"><strong>${i+1}.</strong>${item.q}<br/><span class="arrow">→</span><span class="ans">${item.a}</span><span class="tag">${item.category}</span></div>`).join("");
+}
+
+function startTraining(){
+  if(!materials||!materials.length)generateMaterials();
+  if(!materials.length){alert("생성된 문항이 없어요.");return;}
   currentIndex=0;answers=[];
   document.getElementById("setupView").classList.add("hidden");
+  document.getElementById("previewView").classList.add("hidden");
   document.getElementById("trainingView").classList.remove("hidden");
   document.getElementById("finishView").classList.add("hidden");
   showItem();
@@ -426,7 +462,7 @@ function finishTraining(){
   Store.save("speech_training_history",history);
 }
 
-renderSubject();renderCategoryOptions();
+renderSubject();renderCategoryOptions();generateMaterials();
 </script>
 </body>
 </html>

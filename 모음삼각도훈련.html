@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>모음 삼각도 조음 훈련</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Pretendard","Noto Sans KR",Arial,sans-serif;background:#f4f6fa;color:#162033}
+.app{max-width:1200px;margin:0 auto;padding:24px 22px 48px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:900}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#315cff,#37c4ff);color:white;display:grid;place-items:center;font-weight:900}
+button{border:none;border-radius:14px;padding:12px 17px;font-size:15px;font-weight:900;cursor:pointer;transition:all .15s}
+button:disabled{opacity:.5;cursor:not-allowed}
+.primary{background:#246bfe;color:white}
+.primary:hover:not(:disabled){background:#1e56d0}
+.secondary{background:#eef3ff;color:#246bfe}
+.gray{background:#edf1f6;color:#5d687b}
+.panel{background:white;border:1px solid #e2e8f0;border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(15,30,60,.06);margin-bottom:20px}
+.panel h2{margin:0 0 16px;font-size:22px}
+.setup-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px}
+label{display:block;font-size:13px;font-weight:900;color:#475569;margin-bottom:7px}
+select{width:100%;border:1px solid #dce3ef;border-radius:13px;padding:12px 13px;font-size:14px;outline:none;background:white}
+.subject-box,.help-box{background:#f8faff;border:1px solid #eef3ff;border-radius:18px;padding:16px;margin-bottom:16px;color:#475569;line-height:1.6}
+.help-box{margin-top:16px;font-size:14px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.hidden{display:none!important}
+
+/* 훈련 화면 */
+.training-body{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center;margin-bottom:18px}
+.progress-line{height:10px;background:#edf1f7;border-radius:999px;overflow:hidden;margin-bottom:18px}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#246bfe,#37c4ff);transition:width .3s}
+.training-title{font-size:18px;font-weight:900;color:#246bfe;margin-bottom:14px;text-align:center}
+
+/* 모음 사각도 SVG */
+.vowel-chart-box{background:#f8faff;border-radius:20px;padding:22px;border:2px solid #eef3ff;display:grid;place-items:center}
+.vowel-chart{width:100%;max-width:440px;height:auto;display:block}
+.vowel-chart .grid-line{stroke:#dce3ef;stroke-width:1.5;fill:none;stroke-dasharray:4 4}
+.vowel-chart .trapezoid{stroke:#c8ced8;stroke-width:2;fill:none}
+.vowel-chart .active-arrow{stroke:#246bfe;stroke-width:4.5;fill:none;marker-end:url(#arrowhead)}
+.vowel-chart .vowel-node{fill:white;stroke:#94a3b8;stroke-width:2.5;transition:all .3s}
+.vowel-chart .vowel-node.active{fill:#246bfe;stroke:#1e56d0;stroke-width:3;animation:pulse 1.4s ease-in-out infinite}
+.vowel-chart .vowel-label{font-family:"Noto Sans KR",sans-serif;font-weight:900;font-size:20px;fill:#334155;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.vowel-chart .vowel-label.active{fill:white}
+@keyframes pulse{0%,100%{r:22}50%{r:26}}
+
+/* 문제 표시 */
+.problem-box{background:#f8faff;border-radius:20px;padding:24px 20px;display:flex;flex-direction:column;justify-content:center;min-height:340px;text-align:center}
+.step-badge{display:inline-block;background:#246bfe;color:white;font-size:12px;font-weight:900;padding:5px 14px;border-radius:999px;margin-bottom:14px}
+.syllable-display{font-size:62px;font-weight:1000;letter-spacing:14px;color:#162033;line-height:1.2;margin-bottom:16px;word-break:keep-all}
+.hint-image{width:180px;height:180px;object-fit:contain;border-radius:16px;margin:0 auto 14px;background:#fff;border:2px solid #e2e8f0;display:block}
+.hint-image.placeholder{background:linear-gradient(135deg,#eef3ff,#eef3ff);display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;font-weight:900;padding:12px;text-align:center}
+.answer-word{font-size:38px;font-weight:900;color:#246bfe;letter-spacing:2px;margin-top:4px;min-height:52px}
+.answer-word.hidden-word{visibility:hidden}
+.reveal-btn{background:#eef3ff;color:#246bfe;border-radius:12px;padding:10px 18px;font-size:14px;font-weight:900;cursor:pointer;border:none;margin:6px auto;display:block}
+
+/* 컨트롤 */
+.control-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.control-btn{background:white;border:2px solid #e2e8f0;border-radius:14px;padding:14px 22px;font-size:15px;font-weight:900;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.control-btn.correct-btn{background:#e8fff4;color:#16a06f;border-color:#a7f3d0}
+.control-btn.correct-btn:hover:not(:disabled){background:#c8f7dc;border-color:#16a06f}
+.control-btn.wrong-btn{background:#fff1f1;color:#e54848;border-color:#fecaca}
+.control-btn.wrong-btn:hover:not(:disabled){background:#ffdada;border-color:#e54848}
+.control-btn.next-btn{background:#246bfe;color:white;border-color:#246bfe}
+.control-btn.next-btn:hover:not(:disabled){background:#1e56d0}
+
+/* 결과 */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.summary-card{background:white;border:1px solid #edf2f7;border-radius:20px;padding:22px 16px;text-align:center;box-shadow:0 8px 22px rgba(15,30,60,.06)}
+.summary-icon{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;margin:0 auto 10px;color:white;font-size:22px;font-weight:900}
+.summary-card strong{display:block;font-size:30px;line-height:1;margin-bottom:8px;font-weight:900}
+.summary-card span{color:#334155;font-size:15px;font-weight:800}
+.summary-card.total strong,.summary-card.rate strong{color:#246bfe}
+.summary-card.correct strong{color:#16a06f}
+.summary-card.wrong strong{color:#e54848}
+.summary-icon.total,.summary-icon.rate{background:#246bfe}
+.summary-icon.correct{background:#16a06f}
+.summary-icon.wrong{background:#e54848}
+
+/* 미리보기 */
+.word-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:10px}
+.item-card{background:#f8faff;border:1px solid #eef3ff;border-radius:15px;padding:14px;font-size:14px;line-height:1.5}
+.item-card strong{color:#246bfe;margin-right:5px}
+.item-card .tag{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:#eef3ff;color:#246bfe;font-size:11px;font-weight:900}
+
+@media(max-width:900px){
+  .training-body{grid-template-columns:1fr}
+  .summary-grid{grid-template-columns:repeat(2,1fr)}
+  .topbar{align-items:flex-start;flex-direction:column}
+  .syllable-display{font-size:50px;letter-spacing:10px}
+  .answer-word{font-size:30px}
+}
+@media(max-width:560px){
+  .summary-grid{grid-template-columns:1fr}
+  .syllable-display{font-size:40px;letter-spacing:6px}
+  .hint-image{width:140px;height:140px}
+}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar">
+  <div class="brand"><div class="logo">모</div><span>모음 삼각도 조음 훈련</span></div>
+  <button class="gray" onclick="location.href='index.html'">메인으로</button>
+</header>
+
+<section class="panel"><h2>대상자</h2><div id="subjectBox" class="subject-box"></div></section>
+
+<section id="setupView" class="panel">
+<h2>훈련 설정</h2>
+<div class="setup-grid">
+  <div>
+    <label for="levelValue">훈련 레벨</label>
+    <select id="levelValue" onchange="onLevelChange()">
+      <option value="1">Level 1 · 1음절 기초</option>
+      <option value="2" selected>Level 2 · 2음절 무의미</option>
+      <option value="3">Level 3 · 2음절 실제 단어</option>
+      <option value="4">Level 4 · 3~4음절 확장</option>
+    </select>
+  </div>
+  <div>
+    <label for="transitionValue">전환 유형</label>
+    <select id="transitionValue" onchange="generateMaterials()">
+      <option value="all" selected>전체</option>
+      <option value="horizontal">수평 전환</option>
+      <option value="vertical">수직 전환</option>
+      <option value="diagonal">대각 전환</option>
+    </select>
+  </div>
+  <div>
+    <label for="countValue">문제 수</label>
+    <select id="countValue" onchange="generateMaterials()">
+      <option value="5">5문제</option>
+      <option value="10" selected>10문제</option>
+      <option value="15">15문제</option>
+      <option value="all">전체</option>
+    </select>
+  </div>
+</div>
+<div class="help-box">
+  <b>모음 삼각도(Vowel Chart)</b>는 한국어 모음의 조음 위치(혀 위치·입 벌림)를 시각화한 표준 도표입니다.<br/>
+  두 모음 사이의 조음 이동을 반복하며 조음 정확도와 유창성을 훈련합니다. 대상자의 발음을 직접 관찰해 <b>잘함/다시</b>로 채점하세요.
+</div>
+
+<div class="actions">
+  <button class="primary" onclick="generateMaterials()">자료 생성</button>
+  <button class="secondary" onclick="startTraining()">훈련 시작</button>
+</div>
+</section>
+
+<section id="previewView" class="panel">
+<h2 id="previewTitle">생성 자료</h2>
+<div id="previewList" class="word-grid"></div>
+</section>
+
+<section id="trainingView" class="panel hidden">
+<div class="progress-line"><div id="progressBar" class="progress-bar"></div></div>
+<div id="trainingTitle" class="training-title">1 / 10</div>
+
+<div class="training-body">
+  <div class="vowel-chart-box" id="vowelChartBox"></div>
+
+  <div class="problem-box">
+    <div><span class="step-badge" id="stepBadge">2단계</span></div>
+    <div class="syllable-display" id="syllableDisplay">이 우</div>
+    <div id="hintArea">
+      <img class="hint-image placeholder" id="hintImage" alt="" style="display:none">
+      <div class="answer-word hidden-word" id="answerWord">비누</div>
+      <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">그림·정답 보기</button>
+    </div>
+  </div>
+</div>
+
+<div class="control-row">
+  <button class="control-btn correct-btn" onclick="scoreCorrect()">✓ 잘함</button>
+  <button class="control-btn wrong-btn" onclick="scoreWrong()">✗ 다시</button>
+  <button class="control-btn next-btn" onclick="nextItem()">다음 문제 →</button>
+</div>
+</section>
+
+<section id="finishView" class="panel hidden">
+<h2>훈련 결과</h2><p id="finishText"></p><div class="summary-grid" id="summaryGrid"></div>
+<div class="actions">
+  <button class="primary" onclick="location.href='index.html'">메인으로</button>
+  <button class="secondary" onclick="location.reload()">같은 훈련 다시 하기</button>
+</div>
+</section>
+</main>
+
+<script src="모음삼각도단어.js"></script>
+
+<script>
+const TRAINING_NAME="모음 삼각도 조음 훈련";
+const Store={load(key,fallback){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch{return fallback}},save(key,v){localStorage.setItem(key,JSON.stringify(v))}};
+const subjects=Store.load("speech_subjects",[]);
+const selectedSubjectId=Store.load("speech_selected_subject",null);
+const selectedSubject=subjects.find(s=>s.id===selectedSubjectId)||null;
+
+// 표준 사다리꼴 모음 사각도 좌표
+const VOWELS = {
+  'ㅣ': {x:0.05, y:0.10, num:1},
+  'ㅜ': {x:0.95, y:0.10, num:7},
+  'ㅔ': {x:0.18, y:0.40, num:2},
+  'ㅗ': {x:0.82, y:0.40, num:6},
+  'ㅐ': {x:0.32, y:0.70, num:3},
+  'ㅓ': {x:0.68, y:0.70, num:5},
+  'ㅏ': {x:0.50, y:0.95, num:4},
+};
+
+let materials=[],currentIndex=0,answers=[],choiceLocked=false;
+
+function shuffle(arr){const c=[...arr];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]]}return c}
+
+function renderSubject(){
+  const box=document.getElementById("subjectBox");
+  if(!selectedSubject){box.innerHTML=`선택된 대상자가 없습니다. <button class="secondary" onclick="location.href='index.html'">대상자 등록하기</button>`;return}
+  box.innerHTML=`<strong>${selectedSubject.name}</strong><br />${selectedSubject.number||""} ${selectedSubject.memo?" · "+selectedSubject.memo:""}`;
+}
+
+function renderVowelChart(activeVowels=[], arrow=null){
+  const W=440, H=340, pad=42;
+  return `
+    <svg class="vowel-chart" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <polygon points="0 0, 10 3, 0 6" fill="#246bfe"/>
+        </marker>
+      </defs>
+      ${drawGridLines(W, H, pad)}
+      ${drawTrapezoid(W, H, pad)}
+      ${arrow ? drawArrow(arrow, W, H, pad) : ''}
+      ${drawNodes(W, H, pad, activeVowels)}
+    </svg>
+  `;
+}
+
+function coord(v, W, H, pad){
+  const usableW=W-pad*2, usableH=H-pad*2;
+  return {cx:pad+v.x*usableW, cy:pad+v.y*usableH};
+}
+
+function drawGridLines(W, H, pad){
+  const lines=[];
+  ['ㅣ','ㅔ','ㅐ','ㅏ'].forEach(vk=>{
+    const v=VOWELS[vk];
+    const y=pad+v.y*(H-pad*2);
+    lines.push(`<line class="grid-line" x1="0" y1="${y}" x2="${W}" y2="${y}"/>`);
+  });
+  return lines.join("");
+}
+
+function drawTrapezoid(W, H, pad){
+  const path=[
+    coord(VOWELS['ㅣ'], W, H, pad),
+    coord(VOWELS['ㅜ'], W, H, pad),
+    coord(VOWELS['ㅗ'], W, H, pad),
+    coord(VOWELS['ㅓ'], W, H, pad),
+    coord(VOWELS['ㅏ'], W, H, pad),
+    coord(VOWELS['ㅐ'], W, H, pad),
+    coord(VOWELS['ㅔ'], W, H, pad),
+  ];
+  const d=path.map((p,i)=>`${i===0?'M':'L'} ${p.cx} ${p.cy}`).join(' ')+' Z';
+  return `<path class="trapezoid" d="${d}"/>`;
+}
+
+function drawArrow(pair, W, H, pad){
+  const A=coord(VOWELS[pair.from], W, H, pad);
+  const B=coord(VOWELS[pair.to], W, H, pad);
+  const dx=B.cx-A.cx, dy=B.cy-A.cy;
+  const len=Math.sqrt(dx*dx+dy*dy);
+  if(len<1)return '';
+  const nx=dx/len, ny=dy/len;
+  const gap=26;
+  return `<line class="active-arrow" x1="${A.cx+nx*gap}" y1="${A.cy+ny*gap}" x2="${B.cx-nx*gap}" y2="${B.cy-ny*gap}"/>`;
+}
+
+function drawNodes(W, H, pad, activeVowels){
+  return Object.entries(VOWELS).map(([k,v])=>{
+    const {cx,cy}=coord(v, W, H, pad);
+    const isActive=activeVowels.includes(k);
+    const r=isActive?24:20;
+    return `
+      <circle class="vowel-node${isActive?' active':''}" cx="${cx}" cy="${cy}" r="${r}"/>
+      <text class="vowel-label${isActive?' active':''}" x="${cx}" y="${cy}">${k}</text>
+    `;
+  }).join("");
+}
+
+function onLevelChange(){
+  const lvl=document.getElementById("levelValue").value;
+  const transEl=document.getElementById("transitionValue");
+  const disabled=(lvl==="1"||lvl==="4");
+  transEl.disabled=disabled;
+  transEl.parentElement.style.opacity=disabled?"0.5":"1";
+  generateMaterials();
+}
+
+function buildMaterials(){
+  if(!window.TRIANGLE_DB){alert("모음삼각도단어.js 파일을 불러올 수 없어요. 같은 폴더에 있는지 확인해주세요.");return []}
+
+  const level=parseInt(document.getElementById("levelValue").value);
+  const transition=document.getElementById("transitionValue").value;
+  const DB=window.TRIANGLE_DB;
+  let items=[];
+
+  if(level===1)items=(DB.level1||[]).map(x=>({...x, level:1}));
+  else if(level===2)items=(DB.level2||[]).map(x=>({...x, level:2}));
+  else if(level===3)items=(DB.level3||[]).map(x=>({...x, level:3}));
+  else if(level===4)items=(DB.level4||[]).map(x=>({...x, level:4}));
+
+  if((level===2||level===3)&&transition!=="all"){
+    items=items.filter(x=>x.type===transition);
+  }
+
+  items=shuffle(items);
+  const countVal=document.getElementById("countValue").value;
+  if(countVal!=="all")items=items.slice(0, parseInt(countVal));
+  return items;
+}
+
+function generateMaterials(){
+  materials=buildMaterials();
+  renderPreview();
+}
+
+function renderPreview(){
+  const level=document.getElementById("levelValue").value;
+  const transition=document.getElementById("transitionValue").value;
+  const levelLabels={"1":"1음절 기초","2":"2음절 무의미","3":"2음절 실제 단어","4":"3~4음절 확장"};
+  const transLabels={"all":"전체","horizontal":"수평","vertical":"수직","diagonal":"대각"};
+  const parts=[levelLabels[level]];
+  if(level==="2"||level==="3")parts.push(transLabels[transition]+" 전환");
+  parts.push(`총 ${materials.length}문제`);
+  document.getElementById("previewTitle").textContent=`생성 자료 (${parts.join(" · ")})`;
+
+  const list=document.getElementById("previewList");
+  if(!materials.length){
+    list.innerHTML=`<div class="item-card">해당 조건의 문항이 없습니다.</div>`;
+    return;
+  }
+  list.innerHTML=materials.map((item,i)=>{
+    const arrow=item.from&&item.to?` <small style="color:#94a3b8;">(${item.from}→${item.to})</small>`:'';
+    const tag=item.type?`<span class="tag">${{horizontal:"수평",vertical:"수직",diagonal:"대각"}[item.type]||item.type}</span>`:'';
+    return `<div class="item-card"><strong>${i+1}.</strong>${item.syllables}${item.word?' → '+item.word:''}${arrow}${tag}</div>`;
+  }).join("");
+}
+
+function startTraining(){
+  if(!materials.length)generateMaterials();
+  if(!materials.length){alert("생성된 문항이 없어요.");return}
+  currentIndex=0;answers=[];
+  document.getElementById("setupView").classList.add("hidden");
+  document.getElementById("previewView").classList.add("hidden");
+  document.getElementById("trainingView").classList.remove("hidden");
+  document.getElementById("finishView").classList.add("hidden");
+  showItem();
+}
+
+function showItem(){
+  const item=materials[currentIndex];
+  choiceLocked=false;
+
+  const activeVowels=item.vowel?[item.vowel]:[item.from,item.to].filter(Boolean);
+  const arrow=item.from&&item.to?{from:item.from,to:item.to}:null;
+  document.getElementById("vowelChartBox").innerHTML=renderVowelChart(activeVowels, arrow);
+
+  const levelLabels={"1":"1단계 · 기초","2":"2단계 · 전환","3":"3단계 · 실제 단어","4":"4단계 · 확장"};
+  document.getElementById("stepBadge").textContent=levelLabels[item.level]||`Level ${item.level}`;
+  document.getElementById("syllableDisplay").textContent=item.syllables;
+
+  const hintImage=document.getElementById("hintImage");
+  const answerEl=document.getElementById("answerWord");
+  const revealBtn=document.getElementById("revealBtn");
+
+  if(item.word){
+    answerEl.textContent=item.word;
+    answerEl.classList.add('hidden-word');
+    hintImage.style.display='none';
+    revealBtn.style.display='block';
+  }else{
+    answerEl.textContent='';
+    answerEl.classList.add('hidden-word');
+    hintImage.style.display='none';
+    revealBtn.style.display='none';
+  }
+
+  document.getElementById("trainingTitle").textContent=`${currentIndex+1} / ${materials.length}`;
+  document.getElementById("progressBar").style.width=`${(currentIndex/materials.length)*100}%`;
+}
+
+function revealAnswer(){
+  const item=materials[currentIndex];
+  const hintImage=document.getElementById("hintImage");
+  const answerEl=document.getElementById("answerWord");
+  const revealBtn=document.getElementById("revealBtn");
+
+  if(item.image){
+    hintImage.classList.remove('placeholder');
+    hintImage.src=item.image;
+    hintImage.alt=item.word;
+    hintImage.style.display='block';
+    hintImage.onerror=function(){
+      hintImage.classList.add('placeholder');
+      hintImage.style.display='none';
+      hintImage.onerror=null;
+    };
+  }
+  answerEl.classList.remove('hidden-word');
+  revealBtn.style.display='none';
+}
+
+function scoreCorrect(){
+  if(choiceLocked)return;
+  choiceLocked=true;
+  const item=materials[currentIndex];
+  answers.push({item, correct:true});
+  setTimeout(nextItem, 400);
+}
+
+function scoreWrong(){
+  if(choiceLocked)return;
+  choiceLocked=true;
+  const item=materials[currentIndex];
+  answers.push({item, correct:false});
+  setTimeout(nextItem, 400);
+}
+
+function nextItem(){
+  if(!choiceLocked){
+    const item=materials[currentIndex];
+    answers.push({item, correct:false, skipped:true});
+    choiceLocked=true;
+  }
+  currentIndex++;
+  if(currentIndex>=materials.length)finishTraining();
+  else showItem();
+}
+
+function finishTraining(){
+  document.getElementById("progressBar").style.width='100%';
+  document.getElementById("trainingView").classList.add("hidden");
+  document.getElementById("finishView").classList.remove("hidden");
+  const total=answers.length;
+  const correct=answers.filter(a=>a.correct).length;
+  const wrong=total-correct;
+  const rate=total?Math.round((correct/total)*100):0;
+  const subjectName=selectedSubject?selectedSubject.name:"대상자";
+  document.getElementById("finishText").textContent=`${subjectName}님의 ${TRAINING_NAME} 결과입니다.`;
+  document.getElementById("summaryGrid").innerHTML=`<div class="summary-card total"><div class="summary-icon total">#</div><strong>${total}</strong><span>전체 문항</span></div><div class="summary-card correct"><div class="summary-icon correct">✓</div><strong>${correct}</strong><span>잘함</span></div><div class="summary-card wrong"><div class="summary-icon wrong">!</div><strong>${wrong}</strong><span>다시</span></div><div class="summary-card rate"><div class="summary-icon rate">%</div><strong>${rate}%</strong><span>정답률</span></div>`;
+  const history=Store.load("speech_training_history",[]);
+  history.push({id:Date.now(),subjectId:selectedSubjectId,subjectName,training:TRAINING_NAME,date:new Date().toISOString(),total,correct,wrong,rate});
+  Store.save("speech_training_history",history);
+}
+
+renderSubject();
+onLevelChange();
+</script>
+</body>
+</html>

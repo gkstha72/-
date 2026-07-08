@@ -133,12 +133,24 @@ function renderSubject(){
   box.innerHTML=`<strong>${selectedSubject.name}</strong><br>${selectedSubject.number||"등록번호 없음"} · ${selectedSubject.gender||"성별 미입력"} · ${selectedSubject.age?selectedSubject.age+"세":"나이 미입력"}<br>${selectedSubject.diagnosis||"진단명 미입력"} · ${selectedSubject.goal||"목표 미입력"}`;
 }
 
+function testImage(src){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>resolve(src);
+    img.onerror=()=>resolve(null);
+    img.src=encodeURI(src);
+  });
+}
 async function findImage(category,name){
   const exts=['png','jpg','jpeg','webp'];
+  const tries=[];
   for(const ext of exts){
-    const src=`이미지/${category}/${name}.${ext}`;
-    try{const ok=await new Promise(r=>{const img=new Image();img.onload=()=>r(true);img.onerror=()=>r(false);img.src=src});
-    if(ok)return src;}catch(e){}
+    tries.push(`이미지/${category}/${name}.${ext}`);
+    tries.push(`${category}/${name}.${ext}`);
+  }
+  for(const src of tries){
+    const ok=await testImage(src);
+    if(ok)return ok;
   }
   return null;
 }
@@ -225,7 +237,7 @@ function showItem(){
   document.getElementById("trainingTitle").textContent=`${currentIndex+1} / ${materials.length}`;
   const imgEl=document.getElementById("stimulusImage");
   const missingEl=document.getElementById("stimulusImageMissing");
-  imgEl.src=item.url;imgEl.alt=item.name;imgEl.style.display='block';missingEl.style.display='none';
+  imgEl.src=encodeURI(item.url);imgEl.alt=item.name;imgEl.style.display='block';missingEl.style.display='none';
   imgEl.onerror=function(){imgEl.style.display='none';missingEl.style.display='block';imgEl.onerror=null};
   document.getElementById("targetWord").innerHTML=makeBlankedWord(item.word);
   document.getElementById("progressBar").style.width=`${(currentIndex/materials.length)*100}%`;

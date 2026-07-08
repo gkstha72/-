@@ -826,8 +826,7 @@ function openVowelModal(vowel){
     img.alt=vowel+" 입 모양";
     img.style.display='block';
     img.onerror=function(){
-      img.classList.add('placeholder');
-      img.style.display='flex';
+      img.style.display='none';
       img.onerror=null;
     };
   }else{

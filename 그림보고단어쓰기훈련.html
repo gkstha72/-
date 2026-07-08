@@ -156,15 +156,22 @@ async function findImage(category,name){
 
 async function autoLoadImages(){
   const status=document.getElementById("loadStatus");
-  status.innerHTML='<span>이미지 폴더를 확인하는 중입니다...</span>';
+  status.innerHTML='<span>이미지 폴더를 확인하는 중입니다... (병렬 로드)</span>';
   imageDB=[];
+  const promises=[];
   for(const [category,names] of Object.entries(AUTO_ITEMS)){
     for(const name of names){
-      const src=await findImage(category,name);
-      if(src)imageDB.push({category,name,url:src,file:src});
+      promises.push(findImage(category,name).then(src=>{
+        if(src) imageDB.push({category,name,url:src,file:src});
+      }));
     }
   }
-  status.innerHTML=`자동 연동 완료: <b>${imageDB.length}</b>개 이미지가 불러와졌습니다.`;
+  await Promise.all(promises);
+  if(imageDB.length===0){
+    status.innerHTML='⚠️ 이미지를 찾지 못했습니다. GitHub 저장소의 <b>이미지/</b> 폴더 구조와 파일 업로드 상태를 확인해주세요.';
+  }else{
+    status.innerHTML=`자동 연동 완료: <b>${imageDB.length}</b>개 이미지가 불러와졌습니다.`;
+  }
   renderCategoryOptions();generateMaterials();renderStats();
 }
 

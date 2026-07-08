@@ -1329,7 +1329,7 @@ function makeChoices(item, settings) {
 
 function buildMaterials() {
   const settings = getSettings();
-  const source = settings.shuffle(SENTENCE_DB);
+  const source = shuffle(SENTENCE_DB);
   return source.slice(0, Math.min(settings.count, source.length)).map(item => ({
     ...item,
     choices: makeChoices(item, settings),

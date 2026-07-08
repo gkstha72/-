@@ -1749,7 +1749,7 @@
         difficultyMode: difficultyMode
       };
     }
-    function getItemsBySetting(settings) { const list = settings.categoryValue === "all" ? DESCRIPTION_DB : DESCRIPTION_DB.filter(item => item.category === settings.categoryValue); return settings.shuffle(list); }
+    function getItemsBySetting(settings) { const list = settings.categoryValue === "all" ? DESCRIPTION_DB : DESCRIPTION_DB.filter(item => item.category === settings.categoryValue); return shuffle(list); }
     function pickUnique(pool, count, excludeWords) {
       const exclude = new Set(excludeWords || []);
       const picked = [];

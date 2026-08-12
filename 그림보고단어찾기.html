@@ -247,9 +247,9 @@ function showItem(){
  const choiceCount=choiceCountEl ? Number(choiceCountEl.value) : item.choices.length;
  const answerBox=document.getElementById("answerOptions");
  answerBox.style.gridTemplateColumns = choiceCount===2 ? "repeat(2,1fr)" : "repeat(2,1fr)";
- answerBox.innerHTML=item.choices.map(choice=>{
+ answerBox.innerHTML=item.choices.map((choice,idx)=>{
    const safe=String(choice).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-   return `<button class="answer-btn" data-choice="${safe}" onclick="selectAnswer(this,this.dataset.choice)">${safe}</button>`;
+   return `<button class="answer-btn" onclick="selectAnswer(this,${idx})">${safe}</button>`;
  }).join("");
 }
 
@@ -261,11 +261,14 @@ function showFeedback(msg,correct){
  fb.style.color=correct ? "#16a06f" : "#e54848";
 }
 
-function selectAnswer(button,choice){
+function normalizeStr(s){return String(s||"").normalize("NFC")}
+
+function selectAnswer(button,choiceIdx){
  if(choiceLocked)return;
 
  const item=materials[currentIndex];
- const isCorrect=choice===item.name;
+ const choice=item.choices[choiceIdx];
+ const isCorrect=normalizeStr(choice)===normalizeStr(item.name);
 
  if(isCorrect){
    choiceLocked=true;

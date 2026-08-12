@@ -279,7 +279,7 @@
       } else {
         document.getElementById("answerOptions").classList.remove("hidden");
         document.getElementById("oralBox").classList.add("hidden");
-        document.getElementById("answerOptions").innerHTML = item.choices.map(choice => `<button class="answer-btn" onclick="selectAnswer(this, '${choice.replace(/'/g,"\\'")}')">${choice}</button>`).join("");
+        document.getElementById("answerOptions").innerHTML = item.choices.map((choice,idx) => `<button class="answer-btn" onclick="selectAnswer(this, ${idx})">${choice}</button>`).join("");
       }
     }
 
@@ -294,11 +294,14 @@
       document.querySelectorAll(".answer-btn").forEach(btn => btn.disabled = disabled);
     }
 
+    function normalizeStr(s){return String(s||"").normalize("NFC")}
+
     function markChoiceResult(selectedButton, selectedChoice) {
       const item = materials[currentIndex];
+      const target = normalizeStr(item.name);
       document.querySelectorAll(".answer-btn").forEach(btn => {
-        if (btn.textContent === item.name) btn.classList.add("correct-choice");
-        if (btn === selectedButton && selectedChoice !== item.name) btn.classList.add("wrong-choice");
+        if (normalizeStr(btn.textContent) === target) btn.classList.add("correct-choice");
+        if (btn === selectedButton && normalizeStr(selectedChoice) !== target) btn.classList.add("wrong-choice");
       });
     }
 
@@ -307,10 +310,11 @@
       document.getElementById("oralWrongBtn").disabled = disabled;
     }
 
-    function selectAnswer(button, choice) {
+    function selectAnswer(button, choiceIdx) {
       if (choiceLocked) return;
       const item = materials[currentIndex];
-      const isCorrect = choice === item.name;
+      const choice = item.choices[choiceIdx];
+      const isCorrect = normalizeStr(choice) === normalizeStr(item.name);
 
       if (isCorrect) {
         choiceLocked = true;

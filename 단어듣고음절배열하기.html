@@ -208,7 +208,7 @@ function showItem(){
   const item=materials[currentIndex];
   placed=new Array(syllables(item.word).length).fill(null);
   document.getElementById("trainingTitle").textContent=`${currentIndex+1} / ${materials.length}`;
-  document.getElementById("audioPlayer").src=item.file;
+  document.getElementById("audioPlayer").src=encodeURI(item.file);
   document.getElementById("progressBar").style.width=`${(currentIndex/materials.length)*100}%`;
   document.getElementById("feedbackBox").style.display="none";
   document.getElementById("feedbackBox").textContent="";
@@ -278,7 +278,20 @@ function playCurrentAudio(){
   const limit=Number(document.getElementById("playLimit").value);
   if(limit!==0&&playCount>=limit){showFeedback("재생 횟수를 모두 사용했습니다.",false);return}
   const player=document.getElementById("audioPlayer");
-  player.currentTime=0;player.play();playCount+=1;updatePlayInfo();
+  const item=materials[currentIndex];
+  // 매번 src 재설정 (iPad Safari에서 안정적)
+  if(!player.src||!player.src.includes(encodeURI(item.file).split('/').pop())){
+    player.src=encodeURI(item.file);
+  }
+  player.currentTime=0;
+  const p=player.play();
+  if(p&&p.catch){
+    p.catch(err=>{
+      showFeedback("오디오 재생에 실패했습니다. 파일 경로 확인 필요: "+item.file,false);
+      console.error("Audio play failed:",err,item.file);
+    });
+  }
+  playCount+=1;updatePlayInfo();
 }
 
 
